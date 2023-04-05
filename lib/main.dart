@@ -13,9 +13,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Comic Neue'
-      ),
       title: "LOGİN",
       debugShowCheckedModeBanner: false,
       home: LoginPage(),

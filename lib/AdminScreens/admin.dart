@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekle.dart';
 import 'package:elifbauygulamasi/AdminScreens/liste.dart';
@@ -145,7 +144,7 @@ class _AdminState extends State<AdminPage> {
                   ),
                 ),
                 ),
-                ListTile(
+                /*ListTile(
                   onTap: () {},
                   leading: Icon(Icons.settings),
                   title: Text(
@@ -156,7 +155,7 @@ class _AdminState extends State<AdminPage> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
+                ),*/
                 ListTile(
                   onTap: () {
                     _showResendDialog();
