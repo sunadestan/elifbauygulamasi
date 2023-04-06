@@ -5,7 +5,7 @@ class Letter {
   String? imagePath;
   String? musicPath;
 
-  Letter({this.id, this.name, this.annotation, this.imagePath, this.musicPath});
+  Letter({this.id, this.name, this.annotation, required this.imagePath , this.musicPath});
   Letter copyWith({
     int? id,
     String? name,

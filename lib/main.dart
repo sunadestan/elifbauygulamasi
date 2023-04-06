@@ -1,3 +1,4 @@
+import 'package:elifbauygulamasi/KullaniciScreens/alistirma.dart';
 import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "LOGİN",
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: MatchingGame(),
     );
   }
 }
