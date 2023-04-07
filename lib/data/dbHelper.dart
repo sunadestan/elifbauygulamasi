@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/letter.dart';
@@ -22,6 +21,23 @@ class DbHelper {
     var elifDb = openDatabase(dbPath, version: 1, onCreate: createDb);
     return elifDb;
   }
+  List<Map<String, dynamic>> _randomImages = [];
+
+  Future<void> getRandomImages() async {
+    // Veritabanına bağlan
+    final Database db = await openDatabase(
+      join(await getDatabasesPath(), 'your_database_name.db'),
+    );
+    final List<Map<String, dynamic>> allImages = await db.query('letters');
+    _randomImages = allImages..shuffle();
+    _randomImages = _randomImages.sublist(0, 10);
+    await db.close();
+  }
+
+  List<String> getRandomImagePaths() {
+    return _randomImages.map((Letter) => Letter['image_path'].toString()).toList();
+  }
+
 
   void createDb(Database db, int version) async {
     await db.execute(
@@ -57,30 +73,6 @@ class DbHelper {
     var result = await db.update(" letters ", letter.toMap(),
         where: "id=?", whereArgs: [letter.id]);
     return result;
-  }
-
-  List<Letter> getRandomLetters(int count, List<Letter> lettersList) {
-    List<Letter> randomLetters = [];
-
-    // Rastgele harfleri seçmek için kullanacağımız bir Random nesnesi oluşturuyoruz
-    Random random = Random();
-
-    // Belirtilen sayıda harf seçilene kadar devam eden bir döngü oluşturuyoruz
-    while (randomLetters.length < count) {
-      // Harfler listesinden rastgele bir harf seçiyoruz
-      Letter letter = lettersList[random.nextInt(lettersList.length)];
-
-      // Seçilen harfin daha önce seçilip seçilmediğini kontrol ediyoruz
-      if (!randomLetters.contains(letter)) {
-        // Eğer seçilmemişse, listeye ekliyoruz
-        randomLetters.add(letter);
-        // Aynı harfi eşleştirebilmek için bir tane daha oluşturup listeye ekliyoruz
-        randomLetters.add(letter.copyWith(id: letter.id! + count));
-      }
-    }
-
-    // Karışık sırayla harfleri içeren listeyi döndürüyoruz
-    return randomLetters..shuffle();
   }
 
   Future<List<User>> getUser(id) async {

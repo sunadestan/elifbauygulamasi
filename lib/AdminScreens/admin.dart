@@ -144,18 +144,6 @@ class _AdminState extends State<AdminPage> {
                   ),
                 ),
                 ),
-                /*ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'Ayarlar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),*/
                 ListTile(
                   onTap: () {
                     _showResendDialog();

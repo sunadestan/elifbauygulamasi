@@ -4,6 +4,8 @@ class Letter {
   String? annotation;
   String? imagePath;
   String? musicPath;
+  bool isMatched = false;
+  bool isSelected = false;
 
   Letter({this.id, this.name, this.annotation, required this.imagePath , this.musicPath});
   Letter copyWith({
