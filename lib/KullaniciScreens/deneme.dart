@@ -15,6 +15,7 @@ class _MyGamePageState extends State<MyGamePage> {
   List<Letter> _selectedLetters = [];
   List<Letter> harfler = [];
   var dbHelper = DbHelper();
+  List<Letter> _matchedLetters=[];
 
   @override
   void initState() {
@@ -28,12 +29,12 @@ class _MyGamePageState extends State<MyGamePage> {
 
   Future<void> _init() async {
     _letters = await dbHelper.getLetters();
-    _letters.shuffle();
     _selectedLetters = _letters.sublist(0, 10)..addAll(_letters.sublist(0, 10));
     _selectedLetters.shuffle();
+    _selectedLetters = _selectedLetters.sublist(0, 20);
+
   }
-
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,17 +73,32 @@ class _MyGamePageState extends State<MyGamePage> {
             },
             child: Card(
               elevation: 4.0,
-              child: _selectedLetters[index].isMatched
-                  ? Icon(
-                Icons.check_circle,
-                color: Colors.green,
-              )
-                  : _selectedLetters[index].isSelected
-                  ? Image.file(File
-                (_selectedLetters[index].imagePath!,),
-                fit: BoxFit.cover,
-              )
-                  : Container(),
+              // set id value for card
+              semanticContainer: true,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Stack(
+                children: [
+                  // add the image widget to the stack
+                  if (_selectedLetters[index].isSelected)
+                    Image.file(
+                      File(_selectedLetters[index].imagePath!),
+                      fit: BoxFit.cover,
+                    ),
+
+                  if (_selectedLetters[index].isMatched)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                    ),
+                ],
+              ),
             ),
           );
         }),
