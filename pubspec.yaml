@@ -69,6 +69,9 @@ dev_dependencies:
   flutter_animated_button:
   social_login_buttons:
   google_fonts:
+  flare_flutter:
+  animated_icon_button:
+
 
 
 # For information on the generic Dart part of this file, see the

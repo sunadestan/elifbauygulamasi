@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/dersler.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../LoginScreens/login_page.dart';
@@ -9,9 +9,9 @@ import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.user,required this.letter}) : super(key: key);
+  HomePage({Key? key, required this.user, required this.letter})
+      : super(key: key);
   User user;
   Letter letter;
 
@@ -24,7 +24,7 @@ class _HomeState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-
+  var user = User("", "", "", "", "", "", "", isadmin: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +52,7 @@ class _HomeState extends State<HomePage> {
           key: _formKey,
           backgroundColor: Color(0xFF975FD0),
           title: Text(
-            'Merhaba' +
-                "  " +
-                '${widget.user.name}',
+            'Merhaba' + "  " + '${widget.user.name}',
             style: GoogleFonts.comicNeue(
               color: Colors.white,
               fontSize: 20,
@@ -119,20 +117,28 @@ class _HomeState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Dersler(user: widget.user,letter: letter,)));
+                            builder: (context) => Dersler(
+                                  user: widget.user,
+                                  letter: letter,
+                                ))).then((value) => Navigator.pop(context));
                   },
                   leading: Icon(Icons.play_lesson),
                   title: Text(
-                  'Dersler',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    'Dersler',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                ),
                 ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ResimEslestirme(user: user,letter: letter,)));
+                  },
                   leading: Icon(Icons.extension),
                   title: Text(
                     'Alıştırmalar',
@@ -156,10 +162,15 @@ class _HomeState extends State<HomePage> {
                   ),
                 ),
                 ListTile(
-                  onTap: () {Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AyarlarPage(letter: widget.letter,user: widget.user,)));},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AyarlarPage(
+                                  letter: widget.letter,
+                                  user: widget.user,
+                                )));
+                  },
                   leading: Icon(Icons.settings),
                   title: Text(
                     'Ayarlar',
@@ -176,13 +187,13 @@ class _HomeState extends State<HomePage> {
                   },
                   leading: Icon(Icons.power_settings_new),
                   title: Text(
-                  'Çıkış Yap',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    'Çıkış Yap',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
                 ),
                 Spacer(),
                 DefaultTextStyle(
@@ -194,7 +205,7 @@ class _HomeState extends State<HomePage> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child:Text(
+                    child: Text(
                       'Hizmet Şartları | Gizlilik Politikası',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -280,13 +291,15 @@ class _HomeState extends State<HomePage> {
               style: GoogleFonts.comicNeue(
                 color: Color(0xffad80ea),
                 fontSize: 40,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',
@@ -307,7 +320,6 @@ class _HomeState extends State<HomePage> {
     );
   }
 
-
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
@@ -315,8 +327,7 @@ class _HomeState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title:
-        Text(
+        title: Text(
           'Güvenli Çıkış Yapın',
           style: GoogleFonts.comicNeue(
             color: Colors.red,
@@ -330,8 +341,9 @@ class _HomeState extends State<HomePage> {
               Navigator.of(context).pop();
             },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),),
-            child:  Text(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+            ),
+            child: Text(
               'Hayır',
               style: GoogleFonts.comicNeue(
                 fontWeight: FontWeight.w600,
@@ -346,8 +358,9 @@ class _HomeState extends State<HomePage> {
                 MaterialPageRoute(builder: (context) => LoginPage()),
               );
             },
-    style: ButtonStyle(
-    backgroundColor: MaterialStateProperty.all<Color>(Colors.red),),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+            ),
             child: Text(
               'Evet',
               style: GoogleFonts.comicNeue(
@@ -360,5 +373,4 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
-
 }
