@@ -350,6 +350,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   void _showResendDialogg() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -364,7 +365,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Güvenli Çıkış Yapmak İster Misiniz?',
+                'Güvenli Çıkış Yapın!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
@@ -428,6 +429,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   void _showResendDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),

@@ -73,7 +73,6 @@ dev_dependencies:
   animated_icon_button:
 
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -145,7 +144,6 @@ flutter:
       - assets/elifba/ğayn.png
       - assets/elifba/ğhı.png
       - assets/elifba/şin.png
-
 
 
   #   - images/a_dot_burr.jpeg

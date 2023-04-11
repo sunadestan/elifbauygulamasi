@@ -1,9 +1,8 @@
-import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../LoginScreens/login_page.dart';
@@ -11,18 +10,19 @@ import '../models/letter.dart';
 import '../models/user.dart';
 import 'ayarlar.dart';
 import 'dersler.dart';
+import 'home.dart';
+import 'oyunsinifi.dart';
 
-class ResimEslestirme extends StatefulWidget {
-  ResimEslestirme({Key? key, required this.user, required this.letter})
-      : super(key: key);
+class ResimEslestirmeuc extends StatefulWidget {
+  ResimEslestirmeuc({Key? key, required this.user, required this.letter}) : super(key: key);
   User user;
   Letter letter;
+
   @override
-  _ResimEslestirmeState createState() => _ResimEslestirmeState();
+  State<ResimEslestirmeuc> createState() => _ResimEslestirmeucState();
 }
 
-class _ResimEslestirmeState extends State<ResimEslestirme>
-    with TickerProviderStateMixin {
+class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProviderStateMixin  {
   int seciliIndex = -1;
   bool eslesmeTamamlandi = false;
   int _secondsLeft = 120;
@@ -35,37 +35,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
   //var userr = User("", "", "", "", "", "", "", isadmin: 0);
 
   List<String> resimler = [
-    'assets/elifba/elif.png',
-    'assets/elifba/elif.png',
-    'assets/elifba/be.png',
-    'assets/elifba/be.png',
-    'assets/elifba/te.png',
-    'assets/elifba/te.png',
-    'assets/elifba/peltekSe.png',
-    'assets/elifba/peltekSe.png',
-    'assets/elifba/cim.png',
-    'assets/elifba/cim.png',
-    'assets/elifba/ha.png',
-    'assets/elifba/ha.png',
-    'assets/elifba/ğhı.png',
-    'assets/elifba/ğhı.png',
-    'assets/elifba/dal.png',
-    'assets/elifba/dal.png',
-    'assets/elifba/zel.png',
-    'assets/elifba/zel.png',
-    'assets/elifba/ra.png',
-    'assets/elifba/ra.png',
-    'assets/elifba/ze.png',
-    'assets/elifba/ze.png',
-    'assets/elifba/sin.png',
-    'assets/elifba/sin.png',
-    'assets/elifba/şin.png',
-    'assets/elifba/şin.png',
-    'assets/elifba/sad.png',
-    'assets/elifba/sad.png',
-    'assets/elifba/dad.png',
-    'assets/elifba/dad.png',
-
     'assets/elifba/ta.png',
     'assets/elifba/ta.png',
     'assets/elifba/za.png',
@@ -96,36 +65,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
     'assets/elifba/ye.png',
   ];
   List<String> gizliResimler = [
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
@@ -324,7 +263,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                                 gizliResimler[index] = resimler[index];
                                 seciliIndex = -1;
                                 if (gizliResimler.every((resim) =>
-                                    resim != 'assets/resim/Elif.png')) {
+                                resim != 'assets/resim/Elif.png')) {
                                   eslesmeTamamlandi = true;
                                   _timer.cancel();
                                   _showDialogg();
@@ -335,9 +274,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                                   if (seciliIndex != -1) {
                                     if (index != seciliIndex) {
                                       gizliResimler[index] =
-                                          'assets/resim/Elif.png';
+                                      'assets/resim/Elif.png';
                                       gizliResimler[seciliIndex] =
-                                          'assets/resim/Elif.png';
+                                      'assets/resim/Elif.png';
                                       seciliIndex = -1;
                                       setState(() {});
                                     }
@@ -356,7 +295,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border:
-                                Border.all(color: Color(0xffbea1ea), width: 2),
+                            Border.all(color: Color(0xffbea1ea), width: 2),
                           ),
                           child: Image.asset(
                             gizliResimler[index],
@@ -404,9 +343,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                         context,
                         MaterialPageRoute(
                             builder: (context) => HomePage(
-                                  user: widget.user,
-                                  letter: letter,
-                                ))).then((value) => Navigator.pop(context));
+                              user: widget.user,
+                              letter: letter,
+                            ))).then((value) => Navigator.pop(context));
                     togglePause();
                   },
                   leading: Icon(Icons.home),
@@ -425,9 +364,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                         context,
                         MaterialPageRoute(
                             builder: (context) => Dersler(
-                                  user: widget.user,
-                                  letter: letter,
-                                ))).then((value) => Navigator.pop(context));
+                              user: widget.user,
+                              letter: letter,
+                            ))).then((value) => Navigator.pop(context));
                     togglePause();
                   },
                   leading: Icon(Icons.play_lesson),
@@ -476,9 +415,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                         context,
                         MaterialPageRoute(
                             builder: (context) => AyarlarPage(
-                                  letter: letter,
-                                  user: widget.user,
-                                )));
+                              letter: letter,
+                              user: widget.user,
+                            )));
                     togglePause();
                   },
                   leading: Icon(Icons.settings),
@@ -532,15 +471,16 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
       ),
     );
   }
+
   Widget row(){
     return Row(
       children: [
-            timer(),
-            _title(),
+        timer(),
+        _title(),
 
       ],
     );
-}
+  }
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -640,7 +580,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
               ),
             ),
             TextSpan(
-              text: '3',
+              text: '2',
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
@@ -659,8 +599,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
   }
 
   Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
+    height: 20,
+  );
 
   void _showResendDialog() {
     showDialog(
@@ -794,7 +734,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -808,8 +748,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _secondsLeft=120;
+                      _secondsLeft = 120;
                       startTimer();
+                      reset();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -940,8 +881,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-      (Timer timer) => setState(
-        () {
+          (Timer timer) => setState(
+            () {
           if (_secondsLeft < 1) {
             timer.cancel();
             _showDialog();
@@ -952,7 +893,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
       ),
     );
   }
-
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -980,7 +920,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
     setState(() {
       resimler.shuffle();
       gizliResimler =
-          List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
+      List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
       eslesmeTamamlandi = false;
     });
   }

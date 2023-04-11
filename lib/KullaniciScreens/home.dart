@@ -346,6 +346,7 @@ class _HomeState extends State<HomePage> {
   void _showResendDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -360,19 +361,10 @@ class _HomeState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Güvenli Çıkış Yapmak İster Misiniz?',
+                'Güvenli Çıkış Yapın!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Emin misiniz?',
-                style: GoogleFonts.comicNeue(
-                  //color: Colors.lightBlueAccent,
-                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),

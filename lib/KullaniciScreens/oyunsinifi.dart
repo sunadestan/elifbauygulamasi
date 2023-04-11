@@ -1,16 +1,18 @@
 import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirmeiki.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirmeuc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../LoginScreens/login_page.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import 'ayarlar.dart';
 import 'dersler.dart';
 import 'home.dart';
-
 
 class OyunSinifi extends StatefulWidget {
   OyunSinifi({Key? key,required this.user}) : super(key: key);
@@ -23,11 +25,10 @@ class OyunSinifi extends StatefulWidget {
 class _OyunSinifiState extends State<OyunSinifi> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   final _advancedDrawerController = AdvancedDrawerController();
-
+  late AudioPlayer _audioPlayer;
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     return AdvancedDrawer(
         backdropColor: Color(0xffad80ea),
         controller: _advancedDrawerController,
@@ -71,25 +72,28 @@ class _OyunSinifiState extends State<OyunSinifi> {
             ),
           ),
           body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/renkli.jpg"),
-                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child:  Container(
-              padding: EdgeInsets.only(top: 330,right: 20),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: birinciOyun(),
-                      ),
-                    ),
-                  ],
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/renkli.jpg"),
+                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                  fit: BoxFit.cover,
                 ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(child: birinciOyun(),right: 120,top: 20,),
+                  Positioned(child: ikinciOyun(),right: 10,top: 90,),
+                  Positioned(child: ucuncuOyun(),left: 130,top: 160,),
+                  Positioned(child: dorduncuOyun(),right: 10,top: 230,),
+                  Positioned(child: besinciOyun(),right: 120,top: 300,),
+                  Positioned(child: altinciOyun(),right: 10,top: 370,),
+                  Positioned(child: yedinciOyun(),left: 130,top: 440,),
+                  Positioned(child: sekizinciOyun(),right: 10,top: 510,),
+                  Positioned(child: dokuzuncuOyun(),right: 120,top: 590,),
+                  Positioned(child: onuncuOyun(),right: 10,top: 650,),
+                ],
+              ),
             ),
           ),
         ),
@@ -252,7 +256,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
 
   Widget birinciOyun() {
     return Container(
-      margin: EdgeInsets.all(60),
+      margin: EdgeInsets.symmetric(horizontal: 120),
 
       child: Column(
         children: [
@@ -265,27 +269,19 @@ class _OyunSinifiState extends State<OyunSinifi> {
               ),
             ),
             onPressed: () {
-              // butona tıklandığında yapılacak işlem
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeuc(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
               children: [
                 Text(
-                  '1. seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  'Renkli Harfler',
+                  '1. Seviye',
                   style: GoogleFonts.comicNeue(
                     color: Colors.white,
                     fontSize: 18,
@@ -295,7 +291,16 @@ class _OyunSinifiState extends State<OyunSinifi> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+  Widget ikinciOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+
+      child: Column(
+        children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               primary: Color(0xFFD399EA),
@@ -305,27 +310,341 @@ class _OyunSinifiState extends State<OyunSinifi> {
               ),
             ),
             onPressed: () {
-              // butona tıklandığında yapılacak işlem
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeuc(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
               children: [
                 Text(
-                  '2. seviye',
+                  '2. Seviye',
                   style: GoogleFonts.comicNeue(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                SizedBox(width: 10),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget ucuncuOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirme(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
                 Text(
-                  'Sesli Harfler ',
+                  '3. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget dorduncuOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '4. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget besinciOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '5. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget altinciOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '6. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget yedinciOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '7. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget sekizinciOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '8. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget dokuzuncuOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '9. Seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget onuncuOyun() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 120),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ResimEslestirmeiki(
+                        user: widget.user,
+                        letter: letter,
+                      ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '10. Seviye',
                   style: GoogleFonts.comicNeue(
                     color: Colors.white,
                     fontSize: 18,
@@ -340,10 +659,10 @@ class _OyunSinifiState extends State<OyunSinifi> {
     );
   }
 
-
   void _showResendDialogg() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -358,7 +677,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Güvenli Çıkış Yapmak İster Misiniz?',
+                'Güvenli Çıkış Yapın!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
@@ -423,5 +742,6 @@ class _OyunSinifiState extends State<OyunSinifi> {
     _advancedDrawerController.showDrawer();
   }
 }
+
 
 

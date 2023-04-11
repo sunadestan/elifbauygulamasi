@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -295,8 +294,6 @@ class _DerslerState extends State<Dersler> {
     );
   }
 
-
-
   Future<void> _loadAudio() async {
     try {
       await audioPlayer.setUrl(musicPath);
@@ -443,6 +440,7 @@ class _DerslerState extends State<Dersler> {
   void _showResendDialog(Letter selectedLetter) {
     showDialog(
       context: context,
+      barrierDismissible: false,
         builder: (context) => Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -507,6 +505,7 @@ class _DerslerState extends State<Dersler> {
   void _showResendDialogg() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -521,7 +520,7 @@ class _DerslerState extends State<Dersler> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Güvenli Çıkış Yapmak İster Misiniz?',
+                'Güvenli Çıkış Yapın!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,

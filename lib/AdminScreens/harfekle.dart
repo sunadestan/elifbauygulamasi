@@ -508,6 +508,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
   void _showResendDialogg(context) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -522,7 +523,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Güvenli Çıkış Yapınmak İster Misiniz?',
+                'Güvenli Çıkış Yapın!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
