@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                                 "Şifremi Unuttum ?",
                                 style: GoogleFonts.comicNeue(
                                   color: Colors.white,
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -153,7 +153,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildPasswordField() {
     bool isPassword = true;
     return Container(
@@ -230,7 +229,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-
   Widget _LoginButton() {
     return TextButton(
       onPressed: () async {
@@ -269,7 +267,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-
   Widget _googleButton() {
     return TextButton(
       onPressed: () async {
@@ -346,14 +343,12 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       }
     }
   }
-
   Future<User> _convertGoogleSignInToUser(GoogleSignInAccount account) async {
     final GoogleSignInAuthentication auth = await account.authentication;
     final String email = account.email;
     final String token = auth.accessToken.toString();
     return User(email, "", "", "", "", "", "", isadmin: 0);
   }
-
   Future<void> signIn() async {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     final user = await GoogleSignInApi.login();
@@ -361,7 +356,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(
         'Oturum açma başarısız!',
-        style: GoogleFonts.comicNeue(),),));
+        style: GoogleFonts.comicNeue(fontWeight: FontWeight.w600),),));
     } else {
       final convertedUser = await _convertGoogleSignInToUser(user);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -371,59 +366,79 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
               )));
     }
   }
-
   void _showResendDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title:
-        Text(
-          "Kullanıcı Bulunamadı",
-          style: GoogleFonts.comicNeue(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
           ),
         ),
-        //Text("Kullanıcı Bulunamadı"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RegisterPage()),
-              );
-            },
-            child:
-            Text(
-              "Kayıt olmak ister misin?",
-              style: GoogleFonts.comicNeue(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Kullanıcı Bulunamadı",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            //Text("Kayıt olmak ister misin?"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
-              );
-            },
-            child:
-            Text(
-              "Şifreni mi unuttun?",
-              style: GoogleFonts.comicNeue(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
 
-              ),
-            ),
-            //Text("Şifreni mi unuttun?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                       "Kayıt olmak ister misin?",
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      "Şifreni mi unuttun?",
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -487,3 +502,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     properties.add(StringProperty('_errorMessage', _errorMessage));
   }
 }
+
+
+

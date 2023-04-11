@@ -107,13 +107,11 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
         }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 75),
+        margin: EdgeInsets.symmetric(horizontal: 75,),
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(
-          vertical: 15,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(50)),
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -122,10 +120,13 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   blurRadius: 5,
                   spreadRadius: 2)
             ],
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [Color(0xff823ac6), Color(0xff703dd0)])),
+                colors: [
+                  Color(0xff823ac6),
+                  Color(0xff703dd0),
+                ])),
         child: Text(
           'Email Gönder',
           style: GoogleFonts.comicNeue(

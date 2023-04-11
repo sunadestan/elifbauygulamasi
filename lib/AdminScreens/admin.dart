@@ -1,6 +1,7 @@
 import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekle.dart';
 import 'package:elifbauygulamasi/AdminScreens/liste.dart';
+import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/dbHelper.dart';
@@ -22,6 +23,7 @@ class _AdminState extends State<AdminPage> {
   final _formKey = GlobalKey<FormState>();
   final _advancedDrawerController = AdvancedDrawerController();
   User user= User("", "", "", "", "", "", "", isadmin: 0);
+  var letter =Letter(imagePath: "");
   var result;
 
   /*0xFFA07BC9*/
@@ -111,6 +113,20 @@ class _AdminState extends State<AdminPage> {
                     //color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
+                ),ListTile(
+                  onTap: ()  {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user)),
+                  );},
+                  leading: Icon(Icons.home),
+                  title: Text(
+                    'Ana Sayfa',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 ListTile(
                   onTap: ()  {Navigator.push(
@@ -131,7 +147,7 @@ class _AdminState extends State<AdminPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,)),
+                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,letter: letter,)),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -188,44 +204,77 @@ class _AdminState extends State<AdminPage> {
   void _showResendDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title:
-        Text(
-          'Güvenli Çıkış Yapın',
-          style: GoogleFonts.comicNeue(
-            color: Colors.red,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child:  Text(
-              'Hayır',
-              style: GoogleFonts.comicNeue(
-
-                fontWeight: FontWeight.w600,
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Güvenli Çıkış Yapmak İster Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-            child: Text(
-              'Evet',
-              style: GoogleFonts.comicNeue(
-                fontWeight: FontWeight.w600,
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
               ),
-            ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Hayır',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Evet',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

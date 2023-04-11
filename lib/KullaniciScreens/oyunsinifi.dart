@@ -1,91 +1,98 @@
-import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/dersler.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../models/letter.dart';
-import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.user, required this.letter}) : super(key: key);
+import '../LoginScreens/login_page.dart';
+import '../models/letter.dart';
+import '../models/user.dart';
+import 'ayarlar.dart';
+import 'dersler.dart';
+import 'home.dart';
+
+
+class OyunSinifi extends StatefulWidget {
+  OyunSinifi({Key? key,required this.user}) : super(key: key);
   User user;
-  Letter letter;
 
   @override
-  State<HomePage> createState() => _HomeState();
+  State<OyunSinifi> createState() => _OyunSinifiState();
 }
 
-class _HomeState extends State<HomePage> {
-  final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _advancedDrawerController = AdvancedDrawerController();
+class _OyunSinifiState extends State<OyunSinifi> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  //var userr = User("", "", "", "", "", "", "", isadmin: 0);
+  final _advancedDrawerController = AdvancedDrawerController();
+
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return AdvancedDrawer(
-      backdropColor: Color(0xffad80ea),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      openScale: 1.0,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          key: _formKey,
-          backgroundColor: Color(0xFF975FD0),
-          title: Text(
-            'Merhaba' + "  " + '${widget.user.name}',
-            style: GoogleFonts.comicNeue(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
+            ),
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Harfler",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/renkli.jpg"),
+                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child:  Container(
+              padding: EdgeInsets.only(top: 330,right: 20),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: birinciOyun(),
+                      ),
+                    ),
+                  ],
+                ),
             ),
           ),
         ),
-        body: Center(
-          child: Container(
-            child: Column(
-              children: [
-                customSizedBox(),
-                _title(),
-              ],
-            ),
-          ),
-        ),
-      ),
       drawer: SafeArea(
         child: Container(
           child: ListTileTheme(
@@ -138,9 +145,9 @@ class _HomeState extends State<HomePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Dersler(
-                                  user: widget.user,
-                                  letter: letter,
-                                ))).then((value) => Navigator.pop(context));
+                              user: widget.user,
+                              letter: letter,
+                            ))).then((value) => Navigator.pop(context));
                   },
                   leading: Icon(Icons.play_lesson),
                   title: Text(
@@ -157,7 +164,7 @@ class _HomeState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => OyunSinifi(user: widget.user))).then((value) => Navigator.pop(context));
+                            builder: (context) => ResimEslestirme(user: widget.user,letter: letter,)));
                   },
                   leading: Icon(Icons.extension),
                   title: Text(
@@ -187,9 +194,9 @@ class _HomeState extends State<HomePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => AyarlarPage(
-                                  letter: letter,
-                                  user: widget.user,
-                                ))).then((value) => Navigator.pop(context));
+                              letter: letter,
+                              user: widget.user,
+                            )));
                   },
                   leading: Icon(Icons.settings),
                   title: Text(
@@ -203,7 +210,7 @@ class _HomeState extends State<HomePage> {
                 ),
                 ListTile(
                   onTap: () {
-                    _showResendDialog();
+                    _showResendDialogg();
                   },
                   leading: Icon(Icons.power_settings_new),
                   title: Text(
@@ -243,107 +250,98 @@ class _HomeState extends State<HomePage> {
     );
   }
 
-  Widget kutu(Widget child) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        alignment: Alignment.center,
-        child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            color: Color(0xffbea1ea),
-            elevation: 8,
-            child: Padding(
-              padding: EdgeInsets.all(50),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[child],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _handleMenuButtonPressed() {
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
-    _advancedDrawerController.showDrawer();
-  }
-
-  Widget resim() {
-    var f = MediaQuery.of(context).size.height;
+  Widget birinciOyun() {
     return Container(
-      margin: EdgeInsets.only(
-        top: 110,
-      ),
-      //padding: EdgeInsets.symmetric(vertical: 150, horizontal: 10),
-      height: f * .35,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            fit: BoxFit.cover, image: AssetImage("assets/images/kurann.png")),
-      ),
-    );
-  }
+      margin: EdgeInsets.all(60),
 
-  Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: 'Elif',
-          style: GoogleFonts.comicNeue(
-            fontSize: 40,
-            fontWeight: FontWeight.w700,
-            color: Color(0xff935ccf),
-            shadows: [
-              Shadow(
-                blurRadius: 5.0,
-                color: Colors.grey,
-                offset: Offset(2.0, 2.0),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
               ),
-            ],
+            ),
+            onPressed: () {
+              // butona tıklandığında yapılacak işlem
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '1. seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Renkli Harfler',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
-          children: [
-            TextSpan(
-              text: '-',
-              style: GoogleFonts.comicNeue(
-                color: Color(0xffad80ea),
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Colors.grey,
-                    offset: Offset(2.0, 2.0),
-                  ),
-                ],
+          SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD399EA),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            TextSpan(
-              text: 'Ba',
-              style: GoogleFonts.comicNeue(
-                color: Color(0xff935ccf),
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Colors.grey,
-                    offset: Offset(2.0, 2.0),
+            onPressed: () {
+              // butona tıklandığında yapılacak işlem
+            },
+            child: Row(
+              mainAxisAlignment:  MainAxisAlignment.center,
+              children: [
+                Text(
+                  '2. seviye',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.arrow_forward,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Sesli Harfler ',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
-          ]),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
-  void _showResendDialog() {
+
+  void _showResendDialogg() {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -364,15 +362,6 @@ class _HomeState extends State<HomePage> {
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Emin misiniz?',
-                style: GoogleFonts.comicNeue(
-                  //color: Colors.lightBlueAccent,
-                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -429,5 +418,10 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
-
+  void _handleMenuButtonPressed() {
+    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
+    _advancedDrawerController.showDrawer();
+  }
 }
+
+

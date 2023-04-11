@@ -49,7 +49,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 50),
                       height: f * .20,
-                      //width:f* .100,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             fit: BoxFit.cover,
@@ -96,13 +95,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
               fontWeight: FontWeight.w700,
             ),
           ),
-          /*Text(
-            "Ad",
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color(0xff935ccf),
-                fontSize: 15),
-          ),*/
           SizedBox(
             height: 5,
           ),
@@ -122,7 +114,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildLastNameField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -156,7 +147,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildPhoneField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -186,7 +176,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
             ),
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            selectorTextStyle: TextStyle(color: Colors.black),
+            selectorTextStyle: TextStyle(color: Colors.black,fontFamily: 'Comic Neue'),
             initialValue: PhoneNumber(isoCode: 'TR'), // başlangıç ülke kodu
             formatInput: true,
             keyboardType:
@@ -202,7 +192,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildAddressField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -236,7 +225,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildUserNameField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -270,7 +258,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildMailField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -303,7 +290,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildPasswordField() {
     bool isPassword = true;
     return Container(
@@ -348,7 +334,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
           "Tüm @elifba.com domain'ine sahip kullanıcıların isadmin alanı 1 olarak güncellendi.");
     }
   }
-
   Future<void> kayit(String kullaniciAdi) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -365,7 +350,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       }
     }
   }
-
   Future<void> addUser() async {
     var result = await dbHelper.insert(
       User(

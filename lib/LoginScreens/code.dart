@@ -100,58 +100,92 @@ class _CodeState extends State<CodePage> with ValidationMixin {
     _timer.cancel();
     // _timer = 0;
   }
-
   void _showResendDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          "Kodun Süresi Doldu",
-          style: GoogleFonts.comicNeue(
-            color: Colors.red,
-            fontSize: 25,
-            fontWeight: FontWeight.w900,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
           ),
         ),
-        content: Text(
-          "Yeniden gönderelim mi?",
-          style: GoogleFonts.comicNeue(
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Süre Doldu",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Yeniden gönderelim mi?",
+                style: GoogleFonts.comicNeue(
+                  //color: Colors.lightBlueAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()));
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      "İptal Et",
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _startTimer();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      "Yeniden Gönder",
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _startTimer();
-            },
-            child:
-            Text(
-              "Yeniden Gönder",
-              style: GoogleFonts.comicNeue(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()));
-            },
-            child: Text(
-              "İptal Et",
-              style: GoogleFonts.comicNeue(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
+
 
   Widget _entryField(String title) {
     return Container(
@@ -229,13 +263,11 @@ class _CodeState extends State<CodePage> with ValidationMixin {
         }
       },
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 75,),
         width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 75),
-        padding: const EdgeInsets.symmetric(
-          vertical: 15,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(50)),
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -244,10 +276,13 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                   blurRadius: 5,
                   spreadRadius: 2)
             ],
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [Color(0xFF975FD0), Color(0xff703dd0)])),
+                colors: [
+                  Color(0xff823ac6),
+                  Color(0xff703dd0),
+                ])),
         child: Text(
           "Gönder",
           style: GoogleFonts.comicNeue(
@@ -268,9 +303,12 @@ class _CodeState extends State<CodePage> with ValidationMixin {
         width: 50,
         child: TextFormField(
           textAlign: TextAlign.center,
-          //maxLength: 1,
           keyboardType: TextInputType.number,
-          style: TextStyle(fontSize: 25),
+          style: GoogleFonts.comicNeue(
+              color: Colors.black,
+              fontSize: 25,
+              fontWeight: FontWeight.w700,
+            ),
           decoration: InputDecoration(
               fillColor: Color(0xfff3f3f4),
               filled: true,
