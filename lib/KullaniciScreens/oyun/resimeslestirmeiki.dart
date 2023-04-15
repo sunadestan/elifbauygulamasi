@@ -5,24 +5,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import '../LoginScreens/login_page.dart';
-import '../models/letter.dart';
-import '../models/user.dart';
-import 'ayarlar.dart';
-import 'dersler.dart';
-import 'home.dart';
-import 'oyunsinifi.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../models/letter.dart';
+import '../../models/user.dart';
+import '../ayarlar.dart';
+import '../dersmenü.dart';
+import '../home.dart';
+import '../oyunmenü.dart';
 
-class ResimEslestirmeuc extends StatefulWidget {
-  ResimEslestirmeuc({Key? key, required this.user, required this.letter}) : super(key: key);
+class ResimEslestirmeiki extends StatefulWidget {
+  ResimEslestirmeiki({Key? key, required this.user, required this.letter}) : super(key: key);
   User user;
   Letter letter;
 
   @override
-  State<ResimEslestirmeuc> createState() => _ResimEslestirmeucState();
+  State<ResimEslestirmeiki> createState() => _ResimEslestirmeikiState();
 }
 
-class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProviderStateMixin  {
+class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProviderStateMixin  {
   int seciliIndex = -1;
   bool eslesmeTamamlandi = false;
   int _secondsLeft = 120;
@@ -35,36 +35,40 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
   //var userr = User("", "", "", "", "", "", "", isadmin: 0);
 
   List<String> resimler = [
-    'assets/elifba/ta.png',
-    'assets/elifba/ta.png',
-    'assets/elifba/za.png',
-    'assets/elifba/za.png',
-    'assets/elifba/ayın.png',
-    'assets/elifba/ayın.png',
-    'assets/elifba/ğayn.png',
-    'assets/elifba/ğayn.png',
-    'assets/elifba/fe.png',
-    'assets/elifba/fe.png',
-    'assets/elifba/gaf.png',
-    'assets/elifba/gaf.png',
-    'assets/elifba/kef.png',
-    'assets/elifba/kef.png',
-    'assets/elifba/lam.png',
-    'assets/elifba/lam.png',
-    'assets/elifba/mim.png',
-    'assets/elifba/mim.png',
-    'assets/elifba/nun.png',
-    'assets/elifba/nun.png',
-    'assets/elifba/vav.png',
-    'assets/elifba/vav.png',
-    'assets/elifba/he.png',
-    'assets/elifba/he.png',
-    'assets/elifba/lamelif.jpg',
-    'assets/elifba/lamelif.jpg',
-    'assets/elifba/ye.png',
-    'assets/elifba/ye.png',
+    'assets/elifba/elif.png',
+    'assets/elifba/elif.png',
+    'assets/elifba/be.png',
+    'assets/elifba/be.png',
+    'assets/elifba/te.png',
+    'assets/elifba/te.png',
+    'assets/elifba/peltekSe.png',
+    'assets/elifba/peltekSe.png',
+    'assets/elifba/cim.png',
+    'assets/elifba/cim.png',
+    'assets/elifba/ha.png',
+    'assets/elifba/ha.png',
+    'assets/elifba/ğhı.png',
+    'assets/elifba/ğhı.png',
+    'assets/elifba/dal.png',
+    'assets/elifba/dal.png',
+    'assets/elifba/zel.png',
+    'assets/elifba/zel.png',
+    'assets/elifba/ra.png',
+    'assets/elifba/ra.png',
+    'assets/elifba/ze.png',
+    'assets/elifba/ze.png',
+    'assets/elifba/sin.png',
+    'assets/elifba/sin.png',
+    'assets/elifba/şin.png',
+    'assets/elifba/şin.png',
+    'assets/elifba/sad.png',
+    'assets/elifba/sad.png',
+    'assets/elifba/dad.png',
+    'assets/elifba/dad.png',
   ];
   List<String> gizliResimler = [
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
@@ -365,7 +369,6 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                         MaterialPageRoute(
                             builder: (context) => Dersler(
                               user: widget.user,
-                              letter: letter,
                             ))).then((value) => Navigator.pop(context));
                     togglePause();
                   },
@@ -580,7 +583,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
               ),
             ),
             TextSpan(
-              text: '2',
+              text: '1',
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
@@ -697,7 +700,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+            Text(
                 "Malesef Olmadı",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,

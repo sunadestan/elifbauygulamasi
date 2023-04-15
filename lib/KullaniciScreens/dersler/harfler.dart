@@ -1,31 +1,31 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../data/dbHelper.dart';
-import '../models/letter.dart';
-import '../models/user.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
+import '../../models/user.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import '../ayarlar.dart';
+import '../dersmenü.dart';
 
-import 'ayarlar.dart';
 
-
-class Dersler extends StatefulWidget {
-  Dersler({Key? key, required this.user, required this.letter})
+class kullaniciHarfler extends StatefulWidget {
+  kullaniciHarfler({Key? key, required this.user, required this.letter})
       : super(key: key);
   User user;
   Letter letter;
 
   @override
-  State<Dersler> createState() => _DerslerState();
+  State<kullaniciHarfler> createState() => _kullaniciHarflerState();
 }
 
-class _DerslerState extends State<Dersler> {
+class _kullaniciHarflerState extends State<kullaniciHarfler> {
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   var user = User("", "", "", "", "", "", "", isadmin: 0);
@@ -117,7 +117,7 @@ class _DerslerState extends State<Dersler> {
                           childAspectRatio: 0.8,
                           children: List.generate(
                             letters!.length,
-                            (index) => kutuu(letters[index]),
+                                (index) => kutuu(letters[index]),
                           ),
                         ),
                       );
@@ -190,7 +190,6 @@ class _DerslerState extends State<Dersler> {
                         MaterialPageRoute(
                             builder: (context) => Dersler(
                               user: widget.user,
-                              letter: letter,
                             ))).then((value) => Navigator.pop(context));
                   },
                   leading: Icon(Icons.play_lesson),
@@ -441,64 +440,64 @@ class _DerslerState extends State<Dersler> {
     showDialog(
       context: context,
       barrierDismissible: false,
-        builder: (context) => Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: Colors.lightBlueAccent,
-          width: 2,
-        ),
-      ),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(selectedLetter.name ?? "",
-                  style: GoogleFonts.comicNeue(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    color: Colors.lightBlueAccent,
-                  ),),
-                SizedBox(height: 16),
-                Text(selectedLetter.annotation ?? "",
-                  style: GoogleFonts.comicNeue(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),),
-                SizedBox(height: 24),
-                Divider(
-                  color: Colors.white,
-                  thickness: 2,
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _pause();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
-                      ),
-                      child: Text(
-                        'Tamam',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
           ),
         ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(selectedLetter.name ?? "",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.lightBlueAccent,
+                ),),
+              SizedBox(height: 16),
+              Text(selectedLetter.annotation ?? "",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  fontSize: 18,
+                ),),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _pause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Tamam',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -586,8 +585,8 @@ class _DerslerState extends State<Dersler> {
     _advancedDrawerController.showDrawer();
   }
   Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
+    height: 20,
+  );
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

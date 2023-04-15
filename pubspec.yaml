@@ -71,6 +71,8 @@ dev_dependencies:
   google_fonts:
   flare_flutter:
   animated_icon_button:
+  charts_flutter:
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -109,9 +111,12 @@ flutter:
       - assets/resim/1.png
       - assets/resim/2.png
       - assets/resim/3.png
+      -  assets/resim/ses.jpg
       - assets/resim/Elif-Ba.png
       - assets/resim/eLİFBA.png
       - assets/resim/Elif-Baa.png
+      - assets/resim/arkaplan.jpg
+      - assets/resim/dersarkaplan.jpg
       - assets/harfyazi/ELİF.png
       - assets/resim/Elif.png
       - assets/resim/eliff.png
@@ -144,6 +149,90 @@ flutter:
       - assets/elifba/ğayn.png
       - assets/elifba/ğhı.png
       - assets/elifba/şin.png
+      - assets/elifba/ustun/ayın_üstün.png
+      - assets/elifba/ustun/be_üstün.png
+      - assets/elifba/ustun/cim_üstün.png
+      - assets/elifba/ustun/dad_üstün.png
+      - assets/elifba/ustun/dal_üstün.png
+      - assets/elifba/ustun/elif_üstün.png
+      - assets/elifba/ustun/fe_üstün.png
+      - assets/elifba/ustun/gaf_üstün.png
+      - assets/elifba/ustun/gayın_üstün.png
+      - assets/elifba/ustun/ha_üstün.png
+      - assets/elifba/ustun/he_üstün.png
+      - assets/elifba/ustun/hı_üstün.png
+      - assets/elifba/ustun/kef_üstün.png
+      - assets/elifba/ustun/lam_üstün.png
+      - assets/elifba/ustun/mim_üstün.png
+      - assets/elifba/ustun/nun_üstün.png
+      - assets/elifba/ustun/ra_üstün.png
+      - assets/elifba/ustun/sad_üstün.png
+      - assets/elifba/ustun/se_üstün.png
+      - assets/elifba/ustun/sin_üstün.png
+      - assets/elifba/ustun/te_üstün.png
+      - assets/elifba/ustun/tı_üstün.png
+      - assets/elifba/ustun/vav_üstün.png
+      - assets/elifba/ustun/ye_üstün.png
+      - assets/elifba/ustun/ze_üstün.png
+      - assets/elifba/ustun/zel_üstün.png
+      - assets/elifba/ustun/zı_üstün.png
+      - assets/elifba/ustun/şin_üstün.png
+      - assets/elifba/esre/ayın_esre.png
+      - assets/elifba/esre/be_esre.png
+      - assets/elifba/esre/cim_esre.png
+      - assets/elifba/esre/dad_esre.png
+      - assets/elifba/esre/dal_esre.png
+      - assets/elifba/esre/elif_esre.png
+      - assets/elifba/esre/fe_esre.png
+      - assets/elifba/esre/gaf_esre.png
+      - assets/elifba/esre/gayın_esre.png
+      - assets/elifba/esre/ha_esre.png
+      - assets/elifba/esre/he_esre.png
+      - assets/elifba/esre/hı_esre.png
+      - assets/elifba/esre/kef_esre.png
+      - assets/elifba/esre/lam_esre.png
+      - assets/elifba/esre/mim_esre.png
+      - assets/elifba/esre/nun_esre.png
+      - assets/elifba/esre/ra_esre.png
+      - assets/elifba/esre/sad_esre.png
+      - assets/elifba/esre/se_esre.png
+      - assets/elifba/esre/sin_esre.png
+      - assets/elifba/esre/te_esre.png
+      - assets/elifba/esre/tı_esre.png
+      - assets/elifba/esre/vav_esre.png
+      - assets/elifba/esre/ye_esre.png
+      - assets/elifba/esre/ze_esre.png
+      - assets/elifba/esre/zel_esre.png
+      - assets/elifba/esre/zı_esre.png
+      - assets/elifba/esre/şin_esre.png
+      - assets/elifba/otre/ayın_ötre.png
+      - assets/elifba/otre/be_ötre.png
+      - assets/elifba/otre/cim_ötre.png
+      - assets/elifba/otre/dad_ötre.png
+      - assets/elifba/otre/dal_ötre.png
+      - assets/elifba/otre/elif_ötre.png
+      - assets/elifba/otre/fe_ötre.png
+      - assets/elifba/otre/gaf_ötre.png
+      - assets/elifba/otre/gayın_ötre.png
+      - assets/elifba/otre/ha_ötre.png
+      - assets/elifba/otre/he_ötre.png
+      - assets/elifba/otre/hı_ötre.png
+      - assets/elifba/otre/kef_ötre.png
+      - assets/elifba/otre/lam_ötre.png
+      - assets/elifba/otre/mim_ötre.png
+      - assets/elifba/otre/nun_ötre.png
+      - assets/elifba/otre/ra_ötre.png
+      - assets/elifba/otre/sad_ötre.png
+      - assets/elifba/otre/se_ötre.png
+      - assets/elifba/otre/sin_ötre.png
+      - assets/elifba/otre/te_ötre.png
+      - assets/elifba/otre/tı_ötre.png
+      - assets/elifba/otre/vav_ötre.png
+      - assets/elifba/otre/ye_ötre.png
+      - assets/elifba/otre/ze_ötre.png
+      - assets/elifba/otre/zel_ötre.png
+      - assets/elifba/otre/zı_ötre.png
+      - assets/elifba/otre/şin_ötre.png
 
 
   #   - images/a_dot_burr.jpeg

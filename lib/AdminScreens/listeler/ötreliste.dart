@@ -1,29 +1,29 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
-import 'package:elifbauygulamasi/AdminScreens/detay.dart';
+import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
+import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../data/dbHelper.dart';
-import '../models/letter.dart';
-import '../models/user.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import '../harfeklememenü.dart';
 
-import 'harfekle.dart';
-
-class ListePage extends StatefulWidget {
+class OtreListePage extends StatefulWidget {
   final User user;
-  ListePage({Key? key, required this.user}) : super(key: key);
+  final int deneme;
+  OtreListePage({Key? key, required this.user,required this.deneme,}) : super(key: key);
   @override
-  State<ListePage> createState() => _ListePage();
+  State<OtreListePage> createState() => _OtreListePage();
 }
 
-class _ListePage extends State<ListePage> {
-  late Future<List<Letter>> _lettersFuture;
+class _OtreListePage extends State<OtreListePage> {
+  late Future<List<Harfharake>> _lettersFuture;
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
-  var letter=Letter(imagePath: "");
+  //var letter=Letter(imagePath: "");
 
 
   @override
@@ -32,8 +32,9 @@ class _ListePage extends State<ListePage> {
     _lettersFuture = liste();
   }
 
-  Future<List<Letter>> liste() async {
-    final result = await dbHelper.getLetters();
+
+  Future<List<Harfharake>> liste() async {
+    final result = await dbHelper.getharfotre();
     return result;
   }
 
@@ -59,7 +60,7 @@ class _ListePage extends State<ListePage> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Harfler",
+          title: Text("Ötre Harfler",
               style: GoogleFonts.comicNeue(
                   color: Colors.white,
                   fontSize: 20,
@@ -86,7 +87,7 @@ class _ListePage extends State<ListePage> {
             customSizedBox(),
             _title(),
             Expanded(
-              child: FutureBuilder<List<Letter>>(
+              child: FutureBuilder<List<Harfharake>>(
                 future: _lettersFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -147,7 +148,7 @@ class _ListePage extends State<ListePage> {
                 ),ListTile(
                   onTap: ()  {Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user)),
+                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
                   );},
                   leading: Icon(Icons.home),
                   title: Text(
@@ -160,10 +161,12 @@ class _ListePage extends State<ListePage> {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListePage(user:widget.user)),
-                  );},
+                  onTap: ()  {
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
+                    );
+                    },
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -178,7 +181,7 @@ class _ListePage extends State<ListePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,letter:letter)),
+                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme ,)),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -348,11 +351,9 @@ class _ListePage extends State<ListePage> {
           ]),
     );
   }
-  Widget kutuu(Letter letters) {
+  Widget kutuu(Harfharake harf) {
     return InkWell(
-      onTap: (){Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DetayPage(letter: letters,user: widget.user,)),);},
+      onTap: (){},
       child: Container(
         alignment: Alignment.center,
         child: Center(
@@ -368,7 +369,7 @@ class _ListePage extends State<ListePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Image.file(
-                    File(letters.imagePath ?? ""),
+                    File(harf.harfharakeimage_path ?? ""),
                     fit: BoxFit.cover,
                   ),
                 ],

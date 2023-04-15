@@ -1,6 +1,6 @@
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
 import 'package:elifbauygulamasi/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +12,7 @@ import '../models/letter.dart';
 import '../models/validation.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
-import 'dersler.dart';
+import 'dersmenü.dart';
 
 
 class AyarlarPage extends StatefulWidget {
@@ -208,7 +208,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                         MaterialPageRoute(
                             builder: (context) => Dersler(
                               user: widget.user,
-                              letter: letter,
                             ))).then((value) => Navigator.pop(context));
                   },
                   leading: Icon(Icons.play_lesson),

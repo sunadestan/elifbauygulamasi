@@ -1,6 +1,6 @@
 import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
-import 'package:elifbauygulamasi/AdminScreens/harfekle.dart';
-import 'package:elifbauygulamasi/AdminScreens/liste.dart';
+import 'package:elifbauygulamasi/AdminScreens/harfekleme/harfekle.dart';
+import 'package:elifbauygulamasi/AdminScreens/listeler/elifbaliste.dart';
 import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,14 @@ import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'harfeklememenü.dart';
+import 'listemenü.dart';
+
 class AdminPage extends StatefulWidget {
-  AdminPage({Key? key, required this.user}) : super(key: key);
+  AdminPage({Key? key, required this.user,required this.deneme}) : super(key: key);
   User user;
+  final int deneme;
+
 
   @override
   State<AdminPage> createState() => _AdminState();
@@ -116,7 +121,7 @@ class _AdminState extends State<AdminPage> {
                 ),ListTile(
                   onTap: ()  {Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user)),
+                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
                   );},
                   leading: Icon(Icons.home),
                   title: Text(
@@ -129,10 +134,11 @@ class _AdminState extends State<AdminPage> {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListePage(user:widget.user)),
-                  );},
+                  onTap: ()  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
+                    );},
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -147,32 +153,32 @@ class _AdminState extends State<AdminPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,letter: letter,)),
+                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
                     );
                   },
                   leading: Icon(Icons.add),
                   title:Text(
-                  'Harf Ekle',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    'Harf Ekle',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
                 ),
                 ListTile(
                   onTap: () {
                     _showResendDialog();
                   },
                   leading: Icon(Icons.power_settings_new),
-                    title: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                  title: Text(
+                    'Çıkış Yap',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
+                  ),
                 ),
                 Spacer(),
                 DefaultTextStyle(
@@ -185,13 +191,13 @@ class _AdminState extends State<AdminPage> {
                       vertical: 16.0,
                     ),
                     child:Text(
-                  'Hizmet Şartları | Gizlilik Politikası',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
+                      'Hizmet Şartları | Gizlilik Politikası',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
                   ),
                 ),
               ],

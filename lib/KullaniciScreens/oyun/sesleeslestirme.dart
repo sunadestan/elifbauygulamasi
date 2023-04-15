@@ -1,28 +1,58 @@
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import '../LoginScreens/login_page.dart';
-import '../models/letter.dart';
-import '../models/user.dart';
-import 'ayarlar.dart';
-import 'dersler.dart';
-import 'home.dart';
-import 'oyunsinifi.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../models/letter.dart';
+import '../../models/user.dart';
+import '../ayarlar.dart';
+import '../dersmenü.dart';
 
-class ResimEslestirmeiki extends StatefulWidget {
-  ResimEslestirmeiki({Key? key, required this.user, required this.letter}) : super(key: key);
-  User user;
-  Letter letter;
+class SoundWaveButton extends StatefulWidget {
 
   @override
-  State<ResimEslestirmeiki> createState() => _ResimEslestirmeikiState();
+  _SoundWaveButtonState createState() => _SoundWaveButtonState();
 }
 
-class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProviderStateMixin  {
+class _SoundWaveButtonState extends State<SoundWaveButton> {
+  bool isPlaying = false;
+  List<double> soundValues = [];
+
+  Future<void> _loadAudio() async {
+    // audio yükleme işlemleri burada yapılabilir
+    // audio dosyasının dinamik olarak yüklenmesi için widget.audioUrl kullanılabilir
+    // ses dalgası verileri soundValues listesine atanabilir
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAudio();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [],);
+  }
+}
+
+
+class ResimEslestirme extends StatefulWidget {
+  ResimEslestirme({Key? key, required this.user, required this.letter})
+      : super(key: key);
+  User user;
+  Letter letter;
+  @override
+  _ResimEslestirmeState createState() => _ResimEslestirmeState();
+}
+
+class _ResimEslestirmeState extends State<ResimEslestirme>
+    with TickerProviderStateMixin {
   int seciliIndex = -1;
   bool eslesmeTamamlandi = false;
   int _secondsLeft = 120;
@@ -65,8 +95,65 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
     'assets/elifba/sad.png',
     'assets/elifba/dad.png',
     'assets/elifba/dad.png',
+
+    'assets/elifba/ta.png',
+    'assets/elifba/ta.png',
+    'assets/elifba/za.png',
+    'assets/elifba/za.png',
+    'assets/elifba/ayın.png',
+    'assets/elifba/ayın.png',
+    'assets/elifba/ğayn.png',
+    'assets/elifba/ğayn.png',
+    'assets/elifba/fe.png',
+    'assets/elifba/fe.png',
+    'assets/elifba/gaf.png',
+    'assets/elifba/gaf.png',
+    'assets/elifba/kef.png',
+    'assets/elifba/kef.png',
+    'assets/elifba/lam.png',
+    'assets/elifba/lam.png',
+    'assets/elifba/mim.png',
+    'assets/elifba/mim.png',
+    'assets/elifba/nun.png',
+    'assets/elifba/nun.png',
+    'assets/elifba/vav.png',
+    'assets/elifba/vav.png',
+    'assets/elifba/he.png',
+    'assets/elifba/he.png',
+    'assets/elifba/lamelif.jpg',
+    'assets/elifba/lamelif.jpg',
+    'assets/elifba/ye.png',
+    'assets/elifba/ye.png',
   ];
   List<String> gizliResimler = [
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
+    'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
     'assets/resim/Elif.png',
@@ -102,12 +189,12 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
   @override
   void initState() {
     super.initState();
-    liste();
+    //liste();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    Future.delayed(Duration.zero, () {
+    /*Future.delayed(Duration.zero, () {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -150,12 +237,12 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [  TextButton(
                     onPressed: () {
-                      Navigator.push(
+                      /*Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
                                 user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
+                              ))).then((value) => Navigator.pop(context));*/
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -171,8 +258,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
-                        startTimer();
+                        //Navigator.of(context).pop();
+                        //startTimer();
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
@@ -193,7 +280,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
           ),
         ),
       );
-    });
+    });*/
   }
 
   @override
@@ -245,73 +332,6 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
             customSizedBox(),
             row(),
             customSizedBox(),
-            //buildcizgi(),
-            //customSizedBox(),
-            Expanded(
-              child: Center(
-                child: GridView.builder(
-                  itemCount: resimler.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (!eslesmeTamamlandi) {
-                            if (seciliIndex == -1) {
-                              seciliIndex = index;
-                              gizliResimler[index] = resimler[index];
-                            } else if (seciliIndex != index) {
-                              if (resimler[index] == resimler[seciliIndex]) {
-                                gizliResimler[index] = resimler[index];
-                                seciliIndex = -1;
-                                if (gizliResimler.every((resim) =>
-                                resim != 'assets/resim/Elif.png')) {
-                                  eslesmeTamamlandi = true;
-                                  _timer.cancel();
-                                  _showDialogg();
-                                }
-                              } else {
-                                gizliResimler[index] = resimler[index];
-                                Timer(Duration(milliseconds: 500), () {
-                                  if (seciliIndex != -1) {
-                                    if (index != seciliIndex) {
-                                      gizliResimler[index] =
-                                      'assets/resim/Elif.png';
-                                      gizliResimler[seciliIndex] =
-                                      'assets/resim/Elif.png';
-                                      seciliIndex = -1;
-                                      setState(() {});
-                                    }
-                                  }
-                                });
-                              }
-                            }
-                          }
-                        });
-                      },
-                      child: Card(
-                        color: Colors.lightBlueAccent,
-                        child: Container(
-                          height: 150,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border:
-                            Border.all(color: Color(0xffbea1ea), width: 2),
-                          ),
-                          child: Image.asset(
-                            gizliResimler[index],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -350,7 +370,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                               user: widget.user,
                               letter: letter,
                             ))).then((value) => Navigator.pop(context));
-                    togglePause();
+                    //togglePause();
                   },
                   leading: Icon(Icons.home),
                   title: Text(
@@ -369,9 +389,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                         MaterialPageRoute(
                             builder: (context) => Dersler(
                               user: widget.user,
-                              letter: letter,
                             ))).then((value) => Navigator.pop(context));
-                    togglePause();
+                    //togglePause();
                   },
                   leading: Icon(Icons.play_lesson),
                   title: Text(
@@ -389,7 +408,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                         context,
                         MaterialPageRoute(
                             builder: (context) => OyunSinifi(user: widget.user)));
-                    togglePause();
+                    //togglePause();
                   },
                   leading: Icon(Icons.extension),
                   title: Text(
@@ -422,7 +441,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                               letter: letter,
                               user: widget.user,
                             )));
-                    togglePause();
+                    //togglePause();
                   },
                   leading: Icon(Icons.settings),
                   title: Text(
@@ -475,17 +494,16 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ),
     );
   }
-
   Widget row(){
     return Row(
       children: [
-        timer(),
+        //timer(),
         _title(),
 
       ],
     );
   }
-  Widget timer() {
+  /*Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       alignment: Alignment.centerLeft,
@@ -520,7 +538,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                getIcon(),
+                //getIcon(),
                 color: Colors.lightBlueAccent,
                 size: 20,
               ),
@@ -536,12 +554,12 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
         ],
       ),
     );
-  }
+  }*/
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'Renkli',
+          text: 'Sesli',
           style: GoogleFonts.comicNeue(
             fontSize: 38,
             fontWeight: FontWeight.w700,
@@ -584,7 +602,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
               ),
             ),
             TextSpan(
-              text: '1',
+              text: '3',
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
@@ -701,7 +719,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            Text(
+              Text(
                 "Malesef Olmadı",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
@@ -752,9 +770,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _secondsLeft = 120;
-                      startTimer();
-                      reset();
+                      _secondsLeft=120;
+                      //startTimer();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -845,8 +862,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                     onPressed: () {
                       Navigator.of(context).pop();
                       _secondsLeft = 120;
-                      startTimer();
-                      reset();
+                      //startTimer();
+                      //reset();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -868,13 +885,12 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ),
     );
   }
-
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
 
-  @override
+ /* @override
   void dispose() {
     _timer.cancel();
     _animationController.dispose();
@@ -897,6 +913,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ),
     );
   }
+
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -918,18 +935,18 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
     setState(() {
       resimler.shuffle(Random());
     });
-  }
+  }*/
 
-  void reset() {
+  /*void reset() {
     setState(() {
       resimler.shuffle();
       gizliResimler =
       List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
       eslesmeTamamlandi = false;
     });
-  }
+  }*/
 
-  IconData getIcon() {
+  /*IconData getIcon() {
     if (_isPaused) {
       return Icons.hourglass_empty;
     } else if (_secondsLeft <= 0) {
@@ -938,7 +955,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
     } else {
       return Icons.alarm;
     }
-  }
+  }*/
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -946,3 +963,5 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
     properties.add(DiagnosticsProperty<Timer>('_timer', _timer));
   }
 }
+
+

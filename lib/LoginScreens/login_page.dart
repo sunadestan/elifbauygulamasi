@@ -30,6 +30,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
   final _passwordController = TextEditingController();
   late String _errorMessage;
   GoogleSignInAccount? user;
+   int deneme=1;
 
   @override
   Widget build(BuildContext context) {
@@ -333,8 +334,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
             context,
             MaterialPageRoute(
                 builder: (context) => AdminPage(
-                      user: result,
-                    )),
+                      user: result, deneme: deneme,)),
           );
         }
       } else {

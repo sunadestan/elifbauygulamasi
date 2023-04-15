@@ -12,19 +12,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/user.dart';
 import 'admin.dart';
-import 'harfekle.dart';
-import 'liste.dart';
+import 'harfekleme/harfekle.dart';
+import 'harfeklememenü.dart';
+import 'listeler/elifbaliste.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'listemenü.dart';
+
 
 
 class DetayPage extends StatefulWidget {
-  DetayPage({Key? key, required this.letter, required this.user})
+  DetayPage({Key? key, required this.letter, required this.user,required this.deneme})
       : super(key: key);
   final Letter letter;
   final User user;
+  final int deneme;
   @override
   State<DetayPage> createState() => _DetayPageState(letter);
 }
@@ -34,6 +38,7 @@ enum Options { delete, update }
 class _DetayPageState extends State<DetayPage> with ValidationMixin {
   late final Letter letters = widget.letter;
   final _advancedDrawerController = AdvancedDrawerController();
+  late int deneme;
 
   var dbHelper = DbHelper();
 
@@ -262,7 +267,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                 ),ListTile(
                   onTap: ()  {Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user)),
+                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
                   );},
                   leading: Icon(Icons.home),
                   title: Text(
@@ -275,10 +280,11 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListePage(user:widget.user)),
-                  );},
+                  onTap: ()  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: deneme,)),
+                    );},
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -293,7 +299,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,letter: widget.letter,)),
+                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -483,7 +489,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                       setState(() {});
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListePage(user: widget.user)),
+                        MaterialPageRoute(builder: (context) => ListePage(user: widget.user,deneme:widget.deneme,)),
                       );
 
                     },
@@ -675,6 +681,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       MaterialPageRoute(
           builder: (context) => ListePage(
                 user: widget.user,
+            deneme: widget.deneme,
               )),
     );
     setState(() {});

@@ -1,7 +1,7 @@
 import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/dersler.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunsinifi.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/resimeslestirme.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/dersmenü.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../LoginScreens/login_page.dart';
@@ -139,7 +139,6 @@ class _HomeState extends State<HomePage> {
                         MaterialPageRoute(
                             builder: (context) => Dersler(
                                   user: widget.user,
-                                  letter: letter,
                                 ))).then((value) => Navigator.pop(context));
                   },
                   leading: Icon(Icons.play_lesson),

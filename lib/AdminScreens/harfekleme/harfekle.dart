@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
+import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
 import 'package:elifbauygulamasi/data/dbHelper.dart';
-import 'package:elifbauygulamasi/AdminScreens/liste.dart';
+import 'package:elifbauygulamasi/AdminScreens/listeler/elifbaliste.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,19 +10,21 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
-import '../LoginScreens/login_page.dart';
-import '../models/letter.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../models/letter.dart';
 import 'package:flutter/widgets.dart';
-import '../models/user.dart';
+import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
+import '../harfeklememenü.dart';
+
 
 class HarfEkle extends StatefulWidget {
-  const HarfEkle({Key? key,required this.user,required this.letter}) : super(key: key);
+  const HarfEkle({Key? key,required this.user,required this.letter,required this.deneme}) : super(key: key);
   final User user;
   final Letter letter;
-
+  final int deneme;
   @override
   _HarfEkleState createState() => _HarfEkleState();
 }
@@ -40,6 +43,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
   final picker = ImagePicker();
   final dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
+  get deneme => null;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +147,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                 ),ListTile(
                   onTap: ()  {Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user)),
+                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
                   );},
                   leading: Icon(Icons.home),
                   title: Text(
@@ -156,10 +160,11 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListePage(user:widget.user)),
-                  );},
+                  onTap: ()  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
+                    );},
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -174,7 +179,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfEkle(user: widget.user,letter: widget.letter,)),
+                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -327,7 +332,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
           saveToDatabase();
           Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ListePage(user: widget.user,)),);
+              MaterialPageRoute(builder: (context) => ListePage(user: widget.user,deneme: deneme,)),);
           _showResendDialog(context);
         }
       },
