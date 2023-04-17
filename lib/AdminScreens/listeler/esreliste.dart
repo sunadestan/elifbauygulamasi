@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
+import 'package:elifbauygulamasi/AdminScreens/esredetay.dart';
 import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
+import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
@@ -14,24 +16,34 @@ import '../harfeklememenü.dart';
 class EsreListePage extends StatefulWidget {
   final User user;
   final int deneme;
-  EsreListePage({Key? key, required this.user,required this.deneme,}) : super(key: key);
+  EsreListePage({
+    Key? key,
+    required this.user,
+    required this.deneme,
+  }) : super(key: key);
   @override
   State<EsreListePage> createState() => _EsreListePage();
 }
 
 class _EsreListePage extends State<EsreListePage> {
   late Future<List<Harfharake>> _lettersFuture;
+  var letter = Letter(imagePath: "");
+  var harf = Harfharake(
+    harfharakemusic_path: "",
+    harfharakeimage_path: "",
+    harfharakeannotation: "",
+    harfharakename: "",
+    harfTur: 0,
+  );
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
   //var letter=Letter(imagePath: "");
-
 
   @override
   void initState() {
     super.initState();
     _lettersFuture = liste();
   }
-
 
   Future<List<Harfharake>> liste() async {
     final result = await dbHelper.getharfesre();
@@ -100,7 +112,7 @@ class _EsreListePage extends State<EsreListePage> {
                         childAspectRatio: 0.8,
                         children: List.generate(
                           letters!.length,
-                              (index) => kutuu(letters[index]),
+                          (index) => kutuu(letters[index]),
                         ),
                       ),
                     );
@@ -145,11 +157,18 @@ class _EsreListePage extends State<EsreListePage> {
                     //color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
-                ),ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
-                  );},
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminPage(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
+                    );
+                  },
                   leading: Icon(Icons.home),
                   title: Text(
                     'Ana Sayfa',
@@ -161,11 +180,16 @@ class _EsreListePage extends State<EsreListePage> {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {
-                     Navigator.push(
+                  onTap: () {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
-                    );},
+                      MaterialPageRoute(
+                          builder: (context) => ListeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
+                    );
+                  },
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -180,11 +204,15 @@ class _EsreListePage extends State<EsreListePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme ,)),
+                      MaterialPageRoute(
+                          builder: (context) => HarfeklemeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
                     );
                   },
                   leading: Icon(Icons.add),
-                  title:Text(
+                  title: Text(
                     'Harf Ekle',
                     style: GoogleFonts.comicNeue(
                       color: Colors.white,
@@ -217,7 +245,7 @@ class _EsreListePage extends State<EsreListePage> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child:Text(
+                    child: Text(
                       'Hizmet Şartları | Gizlilik Politikası',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -232,9 +260,9 @@ class _EsreListePage extends State<EsreListePage> {
           ),
         ),
       ),
-
     );
   }
+
   void _showResendDialogg(context) {
     showDialog(
       context: context,
@@ -275,7 +303,7 @@ class _EsreListePage extends State<EsreListePage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -294,8 +322,8 @@ class _EsreListePage extends State<EsreListePage> {
                       );
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -313,13 +341,15 @@ class _EsreListePage extends State<EsreListePage> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -336,8 +366,7 @@ class _EsreListePage extends State<EsreListePage> {
               ],
               fontSize: 30,
               fontWeight: FontWeight.w700,
-              color: Color(0xff935ccf)
-          ),
+              color: Color(0xff935ccf)),
           children: [
             TextSpan(
               text: '-',
@@ -350,9 +379,21 @@ class _EsreListePage extends State<EsreListePage> {
           ]),
     );
   }
+
   Widget kutuu(Harfharake harf) {
     return InkWell(
-      onTap: (){},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EsrePage(
+                    user: widget.user,
+                    deneme: widget.deneme,
+                    harf: harf,
+                    letter: letter,
+                  )),
+        );
+      },
       child: Container(
         alignment: Alignment.center,
         child: Center(
@@ -380,4 +421,3 @@ class _EsreListePage extends State<EsreListePage> {
     );
   }
 }
-

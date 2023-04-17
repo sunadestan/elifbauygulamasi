@@ -872,14 +872,12 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
-
   @override
   void dispose() {
     _timer.cancel();
     _animationController.dispose();
     super.dispose();
   }
-
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
@@ -912,13 +910,11 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       });
     }
   }
-
   void liste() {
     setState(() {
       resimler.shuffle(Random());
     });
   }
-
   void reset() {
     setState(() {
       resimler.shuffle();
@@ -927,7 +923,6 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       eslesmeTamamlandi = false;
     });
   }
-
   IconData getIcon() {
     if (_isPaused) {
       return Icons.hourglass_empty;

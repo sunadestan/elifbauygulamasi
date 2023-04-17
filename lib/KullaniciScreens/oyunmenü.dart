@@ -1,6 +1,7 @@
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeiki.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeuc.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyun/soruoyunu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -167,7 +168,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ResimEslestirme(user: widget.user,letter: letter,)));
+                            builder: (context) => OyunSinifi(user: widget.user,)));
                   },
                   leading: Icon(Icons.extension),
                   title: Text(
@@ -389,13 +390,6 @@ class _OyunSinifiState extends State<OyunSinifi> {
               ),
             ),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -432,9 +426,8 @@ class _OyunSinifiState extends State<OyunSinifi> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
+                      builder: (context) => SoruOyunu(
                         user: widget.user,
-                        letter: letter,
                       ))).then((value) => Navigator.pop(context));
             },
             child: Row(
@@ -458,7 +451,6 @@ class _OyunSinifiState extends State<OyunSinifi> {
   Widget altinciOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
-
       child: Column(
         children: [
           ElevatedButton(
@@ -469,14 +461,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
+            onPressed: () {_yakindaSizinle();
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -499,7 +484,6 @@ class _OyunSinifiState extends State<OyunSinifi> {
   Widget yedinciOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
-
       child: Column(
         children: [
           ElevatedButton(
@@ -510,14 +494,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
+            onPressed: () {_yakindaSizinle();
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -550,14 +527,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
+            onPressed: () {_yakindaSizinle();
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -590,14 +560,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
+            onPressed: () {_yakindaSizinle();
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -630,14 +593,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
+            onPressed: () {_yakindaSizinle();
             },
             child: Row(
               mainAxisAlignment:  MainAxisAlignment.center,
@@ -736,6 +692,65 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+  void _yakindaSizinle() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Çok Yakında...',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Tamam',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();

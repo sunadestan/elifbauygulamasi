@@ -4,6 +4,7 @@ import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeiki.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeuc.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/oyunmen%C3%BC.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -168,7 +169,7 @@ class _DerslerState extends State<Dersler> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ResimEslestirme(user: widget.user,letter: letter,)));
+                            builder: (context) => OyunSinifi(user: widget.user,)));
                   },
                   leading: Icon(Icons.extension),
                   title: Text(

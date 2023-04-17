@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
+import 'package:elifbauygulamasi/AdminScreens/otredetay.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
@@ -23,7 +25,14 @@ class _OtreListePage extends State<OtreListePage> {
   late Future<List<Harfharake>> _lettersFuture;
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
-  //var letter=Letter(imagePath: "");
+  Letter letter = Letter(imagePath: "");
+  Harfharake harf = Harfharake(
+    harfharakemusic_path: "",
+    harfharakeimage_path: "",
+    harfharakeannotation: "",
+    harfharakename: "",
+    harfTur: 0,
+  );
 
 
   @override
@@ -353,7 +362,12 @@ class _OtreListePage extends State<OtreListePage> {
   }
   Widget kutuu(Harfharake harf) {
     return InkWell(
-      onTap: (){},
+      onTap: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OtrePage(user: widget.user,deneme: widget.deneme,harf: harf,letter: letter,)),
+        );
+      },
       child: Container(
         alignment: Alignment.center,
         child: Center(

@@ -595,7 +595,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
-
   void _showResendDialog() {
     showDialog(
       context: context,

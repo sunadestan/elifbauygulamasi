@@ -19,9 +19,13 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
 import '../harfeklememenü.dart';
 
-
 class HarfEkle extends StatefulWidget {
-  const HarfEkle({Key? key,required this.user,required this.letter,required this.deneme}) : super(key: key);
+  const HarfEkle(
+      {Key? key,
+      required this.user,
+      required this.letter,
+      required this.deneme})
+      : super(key: key);
   final User user;
   final Letter letter;
   final int deneme;
@@ -144,11 +148,18 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                     //color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
-                ),ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
-                  );},
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminPage(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
+                    );
+                  },
                   leading: Icon(Icons.home),
                   title: Text(
                     'Ana Sayfa',
@@ -160,11 +171,16 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                   ),
                 ),
                 ListTile(
-                  onTap: ()  {
+                  onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
-                    );},
+                      MaterialPageRoute(
+                          builder: (context) => ListeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
+                    );
+                  },
                   leading: Icon(Icons.list),
                   title: Text(
                     'Harfleri Listele',
@@ -179,11 +195,15 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
+                      MaterialPageRoute(
+                          builder: (context) => HarfeklemeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
                     );
                   },
                   leading: Icon(Icons.add),
-                  title:Text(
+                  title: Text(
                     'Harf Ekle',
                     style: GoogleFonts.comicNeue(
                       color: Colors.white,
@@ -216,7 +236,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child:Text(
+                    child: Text(
                       'Hizmet Şartları | Gizlilik Politikası',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -233,10 +253,12 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   Future getImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -331,13 +353,20 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
           _formKey.currentState!.save();
           saveToDatabase();
           Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ListePage(user: widget.user,deneme: deneme,)),);
+            context,
+            MaterialPageRoute(
+                builder: (context) => ListePage(
+                      user: widget.user,
+                      deneme: widget.deneme,
+                    )),
+          );
           _showResendDialog(context);
         }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 75,),
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 15),
         alignment: Alignment.center,
@@ -357,7 +386,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                   Color(0xff823ac6),
                   Color(0xff703dd0),
                 ])),
-        child:Text(
+        child: Text(
           "Ekle",
           style: GoogleFonts.comicNeue(
             color: Colors.white,
@@ -470,6 +499,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
       print("Data could not be saved.");
     }
   }
+
   void _showResendDialog(context) {
     showDialog(
       context: context,
@@ -487,7 +517,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-            "Kayıt Başarılı",
+                "Kayıt Başarılı",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
@@ -550,7 +580,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -569,8 +599,8 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
                       );
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -588,6 +618,7 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -611,13 +642,15 @@ class _HarfEkleState extends State<HarfEkle> with ValidationMixin {
               style: GoogleFonts.comicNeue(
                 color: Color(0xffad80ea),
                 fontSize: 40,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',

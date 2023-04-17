@@ -23,6 +23,7 @@ class DbHelper {
     var elifDb = openDatabase(dbPath, version: 1, onCreate: createDb);
     return elifDb;
   }
+
   List<Map<String, dynamic>> _randomImages = [];
 
   Future<void> getRandomImages() async {
@@ -37,9 +38,10 @@ class DbHelper {
   }
 
   List<String> getRandomImagePaths() {
-    return _randomImages.map((Letter) => Letter['image_path'].toString()).toList();
+    return _randomImages
+        .map((Letter) => Letter['image_path'].toString())
+        .toList();
   }
-
 
   void createDb(Database db, int version) async {
     await db.execute(
@@ -53,7 +55,6 @@ class DbHelper {
         harfharakeannotation TEXT, harfharakeimage_path BLOB, harfharakemusic_path BLOB,harfTur INT)''');
   }
 
-
   Future<List<Harfharake>> getHarfharake() async {
     Database? db = await this.db;
     var result = await db.query("harflerharake");
@@ -61,16 +62,21 @@ class DbHelper {
       return Harfharake.fromObject(result[i]);
     });
   }
-  Future<int> insertHarfharake(Harfharake harf,) async {
+
+  Future<int> insertHarfharake(
+    Harfharake harf,
+  ) async {
     Database? db = await this.db;
     var result = await db.insert("harflerharake", harf.toMap());
     return result;
   }
+
   Future<int> deleteHarfharake(int id) async {
     Database? db = await this.db;
     var result = await db.rawDelete("delete from harflerharake where id= $id");
     return result;
   }
+
   Future<int> updateHarfharake(Harfharake harf) async {
     Database? db = await this.db;
     var result = await db.update(" harflerharake ", harf.toMap(),
@@ -85,23 +91,27 @@ class DbHelper {
       return Harf.fromObject(result[i]);
     });
   }
-  Future<int> insertHarf(Harf harf,) async {
+
+  Future<int> insertHarf(
+    Harf harf,
+  ) async {
     Database? db = await this.db;
     var result = await db.insert("harflersekil", harf.toMap());
     return result;
   }
+
   Future<int> deleteHarf(int id) async {
     Database? db = await this.db;
     var result = await db.rawDelete("delete from harflersekil where id= $id");
     return result;
   }
+
   Future<int> updateHarf(Harf harf) async {
     Database? db = await this.db;
     var result = await db.update(" harflersekil ", harf.toMap(),
         where: "id=?", whereArgs: [harf.id]);
     return result;
   }
-
 
   Future<List<Letter>> getLetters() async {
     Database? db = await this.db;
@@ -110,16 +120,21 @@ class DbHelper {
       return Letter.fromObject(result[i]);
     });
   }
-  Future<int> insertLetter(Letter letter,) async {
+
+  Future<int> insertLetter(
+    Letter letter,
+  ) async {
     Database? db = await this.db;
     var result = await db.insert("letters", letter.toMap());
     return result;
   }
+
   Future<int> deleteLetter(int id) async {
     Database? db = await this.db;
     var result = await db.rawDelete("delete from letters where id= $id");
     return result;
   }
+
   Future<int> updateLetter(Letter letter) async {
     Database? db = await this.db;
     var result = await db.update(" letters ", letter.toMap(),
@@ -134,16 +149,19 @@ class DbHelper {
       return User.fromObject(result[i]);
     });
   }
+
   Future<int> insert(User user) async {
     Database? db = await this.db;
     var result = await db.insert("users", user.toMap());
     return result;
   }
+
   Future<int> delete(int id) async {
     Database? db = await this.db;
     var result = await db.rawDelete("delete from users where id= $id");
     return result;
   }
+
   Future<int> update(User user) async {
     Database? db = await this.db;
     var result = await db
@@ -167,6 +185,7 @@ class DbHelper {
       return null;
     }
   }
+
   Future<User?> checkUserGoogle(String username, String password) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -183,6 +202,7 @@ class DbHelper {
       return null;
     }
   }
+
   Future<void> makeAdmin() async {
     final db = await openDatabase('elif.db');
     await db.update(
@@ -192,6 +212,7 @@ class DbHelper {
       whereArgs: ['%@elifba.com'],
     );
   }
+
   Future<User?> checkEmail(String email) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -208,12 +229,14 @@ class DbHelper {
       return null;
     }
   }
+
   Future<User?> checkDeneme() async {
     final db = await dbProvider.db;
     if (db == null) {
       throw Exception('Veritabanı bağlantısı kurulamadı');
     }
   }
+
   Future<bool> kullaniciAdiKontrolEt(String kullaniciAdi) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -226,37 +249,37 @@ class DbHelper {
     );
     return result.isNotEmpty;
   }
+
   Future<List<Harfharake>> getharfustun() async {
     Database? db = await this.db;
     var result = await db!.query("harflerharake", where: "harfTur = '1'");
     return List.generate(
       result.length,
-          (index) {
-        return Harfharake.fromObject(result[index]);
-      },
-    );
-  }
-  Future<List<Harfharake>> getharfesre() async {
-    Database? db = await this.db;
-    var result = await db!.query(
-        "harflerharake", where: "harfTur = '2'");
-    return List.generate(
-      result.length,
-          (index) {
-        return Harfharake.fromObject(result[index]);
-      },
-    );
-  }
-  Future<List<Harfharake>> getharfotre() async {
-    Database? db = await this.db;
-    var result = await db!.query(
-        "harflerharake", where: "harfTur = '3'");
-    return List.generate(
-      result.length,
-          (index) {
+      (index) {
         return Harfharake.fromObject(result[index]);
       },
     );
   }
 
+  Future<List<Harfharake>> getharfesre() async {
+    Database? db = await this.db;
+    var result = await db!.query("harflerharake", where: "harfTur = '2'");
+    return List.generate(
+      result.length,
+      (index) {
+        return Harfharake.fromObject(result[index]);
+      },
+    );
+  }
+
+  Future<List<Harfharake>> getharfotre() async {
+    Database? db = await this.db;
+    var result = await db!.query("harflerharake", where: "harfTur = '3'");
+    return List.generate(
+      result.length,
+      (index) {
+        return Harfharake.fromObject(result[index]);
+      },
+    );
+  }
 }

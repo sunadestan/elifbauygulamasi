@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%BCst%C3%BCnliste.dart';
+import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -12,33 +14,33 @@ import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/user.dart';
 import 'admin.dart';
-import 'harfekleme/harfekle.dart';
 import 'harfeklememenü.dart';
-import 'listeler/elifbaliste.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'listeler/ötreliste.dart';
 import 'listemenü.dart';
 
-class DetayPage extends StatefulWidget {
-  DetayPage(
+class OtrePage extends StatefulWidget {
+  OtrePage(
       {Key? key,
-      required this.letter,
-      required this.user,
-      required this.deneme})
+        required this.letter,
+        required this.user,
+        required this.deneme,
+        required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
+  final Harfharake harf;
   @override
-  State<DetayPage> createState() => _DetayPageState(letter);
+  State<OtrePage> createState() => _OtrePageState(harf);
 }
 
 enum Options { delete, update }
 
-class _DetayPageState extends State<DetayPage> with ValidationMixin {
-  late final Letter letters = widget.letter;
+class _OtrePageState extends State<OtrePage> with ValidationMixin {
+  late final Harfharake harfler = widget.harf;
   final _advancedDrawerController = AdvancedDrawerController();
   late int deneme;
 
@@ -54,16 +56,16 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   String? _ses;
   bool _isPlaying = false;
 
-  Letter letter;
-  _DetayPageState(this.letter);
+  Harfharake harf;
+  _OtrePageState(this.harf);
   var txtlettername = TextEditingController();
   var txtletterannotation = TextEditingController();
   var txtses;
 
   @override
   void initState() {
-    txtlettername.text = letter.name!;
-    txtletterannotation.text = letter.annotation!;
+    txtlettername.text = harf.harfharakename!;
+    txtletterannotation.text = harf.harfharakeannotation!;
     super.initState();
     audioPlayer = AudioPlayer();
     _loadAudio();
@@ -118,28 +120,28 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
             PopupMenuButton<Options>(
                 onSelected: selectProcess,
                 itemBuilder: (BuildContext context) =>
-                    <PopupMenuEntry<Options>>[
-                      PopupMenuItem<Options>(
-                        value: Options.delete,
-                        child: Text(
-                          "Harfi sil",
-                          style: GoogleFonts.comicNeue(
-                            fontWeight: FontWeight.w700,
-                            //color: Colors.black,
-                          ),
-                        ),
+                <PopupMenuEntry<Options>>[
+                  PopupMenuItem<Options>(
+                    value: Options.delete,
+                    child: Text(
+                      "Harfi sil",
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w700,
+                        //color: Colors.black,
                       ),
-                      PopupMenuItem<Options>(
-                        value: Options.update,
-                        child: Text(
-                          "Güncelle",
-                          style: GoogleFonts.comicNeue(
-                            fontWeight: FontWeight.w700,
-                            //color: Colors.black,
-                          ),
-                        ),
+                    ),
+                  ),
+                  PopupMenuItem<Options>(
+                    value: Options.update,
+                    child: Text(
+                      "Güncelle",
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w700,
+                        //color: Colors.black,
                       ),
-                    ])
+                    ),
+                  ),
+                ])
           ],
           backgroundColor: Color(0xFF975FD0),
         ),
@@ -159,7 +161,8 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: FileImage(File(widget.letter.imagePath ?? "")),
+                        image: FileImage(
+                            File(widget.harf.harfharakeimage_path ?? "")),
                         fit: BoxFit.cover,
                       ),
                       color: Colors.black26,
@@ -174,10 +177,10 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                 musicPath == null
                     ? Container()
                     : Text(
-                        path.basename(musicPath!),
-                        style: TextStyle(fontSize: 10),
-                        textAlign: TextAlign.right,
-                      ),
+                  path.basename(musicPath!),
+                  style: TextStyle(fontSize: 10),
+                  textAlign: TextAlign.right,
+                ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
@@ -214,8 +217,8 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                           icon: Icon(Icons.music_note, color: Colors.white),
                           label: Text(
                             musicPath == null
-                                ? path
-                                    .basename(widget.letter.musicPath ?? "Ses:")
+                                ? path.basename(
+                                widget.harf.harfharakemusic_path ?? "Ses:")
                                 : path.basename(musicPath!),
                             style: GoogleFonts.comicNeue(
                               color: Colors.white,
@@ -274,9 +277,9 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AdminPage(
-                                user: widget.user,
-                                deneme: widget.deneme,
-                              )),
+                            user: widget.user,
+                            deneme: widget.deneme,
+                          )),
                     );
                   },
                   leading: Icon(Icons.home),
@@ -295,9 +298,9 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ListeMenu(
-                                user: widget.user,
-                                deneme: deneme,
-                              )),
+                            user: widget.user,
+                            deneme: widget.deneme,
+                          )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -316,9 +319,9 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => HarfeklemeMenu(
-                                user: widget.user,
-                                deneme: widget.deneme,
-                              )),
+                            user: widget.user,
+                            deneme: widget.deneme,
+                          )),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -413,7 +416,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -470,7 +473,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Hesabı kalıcı olarak silmek istediğinize emin misiniz?",
+                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
@@ -492,7 +495,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -505,15 +508,15 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      dbHelper.deleteLetter(letter.id!);
+                      dbHelper.deleteHarfharake(harf.id!);
                       setState(() {});
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ListePage(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                                )),
+                            builder: (context) => OtreListePage(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                            )),
                       );
                     },
                     style: ButtonStyle(
@@ -546,14 +549,15 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
 
   Future<void> _loadAudio() async {
     try {
-      await audioPlayer.setUrl(musicPath ?? widget.letter.musicPath!);
+      await audioPlayer.setUrl(musicPath ?? widget.harf.harfharakemusic_path!);
     } catch (e) {
       print('Error loading audio: $e');
     }
   }
 
   Future<void> _play() async {
-    int result = await audioPlayer.play(musicPath ?? widget.letter.musicPath!);
+    int result =
+    await audioPlayer.play(musicPath ?? widget.harf.harfharakemusic_path!);
     if (result == 1) {
       setState(() {
         _isPlaying = true;
@@ -570,8 +574,8 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
     }
   }
 
-  Future<List<Letter>> liste() async {
-    final result = await dbHelper.getLetters();
+  Future<List<Harfharake>> liste() async {
+    final result = await dbHelper.getHarfharake();
     return result;
   }
 
@@ -646,7 +650,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
 
   Future getImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       // Resim seçilmiş mi diye kontrol ediyoruz
       setState(() {
@@ -686,34 +690,35 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
         _showResendDialog();
         break;
       case Options.update:
-        updateLetter();
+        updateHareke();
         _pause();
         break;
       default:
     }
   }
 
-  void updateLetter() async {
-    Letter updatedLetter = widget.letter.copyWith(
-        imagePath: imagePath,
-        musicPath: musicPath,
-        name: txtlettername.text,
-        annotation: txtletterannotation.text);
-    await dbHelper.updateLetter(updatedLetter);
+  void updateHareke() async {
+    Harfharake updateHarfharake = widget.harf.copyWith(
+      harfharakeimage_path: imagePath,
+      harfharakemusic_path: musicPath,
+      harfharakename: txtlettername.text,
+      harfharakeannotation: txtletterannotation.text,
+    );
+    await dbHelper.updateHarfharake(updateHarfharake);
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ListePage(
-                user: widget.user,
-                deneme: widget.deneme,
-              )),
+          builder: (context) => OtreListePage(
+            user: widget.user,
+            deneme: widget.deneme,
+          )),
     );
     setState(() {});
   }
 
   Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
+    height: 20,
+  );
 
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();

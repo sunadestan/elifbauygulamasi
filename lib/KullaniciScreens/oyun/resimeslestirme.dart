@@ -21,8 +21,7 @@ class ResimEslestirme extends StatefulWidget {
   _ResimEslestirmeState createState() => _ResimEslestirmeState();
 }
 
-class _ResimEslestirmeState extends State<ResimEslestirme>
-    with TickerProviderStateMixin {
+class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderStateMixin {
   int seciliIndex = -1;
   bool eslesmeTamamlandi = false;
   int _secondsLeft = 120;
@@ -934,7 +933,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
     _animationController.dispose();
     super.dispose();
   }
-
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
@@ -951,7 +949,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
       ),
     );
   }
-
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -968,13 +965,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
       });
     }
   }
-
   void liste() {
     setState(() {
       resimler.shuffle(Random());
     });
   }
-
   void reset() {
     setState(() {
       resimler.shuffle();
@@ -983,7 +978,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
       eslesmeTamamlandi = false;
     });
   }
-
   IconData getIcon() {
     if (_isPaused) {
       return Icons.hourglass_empty;
