@@ -1,5 +1,6 @@
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekleme/harfyazilis.dart';
+import 'package:elifbauygulamasi/AdminScreens/harfeklememen%C3%BC.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%B6treliste.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/esreliste.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/harfyazilisliste.dart';
@@ -51,7 +52,7 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Harf Ekle",
+          title: Text("Harfleri Görüntül",
               style: GoogleFonts.comicNeue(
                   color: Colors.white,
                   fontSize: 20,
@@ -155,7 +156,7 @@ class _ListeMenuState extends State<ListeMenu> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ListeMenu(user: widget.user,deneme: widget.deneme,)),
+                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -416,7 +417,7 @@ class _ListeMenuState extends State<ListeMenu> {
           ),
           children: [
             TextSpan(
-              text: 'EKLE',
+              text: 'LİSTELE',
               style: GoogleFonts.comicNeue(
                 color: Color(0xff935ccf),
                 fontSize: 38,

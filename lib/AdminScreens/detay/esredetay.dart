@@ -6,23 +6,23 @@ import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../data/dbHelper.dart';
-import '../models/letter.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../models/user.dart';
-import 'admin.dart';
-import 'harfeklememenü.dart';
-import 'listeler/elifbaliste.dart';
+import '../../models/user.dart';
+import '../admin.dart';
+import '../harfeklememenü.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'listemenü.dart';
+import '../listeler/esreliste.dart';
+import '../listemenü.dart';
 
-class UstunPage extends StatefulWidget {
-  UstunPage(
+class EsrePage extends StatefulWidget {
+  EsrePage(
       {Key? key,
       required this.letter,
       required this.user,
@@ -34,12 +34,12 @@ class UstunPage extends StatefulWidget {
   final int deneme;
   final Harfharake harf;
   @override
-  State<UstunPage> createState() => _UstunPageState(harf);
+  State<EsrePage> createState() => _EsrePageState(harf);
 }
 
 enum Options { delete, update }
 
-class _UstunPageState extends State<UstunPage> with ValidationMixin {
+class _EsrePageState extends State<EsrePage> with ValidationMixin {
   late final Harfharake harfler = widget.harf;
   final _advancedDrawerController = AdvancedDrawerController();
   late int deneme;
@@ -57,7 +57,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
   bool _isPlaying = false;
 
   Harfharake harf;
-  _UstunPageState(this.harf);
+  _EsrePageState(this.harf);
   var txtlettername = TextEditingController();
   var txtletterannotation = TextEditingController();
   var txtses;
@@ -430,6 +430,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                   TextButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -510,9 +511,11 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => UstunListePage(
+                            builder: (context) => EsrePage(
                                   user: widget.user,
                                   deneme: widget.deneme,
+                                  harf: widget.harf,
+                                  letter: widget.letter,
                                 )),
                       );
                     },
@@ -705,7 +708,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => UstunListePage(
+          builder: (context) => EsreListePage(
                 user: widget.user,
                 deneme: widget.deneme,
               )),

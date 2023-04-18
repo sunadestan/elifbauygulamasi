@@ -354,7 +354,6 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
       ),
     );
   }
-
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -389,6 +388,7 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
           ]),
     );
   }
+
 
   void _showResendDialogg() {
     showDialog(

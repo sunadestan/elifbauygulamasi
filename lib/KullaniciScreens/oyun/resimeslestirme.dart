@@ -229,7 +229,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context);
+                        //Navigator.of(context).pop();
                         startTimer();
                       },
                       style: ButtonStyle(

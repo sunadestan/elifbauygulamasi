@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
-import 'package:elifbauygulamasi/AdminScreens/ustundetay.dart';
+import 'package:elifbauygulamasi/AdminScreens/detay/ustundetay.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

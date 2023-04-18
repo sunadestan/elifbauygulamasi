@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
-import 'package:elifbauygulamasi/AdminScreens/otredetay.dart';
+import 'package:elifbauygulamasi/AdminScreens/detay/otredetay.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

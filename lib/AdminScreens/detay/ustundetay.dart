@@ -6,40 +6,40 @@ import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../data/dbHelper.dart';
-import '../models/letter.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../models/user.dart';
-import 'admin.dart';
-import 'harfeklememenü.dart';
+import '../../models/user.dart';
+import '../admin.dart';
+import '../harfeklememenü.dart';
+import '../listeler/elifbaliste.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'listeler/ötreliste.dart';
-import 'listemenü.dart';
+import '../listemenü.dart';
 
-class OtrePage extends StatefulWidget {
-  OtrePage(
+class UstunPage extends StatefulWidget {
+  UstunPage(
       {Key? key,
-        required this.letter,
-        required this.user,
-        required this.deneme,
-        required this.harf})
+      required this.letter,
+      required this.user,
+      required this.deneme,
+      required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
   final Harfharake harf;
   @override
-  State<OtrePage> createState() => _OtrePageState(harf);
+  State<UstunPage> createState() => _UstunPageState(harf);
 }
 
 enum Options { delete, update }
 
-class _OtrePageState extends State<OtrePage> with ValidationMixin {
+class _UstunPageState extends State<UstunPage> with ValidationMixin {
   late final Harfharake harfler = widget.harf;
   final _advancedDrawerController = AdvancedDrawerController();
   late int deneme;
@@ -57,7 +57,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
   bool _isPlaying = false;
 
   Harfharake harf;
-  _OtrePageState(this.harf);
+  _UstunPageState(this.harf);
   var txtlettername = TextEditingController();
   var txtletterannotation = TextEditingController();
   var txtses;
@@ -120,28 +120,28 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
             PopupMenuButton<Options>(
                 onSelected: selectProcess,
                 itemBuilder: (BuildContext context) =>
-                <PopupMenuEntry<Options>>[
-                  PopupMenuItem<Options>(
-                    value: Options.delete,
-                    child: Text(
-                      "Harfi sil",
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w700,
-                        //color: Colors.black,
+                    <PopupMenuEntry<Options>>[
+                      PopupMenuItem<Options>(
+                        value: Options.delete,
+                        child: Text(
+                          "Harfi sil",
+                          style: GoogleFonts.comicNeue(
+                            fontWeight: FontWeight.w700,
+                            //color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  PopupMenuItem<Options>(
-                    value: Options.update,
-                    child: Text(
-                      "Güncelle",
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w700,
-                        //color: Colors.black,
+                      PopupMenuItem<Options>(
+                        value: Options.update,
+                        child: Text(
+                          "Güncelle",
+                          style: GoogleFonts.comicNeue(
+                            fontWeight: FontWeight.w700,
+                            //color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ])
+                    ])
           ],
           backgroundColor: Color(0xFF975FD0),
         ),
@@ -177,10 +177,10 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                 musicPath == null
                     ? Container()
                     : Text(
-                  path.basename(musicPath!),
-                  style: TextStyle(fontSize: 10),
-                  textAlign: TextAlign.right,
-                ),
+                        path.basename(musicPath!),
+                        style: TextStyle(fontSize: 10),
+                        textAlign: TextAlign.right,
+                      ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
@@ -218,7 +218,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                           label: Text(
                             musicPath == null
                                 ? path.basename(
-                                widget.harf.harfharakemusic_path ?? "Ses:")
+                                    widget.harf.harfharakemusic_path ?? "Ses:")
                                 : path.basename(musicPath!),
                             style: GoogleFonts.comicNeue(
                               color: Colors.white,
@@ -277,9 +277,9 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AdminPage(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
                     );
                   },
                   leading: Icon(Icons.home),
@@ -298,9 +298,9 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ListeMenu(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -319,9 +319,9 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => HarfeklemeMenu(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                              )),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -416,7 +416,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -492,7 +492,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -510,10 +510,10 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => OtreListePage(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                            )),
+                            builder: (context) => UstunListePage(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
                     },
                     style: ButtonStyle(
@@ -554,7 +554,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
 
   Future<void> _play() async {
     int result =
-    await audioPlayer.play(musicPath ?? widget.harf.harfharakemusic_path!);
+        await audioPlayer.play(musicPath ?? widget.harf.harfharakemusic_path!);
     if (result == 1) {
       setState(() {
         _isPlaying = true;
@@ -647,7 +647,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
 
   Future getImage() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       // Resim seçilmiş mi diye kontrol ediyoruz
       setState(() {
@@ -705,17 +705,17 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => OtreListePage(
-            user: widget.user,
-            deneme: widget.deneme,
-          )),
+          builder: (context) => UstunListePage(
+                user: widget.user,
+                deneme: widget.deneme,
+              )),
     );
     setState(() {});
   }
 
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
 
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();

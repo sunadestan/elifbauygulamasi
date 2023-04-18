@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
-import 'package:elifbauygulamasi/AdminScreens/esredetay.dart';
+import 'package:elifbauygulamasi/AdminScreens/detay/esredetay.dart';
 import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:elifbauygulamasi/models/letter.dart';
