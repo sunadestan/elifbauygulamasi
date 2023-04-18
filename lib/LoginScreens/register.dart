@@ -114,6 +114,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildLastNameField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -147,6 +148,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildPhoneField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -176,7 +178,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
             ),
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            selectorTextStyle: TextStyle(color: Colors.black,fontFamily: 'Comic Neue'),
+            selectorTextStyle:
+                TextStyle(color: Colors.black, fontFamily: 'Comic Neue'),
             initialValue: PhoneNumber(isoCode: 'TR'), // başlangıç ülke kodu
             formatInput: true,
             keyboardType:
@@ -192,6 +195,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildAddressField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -225,6 +229,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildUserNameField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -258,6 +263,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildMailField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -290,6 +296,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildPasswordField() {
     bool isPassword = true;
     return Container(
@@ -334,6 +341,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
           "Tüm @elifba.com domain'ine sahip kullanıcıların isadmin alanı 1 olarak güncellendi.");
     }
   }
+
   Future<void> kayit(String kullaniciAdi) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -350,7 +358,9 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       }
     }
   }
+
   Future<void> addUser() async {
+    int isAdmin = txtemail.text.endsWith('@elifba.com') ? 1 : 0;
     var result = await dbHelper.insert(
       User(
         txtusername.text,
@@ -360,7 +370,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
         txtadres.text,
         txtlastname.text,
         txtphone.text,
-        isadmin: 0,
+        isadmin: isAdmin,
       ),
     );
     if (result > 0) {
@@ -378,7 +388,9 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 75,),
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 15),
         alignment: Alignment.center,
@@ -518,22 +530,24 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
             TextSpan(
               text: '-',
               style: GoogleFonts.comicNeue(
-                  color: Color(0xffad80ea),
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                color: Color(0xffad80ea),
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',
               style: GoogleFonts.comicNeue(
-                  color: Color(0xff935ccf),
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700,
+                color: Color(0xff935ccf),
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
                     blurRadius: 5.0,

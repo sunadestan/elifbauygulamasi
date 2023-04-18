@@ -119,10 +119,9 @@ class _AdminState extends State<AdminPage> {
                     shape: BoxShape.circle,
                   ),
                 ),ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
-                  );},
+                  onTap: () {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> AdminPage(user:widget.user,deneme: widget.deneme,)), (route) => false);
+                  },
                   leading: Icon(Icons.home),
                   title: Text(
                     'Ana Sayfa',
@@ -260,10 +259,7 @@ class _AdminState extends State<AdminPage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:

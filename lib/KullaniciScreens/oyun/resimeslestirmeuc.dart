@@ -24,6 +24,8 @@ class ResimEslestirmeuc extends StatefulWidget {
 
 class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProviderStateMixin  {
   int seciliIndex = -1;
+  int skor = 0;
+  bool tappingDisabled = false;
   bool eslesmeTamamlandi = false;
   int _secondsLeft = 120;
   int _pausedTime = 0;
@@ -254,7 +256,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (!eslesmeTamamlandi) {
+                          if (!eslesmeTamamlandi && !tappingDisabled) {
                             if (seciliIndex == -1) {
                               seciliIndex = index;
                               gizliResimler[index] = resimler[index];
@@ -262,6 +264,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                               if (resimler[index] == resimler[seciliIndex]) {
                                 gizliResimler[index] = resimler[index];
                                 seciliIndex = -1;
+                                skor += 1; // Skoru artır
                                 if (gizliResimler.every((resim) =>
                                 resim != 'assets/resim/Elif.png')) {
                                   eslesmeTamamlandi = true;
@@ -269,15 +272,15 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                                   _showDialogg();
                                 }
                               } else {
+                                tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
                                 gizliResimler[index] = resimler[index];
                                 Timer(Duration(milliseconds: 500), () {
-                                  if (seciliIndex != -1) {
+                                  if (seciliIndex != -1 && seciliIndex != -2) {
                                     if (index != seciliIndex) {
-                                      gizliResimler[index] =
-                                      'assets/resim/Elif.png';
-                                      gizliResimler[seciliIndex] =
-                                      'assets/resim/Elif.png';
+                                      gizliResimler[index] = 'assets/resim/Elif.png';
+                                      gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
                                       seciliIndex = -1;
+                                      tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
                                       setState(() {});
                                     }
                                   }
@@ -306,6 +309,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     );
                   },
                 ),
+              ),
+            ),
+            Text(
+              'Skor: $skor',
+              style: GoogleFonts.comicNeue(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+
               ),
             ),
           ],
@@ -654,10 +665,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -750,6 +758,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                       _secondsLeft = 120;
                       startTimer();
                       reset();
+                      skor=0;
+
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -842,6 +852,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                       _secondsLeft = 120;
                       startTimer();
                       reset();
+                      skor=0;
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(

@@ -311,10 +311,8 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(

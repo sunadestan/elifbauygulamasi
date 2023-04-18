@@ -45,7 +45,7 @@ class DbHelper {
 
   void createDb(Database db, int version) async {
     await db.execute(
-        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,address TEXT,username TEXT,password TEXT,email TEXT,isadmin INT)''');
+        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER DEFAULT = 0)''');
     await db.execute(
         '''CREATE TABLE letters(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, annotation TEXT, image_path BLOB, music_path BLOB)''');
     await db.execute(
@@ -151,8 +151,18 @@ class DbHelper {
   }
 
   Future<int> insert(User user) async {
+    int isAdmin = user.email.endsWith('@elifba.com') ? 1 : 0;
     Database? db = await this.db;
-    var result = await db.insert("users", user.toMap());
+    var result = await db.insert("users", {
+      "username": user.username,
+      "password": user.password,
+      "email": user.email,
+      "name": user.name,
+      "address": user.address,
+      "lastname": user.lastname,
+      "phone": user.phone,
+      "isadmin": isAdmin,
+    });
     return result;
   }
 

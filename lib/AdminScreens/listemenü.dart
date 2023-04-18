@@ -485,10 +485,7 @@ class _ListeMenuState extends State<ListeMenu> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:
