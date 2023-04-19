@@ -2,6 +2,7 @@ import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
 import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:elifbauygulamasi/models/user.dart';
 import 'package:flutter/material.dart';
+import 'KullaniciScreens/deneme.dart';
 import 'KullaniciScreens/oyun/sesoyunu.dart';
 import 'KullaniciScreens/oyun/soruoyunu.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "LOGİN",
       debugShowCheckedModeBanner: false,
-      home: SesOyunu(letter: letter,user: user),
+      home: ses(user: user,letter: letter,),
     );
   }
 }

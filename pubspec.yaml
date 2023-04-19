@@ -72,8 +72,8 @@ dev_dependencies:
   flare_flutter:
   animated_icon_button:
   charts_flutter:
-
-
+  assets_audio_player:
+  flutter_neumorphic:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -233,7 +233,37 @@ flutter:
       - assets/elifba/otre/zel_ötre.png
       - assets/elifba/otre/zı_ötre.png
       - assets/elifba/otre/şin_ötre.png
-      - assets/ses/ses.jpg
+      - assets/elifba/ses/ses.jpg
+      - assets/elifba/ses/ayın.mp3
+      - assets/elifba/ses/be.mp3
+      - assets/elifba/ses/cim.mp3
+      - assets/elifba/ses/dad.mp3
+      - assets/elifba/ses/dal.mp3
+      - assets/elifba/ses/elif.mp3
+      - assets/elifba/ses/elif.m4a
+      - assets/elifba/ses/fe.mp3
+      - assets/elifba/ses/gaf.mp3
+      - assets/elifba/ses/gayın.mp3
+      - assets/elifba/ses/ha.mp3
+      - assets/elifba/ses/he.mp3
+      - assets/elifba/ses/hı.mp3
+      - assets/elifba/ses/kef.mp3
+      - assets/elifba/ses/lam.mp3
+      - assets/elifba/ses/lamelif.mp3
+      - assets/elifba/ses/mim.mp3
+      - assets/elifba/ses/nun.mp3
+      - assets/elifba/ses/ra.mp3
+      - assets/elifba/ses/sad.mp3
+      - assets/elifba/ses/se.mp3
+      - assets/elifba/ses/sin.mp3
+      - assets/elifba/ses/te.mp3
+      - assets/elifba/ses/tı.mp3
+      - assets/elifba/ses/vav.mp3
+      - assets/elifba/ses/ye.mp3
+      - assets/elifba/ses/ze.mp3
+      - assets/elifba/ses/zel.mp3
+      - assets/elifba/ses/zı.mp3
+      - assets/elifba/ses/şin.mp3
 
 
   #   - images/a_dot_burr.jpeg

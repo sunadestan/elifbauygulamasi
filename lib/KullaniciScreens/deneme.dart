@@ -1,166 +1,47 @@
-import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import '../../LoginScreens/login_page.dart';
-import '../../models/letter.dart';
-import '../../models/user.dart';
-import '../ayarlar.dart';
-import '../dersmenü.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import '../LoginScreens/login_page.dart';
+import '../data/dbHelper.dart';
+import '../models/letter.dart';
+import '../models/user.dart';
+import 'ayarlar.dart';
+import 'dersmenü.dart';
+import 'home.dart';
+import 'oyunmenü.dart';
 
-class ResimEslestirme extends StatefulWidget {
-  ResimEslestirme({Key? key, required this.user, required this.letter})
-      : super(key: key);
-  User user;
-  Letter letter;
+class ses extends StatefulWidget {
+  ses({Key? key,required this.user,required this.letter}) : super(key: key,);
+  final User user;
+  final Letter letter;
+
   @override
-  _ResimEslestirmeState createState() => _ResimEslestirmeState();
+  State<ses> createState() => _sesState();
 }
 
-class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderStateMixin {
-  int seciliIndex = -1;
-  int skor = 0;
-  bool tappingDisabled = false;
-  bool eslesmeTamamlandi = false;
+class _sesState extends State<ses> with TickerProviderStateMixin {
+  var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
+  final AudioPlayer audioPlayer = AudioPlayer();
+  final _advancedDrawerController = AdvancedDrawerController();
+  late AnimationController _animationController;
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
   late Timer _timer;
-  late AnimationController _animationController;
-  final _advancedDrawerController = AdvancedDrawerController();
-  var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  //var userr = User("", "", "", "", "", "", "", isadmin: 0);
-
-  List<String> resimler = [
-    'assets/elifba/elif.png',
-    'assets/elifba/elif.png',
-    'assets/elifba/be.png',
-    'assets/elifba/be.png',
-    'assets/elifba/te.png',
-    'assets/elifba/te.png',
-    'assets/elifba/peltekSe.png',
-    'assets/elifba/peltekSe.png',
-    'assets/elifba/cim.png',
-    'assets/elifba/cim.png',
-    'assets/elifba/ha.png',
-    'assets/elifba/ha.png',
-    'assets/elifba/ğhı.png',
-    'assets/elifba/ğhı.png',
-    'assets/elifba/dal.png',
-    'assets/elifba/dal.png',
-    'assets/elifba/zel.png',
-    'assets/elifba/zel.png',
-    'assets/elifba/ra.png',
-    'assets/elifba/ra.png',
-    'assets/elifba/ze.png',
-    'assets/elifba/ze.png',
-    'assets/elifba/sin.png',
-    'assets/elifba/sin.png',
-    'assets/elifba/şin.png',
-    'assets/elifba/şin.png',
-    'assets/elifba/sad.png',
-    'assets/elifba/sad.png',
-    'assets/elifba/dad.png',
-    'assets/elifba/dad.png',
-
-    'assets/elifba/ta.png',
-    'assets/elifba/ta.png',
-    'assets/elifba/za.png',
-    'assets/elifba/za.png',
-    'assets/elifba/ayın.png',
-    'assets/elifba/ayın.png',
-    'assets/elifba/ğayn.png',
-    'assets/elifba/ğayn.png',
-    'assets/elifba/fe.png',
-    'assets/elifba/fe.png',
-    'assets/elifba/gaf.png',
-    'assets/elifba/gaf.png',
-    'assets/elifba/kef.png',
-    'assets/elifba/kef.png',
-    'assets/elifba/lam.png',
-    'assets/elifba/lam.png',
-    'assets/elifba/mim.png',
-    'assets/elifba/mim.png',
-    'assets/elifba/nun.png',
-    'assets/elifba/nun.png',
-    'assets/elifba/vav.png',
-    'assets/elifba/vav.png',
-    'assets/elifba/he.png',
-    'assets/elifba/he.png',
-    'assets/elifba/lamelif.jpg',
-    'assets/elifba/lamelif.jpg',
-    'assets/elifba/ye.png',
-    'assets/elifba/ye.png',
-  ];
-  List<String> gizliResimler = [
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-    'assets/resim/Elif.png',
-  ];
+  late String musicPath;
+  bool _isPlaying = false;
+  late Future<List<Letter>> _lettersFuture;
+  var dbHelper = DbHelper();
+  late Letter _resim;
 
   @override
   void initState() {
     super.initState();
-    liste();
+    _lettersFuture = liste();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -194,7 +75,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                 Text(
                   "Bu oyunda...",
                   style: GoogleFonts.comicNeue(
-                    fontSize:18,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -206,31 +87,31 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                 SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ),
+                  children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
-                        //Navigator.of(context).pop();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OyunSinifi(
+                                  user: widget.user,
+                                ))).then((value) => Navigator.pop(context));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Çıkış Yap',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
                         startTimer();
                       },
                       style: ButtonStyle(
@@ -255,6 +136,41 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
     });
   }
 
+  Future<List<Letter>> liste() async {
+    final result = await dbHelper.getLetters();
+    List<Letter> randomLetters = [];
+    Random random = new Random();
+    for (var i = 0; i < 5; i++) {
+      randomLetters.add(result[random.nextInt(result.length)]);
+    }
+    return randomLetters;
+  }
+
+  Future<void> _loadAudio() async {
+    try {
+      await audioPlayer.setUrl(musicPath);
+    } catch (e) {
+      print('Error loading audio: $e');
+    }
+  }
+
+  Future<void> _play(Letter harf) async {
+    int result = await audioPlayer.play(harf.musicPath!);
+    if (result == 1) {
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+  }
+
+  Future<void> _pause() async {
+    if (mounted) {
+      int result = await audioPlayer.pause();
+      if (result == 1) {
+        _isPlaying = false;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +203,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
         ),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Hadi Oyun Oynayalım",
+            title: Text("Esre Harfler",
                 style: GoogleFonts.comicNeue(
                     color: Colors.white,
                     fontSize: 20,
@@ -311,92 +227,63 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                    _timer.cancel();
+                    //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)),);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
             ],
           ),
-          body: Column(
-            children: [
-              customSizedBox(),
-              row(),
-              customSizedBox(),
-              Expanded(
-                child: Center(
-                  child: GridView.builder(
-                    itemCount: resimler.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (!eslesmeTamamlandi && !tappingDisabled) {
-                              if (seciliIndex == -1) {
-                                seciliIndex = index;
-                                gizliResimler[index] = resimler[index];
-                              } else if (seciliIndex != index) {
-                                if (resimler[index] == resimler[seciliIndex]) {
-                                  gizliResimler[index] = resimler[index];
-                                  seciliIndex = -1;
-                                  skor += 1; // Skoru artır
-                                  if (gizliResimler.every((resim) =>
-                                      resim != 'assets/resim/Elif.png')) {
-                                    eslesmeTamamlandi = true;
-                                    _timer.cancel();
-                                    _showDialogg();
-                                  }
-                                } else {
-                                  tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
-                                  gizliResimler[index] = resimler[index];
-                                  Timer(Duration(milliseconds: 500), () {
-                                    if (seciliIndex != -1 && seciliIndex != -2) {
-                                      if (index != seciliIndex) {
-                                        gizliResimler[index] = 'assets/resim/Elif.png';
-                                        gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
-                                        seciliIndex = -1;
-                                        tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
-                                        setState(() {});
-                                      }
-                                    }
-                                  });
-                                }
-                              }
-                            }
-                          });
-                        },
-                        child: Card(
-                          color: Colors.lightBlueAccent,
-                          child: Container(
-                            height: 150,
-                            width: 150,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border:
-                                  Border.all(color: Color(0xffbea1ea), width: 2),
-                            ),
-                            child: Image.asset(
-                              gizliResimler[index],
-                              fit: BoxFit.cover,
-                            ),
+          body: Center(
+            child: Column(
+              children: [
+                customSizedBox(),
+                row(),
+                customSizedBox(),
+                Expanded(
+                  child: FutureBuilder<List<Letter>>(
+                    future: _lettersFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final letters = snapshot.data;
+                        return Container(
+                          margin: EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: List.generate(
+                                    letters!.length,
+                                    (index) => ses(letters![index]),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: List.generate(
+                                    letters!.length,
+                                    (index) => kutuu(letters![index]),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      );
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Hata: ${snapshot.error}'),
+                        );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                     },
                   ),
                 ),
-              ),
-              Text(
-                'Skor: $skor',
-                style: GoogleFonts.comicNeue(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         drawer: SafeArea(
@@ -431,10 +318,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                    user: widget.user,
-                                    letter: letter,
-                                  ))).then((value) => Navigator.pop(context));
-                      togglePause();
+                                user: widget.user,
+                                letter: letter,
+                              ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -452,9 +338,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                    user: widget.user,
-                                  ))).then((value) => Navigator.pop(context));
-                      togglePause();
+                                user: widget.user,
+                              ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -471,8 +356,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user)));
-                      togglePause();
+                              builder: (context) =>
+                                  OyunSinifi(user: widget.user)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -502,10 +387,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                    letter: letter,
-                                    user: widget.user,
-                                  )));
-                      togglePause();
+                                letter: letter,
+                                user: widget.user,
+                              )));
                     },
                     leading: Icon(Icons.settings),
                     title: Text(
@@ -556,19 +440,10 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
             ),
           ),
         ),
+
       ),
     );
   }
-
-
-  Widget row(){
-    return Row(
-      children: [
-            timer(),
-            _title(),
-      ],
-    );
-}
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -621,11 +496,19 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+  Widget row() {
+    return Row(
+      children: [
+        timer(),
+        _title(),
+      ],
+    );
+  }
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'Renkli',
+          text: 'Bil',
           style: GoogleFonts.comicNeue(
             fontSize: 38,
             fontWeight: FontWeight.w700,
@@ -644,19 +527,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
-            ),
-            TextSpan(
-              text: 'Harfler ',
-              style: GoogleFonts.comicNeue(
-                color: Colors.lightBlueAccent,
-                fontSize: 38,
                 fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
@@ -668,7 +538,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
               ),
             ),
             TextSpan(
-              text: '3',
+              text: 'Bakalım ',
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
@@ -685,11 +555,147 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
           ]),
     );
   }
+  IconData getIcon() {
+    if (_isPaused) {
+      return Icons.hourglass_empty;
+    } else if (_secondsLeft <= 0) {
+      _animationController.forward();
+      return Icons.hourglass_empty;
+    } else {
+      return Icons.alarm;
+    }
+  }
 
-  Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
-
+  @override
+  void dispose() {
+    _timer.cancel();
+    _animationController.dispose();
+    super.dispose();
+  }
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+          (Timer timer) => setState(
+            () {
+          if (_secondsLeft < 1) {
+            timer.cancel();
+            _showDialog();
+          } else {
+            _secondsLeft = _secondsLeft - 1;
+          }
+        },
+      ),
+    );
+  }
+  void togglePause() {
+    if (_isPaused) {
+      startTimer();
+      _animationController.forward();
+      setState(() {
+        _isPaused = false;
+      });
+    } else {
+      _timer.cancel();
+      _animationController.reverse(from: 1);
+      setState(() {
+        _isPaused = true;
+        _pausedTime = _secondsLeft;
+      });
+    }
+  }
+  void _showDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Malesef Olmadı",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                textAlign: TextAlign.center,
+                "Oyunu yeniden başlatmak ister misiniz?",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(
+                                user: widget.user,
+                              ))).then((value) => Navigator.pop(context));
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Hayır',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _secondsLeft = 120;
+                      startTimer();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Evet',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -747,8 +753,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
 
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -766,263 +772,93 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
-  void _showDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Malesef Olmadı",
-                style: GoogleFonts.comicNeue(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ), SizedBox(height: 16),
-              Text(
-                textAlign: TextAlign.center,
-                "Oyunu yeniden başlatmak ister misiniz?",
-                style: GoogleFonts.comicNeue(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
 
+  Widget kutuu(Letter harf) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () async {},
+          child: Container(
+            child: Center(
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Color(0xffbea1ea),
+                elevation: 8,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Image.file(
+                        File(harf.imagePath ?? ""),
+                        //fit: BoxFit.cover,
+                        height: 90,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Hayır',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _secondsLeft=120;
-                      startTimer();
-                      reset();
-                      skor=0;
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                      'Evet',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
-  void _showDialogg() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
+
+  Widget ses(Letter harf) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () async {
+            await _loadAudio();
+            if (_isPlaying) {
+              await _pause();
+              _play(harf);
+              setState(() {
+                _isPlaying = false;
+              });
+            } else {
+              await _play(harf);
+              setState(() {
+                _isPlaying = true;
+              });
+            }
+          },
+          child: Container(
+            child: Center(
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Color(0xffbea1ea),
+                elevation: 8,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Image.asset(
+                        "assets/elifba/ses/ses.jpg",
+                        //fit: BoxFit.cover,
+                        height: 90,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Tebrikler!',
-                style: GoogleFonts.comicNeue(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ), SizedBox(height: 16),
-              Text(
-                textAlign: TextAlign.center,
-                'Tüm harfleri eşleştirdiniz!',
-                style: GoogleFonts.comicNeue(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _secondsLeft = 120;
-                      startTimer();
-                      reset();
-                      skor=0;
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                      'Tekrar Oyna',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      ],
     );
   }
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    _animationController.dispose();
-    super.dispose();
-  }
-  void startTimer() {
-    const oneSec = const Duration(seconds: 1);
-    _timer = Timer.periodic(
-      oneSec,
-      (Timer timer) => setState(
-        () {
-          if (_secondsLeft < 1) {
-            timer.cancel();
-            _showDialog();
-          } else {
-            _secondsLeft = _secondsLeft - 1;
-          }
-        },
-      ),
-    );
-  }
-  void togglePause() {
-    if (_isPaused) {
-      startTimer();
-      _animationController.forward();
-      setState(() {
-        _isPaused = false;
-      });
-    } else {
-      _timer.cancel();
-      _animationController.reverse(from: 1);
-      setState(() {
-        _isPaused = true;
-        _pausedTime = _secondsLeft;
-      });
-    }
-  }
-  void liste() {
-    setState(() {
-      resimler.shuffle(Random());
-    });
-  }
-  void reset() {
-    setState(() {
-      resimler.shuffle();
-      gizliResimler =
-          List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
-      eslesmeTamamlandi = false;
-    });
-  }
-  IconData getIcon() {
-    if (_isPaused) {
-      return Icons.hourglass_empty;
-    } else if (_secondsLeft <= 0) {
-      _animationController.forward();
-      return Icons.hourglass_empty;
-    } else {
-      return Icons.alarm;
-    }
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<Timer>('_timer', _timer));
-  }
+  Widget customSizedBox() => SizedBox(
+    height: 20,
+  );
 }

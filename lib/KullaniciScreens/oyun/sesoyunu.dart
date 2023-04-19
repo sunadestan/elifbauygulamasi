@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
@@ -11,13 +12,20 @@ import '../dersmenü.dart';
 import '../home.dart';
 import '../oyunmenü.dart';
 
+
 class Ses {
   final String harf;
   final String ses;
-
   final String dogruCevap;
 
   Ses(this.harf, this.ses, this.dogruCevap);
+}
+
+class Soru {
+  final String harf;
+  final String dogruCevap;
+
+  Soru(this.harf, this.dogruCevap);
 }
 
 class SesOyunu extends StatefulWidget {
@@ -37,301 +45,456 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
+  late Soru _resim;
+  late Ses _ses;
   late Timer _timer;
   late AnimationController _animationController;
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   //var userr = User("", "", "", "", "", "", "", isadmin: 0);
-  static List<Ses> _resimler = [
-    Ses("elif", "", "ustun"),
-    Ses("be", "", "esre"),
-    Ses("te", "", "otre"),
-    Ses("peltekSe", "", "ustun"),
-    Ses("cim", "", "esre"),
-    Ses("ha", "", "otre"),
-    Ses("ğhı", "", "ustun"),
-    Ses("dal", "g", "esre"),
-    Ses("zel", "", "otre"),
-    Ses("ra", "", "ustun"),
-    Ses("ze", "", "esre"),
-    Ses("sin", "", "otre"),
-    Ses("şin", "", "ustun"),
-    Ses("sad", "", "esre"),
-    Ses("dad", "", "otre"),
-    Ses("ta", "", "ustun"),
-    Ses("ayın", "", "esre"),
-    Ses("ğayn", "", "otre"),
-    Ses("fe", "g", "ustun"),
-    Ses("gaf", "", "esre"),
-    Ses("kef", "", "otre"),
-    Ses("lam", "", "ustun"),
-    Ses("mim", "", "esre"),
-    Ses("nun", "", "otre"),
-    Ses("vav", "", "ustun"),
-    Ses("he", "", "esre"),
-    Ses("ye", "", "otre"),
-    Ses("elif", "", "esre"),
-    Ses("be", "", "otre"),
-    Ses("te", "", "ustun"),
-    Ses("peltekSe", "", "esre"),
-    Ses("cim", "", "otre"),
-    Ses("ha", "", "ustun"),
-    Ses("ğhı", "", "esre"),
-    Ses("dal", "", "otre"),
-    Ses("zel", "", "ustun"),
-    Ses("ra", "", "esre"),
-    Ses("ze", "", "otre"),
-    Ses("sin", "", "ustun"),
-    Ses("şin", "", "esre"),
-    Ses("sad", "", "otre"),
-    Ses("dad", "", "ustun"),
-    Ses("ta", "", "esre"),
-    Ses("ayın", "", "otre"),
-    Ses("ğayn", "", "ustun"),
-    Ses("fe", "", "esre"),
-    Ses("gaf", "", "otre"),
-    Ses("kef", "", "ustun"),
-    Ses("lam", "", "esre"),
-    Ses("mim", "", "otre"),
-    Ses("nun", "", "ustun"),
-    Ses("vav", "", "esre"),
-    Ses("he", "", "otre"),
-    Ses("ye", "", "ustun"),
-    Ses("elif", "", "otre"),
-    Ses("be", "", "ustun"),
-    Ses("te", "", "esre"),
-    Ses("peltekSe", "", "otre"),
-    Ses("cim", "", "ustun"),
-    Ses("ha", "", "esre"),
-    Ses("ğhı", "", "otre"),
-    Ses("dal", "", "ustun"),
-    Ses("zel", "", "esre"),
-    Ses("ra", "", "otre"),
-    Ses("ze", "", "ustun"),
-    Ses("sin", "", "esre"),
-    Ses("şin", "", "otre"),
-    Ses("sad", "", "ustun"),
-    Ses("dad", "", "esre"),
-    Ses("ta", "", "otre"),
-    Ses("ayın", "", "ustun"),
-    Ses("ğayn", "", "esre"),
-    Ses("fe", "", "otre"),
-    Ses("gaf", "", "ustun"),
-    Ses("kef", "", "esre"),
-    Ses("lam", "g", "otre"),
-    Ses("mim", "", "ustun"),
-    Ses("nun", "", "esre"),
-    Ses("vav", "", "otre"),
-    Ses("he", "", "ustun"),
-    Ses("ye", "", "esre"),
+  bool _isPlaying = false;
+  AudioPlayer audioPlayer = AudioPlayer();
+
+  static List<Ses> _sesler = [
+    Ses("elif", "ses/elif.mp3", "ustun"),
+    Ses("be", "ses/be.mp3", "esre"),
+    Ses("te", "ses/te.mp3", "otre"),
+    Ses("peltekSe", "ses/se.mp3", "ustun"),
+    Ses("cim", "ses/cim.mp3", "esre"),
+    Ses("ha", "ses/ha.mp3", "otre"),
+    Ses("ğhı", "ses/hı.mp3", "ustun"),
+    Ses("dal", "ses/dal.mp3", "esre"),
+    Ses("zel", "ses/zel.mp3", "otre"),
+    Ses("ra", "ses/ra.mp3", "ustun"),
+    Ses("ze", "ses/ze.mp3", "esre"),
+    Ses("sin", "ses/sin.mp3", "otre"),
+    Ses("şin", "ses/şin.mp3", "ustun"),
+    Ses("sad", "ses/sad.mp3", "esre"),
+    Ses("dad", "ses/dad.mp3", "otre"),
+    Ses("ta", "ses/te.mp3", "ustun"),
+    Ses("ayın", "ses/ayın.mp3 ", "esre"),
+    Ses("ğayn", "ses/gayın.mp3", "otre"),
+    Ses("fe", "ses/fe.mp3", "ustun"),
+    Ses("gaf", "ses/gaf.mp3", "esre"),
+    Ses("kef", "ses/kef.mp3", "otre"),
+    Ses("lam", "ses/lam.mp3", "ustun"),
+    Ses("mim", "ses/mim.mp3", "esre"),
+    Ses("nun", "ses/nun.mp3", "otre"),
+    Ses("vav", "ses/vav.mp3", "ustun"),
+    Ses("he", "ses/he.mp3", "esre"),
+    Ses("ye", "ses/ye.mp3", "otre"),
+    Ses("elif", "ses/elif.mp3", "esre"),
+    Ses("be", "ses/be.mp3", "otre"),
+    Ses("te", "ses/te.mp3", "ustun"),
+    Ses("peltekSe", "ses/se.mp3", "esre"),
+    Ses("cim", "ses/cim.mp3", "otre"),
+    Ses("ha", "ses/ha.mp3", "ustun"),
+    Ses("ğhı", "ses/hı.mp3", "esre"),
+    Ses("dal", "ses/dal.mp3", "otre"),
+    Ses("zel", "ses/zel.mp3", "ustun"),
+    Ses("ra", "ses/ra.mp3", "esre"),
+    Ses("ze", "ses/ze.mp3", "otre"),
+    Ses("sin", "ses/sin.mp3", "ustun"),
+    Ses("şin", "ses/şin.mp3", "esre"),
+    Ses("sad", "ses/sad.mp3", "otre"),
+    Ses("dad", "ses/dad.mp3", "ustun"),
+    Ses("ta", "ses/ta.mp3", "esre"),
+    Ses("ayın", "ses/ayın.mp3", "otre"),
+    Ses("ğayn", "ses/gayın.mp3", "ustun"),
+    Ses("fe", "ses/fe.mp3", "esre"),
+    Ses("gaf", "ses/gaf.mp3", "otre"),
+    Ses("kef", "ses/kef.mp3", "ustun"),
+    Ses("lam", "ses/lam.mp3", "esre"),
+    Ses("mim", "ses/mim.mp3", "otre"),
+    Ses("nun", "ses/nun.mp3", "ustun"),
+    Ses("vav", "ses/nun.mp3", "esre"),
+    Ses("he", "ses/he.mp3", "otre"),
+    Ses("ye", "ses/ye.mp3", "ustun"),
+    Ses("elif", "ses/elif.mp3", "otre"),
+    Ses("be", "ses/be.mp3", "ustun"),
+    Ses("te", "ses/te.mp3", "esre"),
+    Ses("peltekSe", "ses/se.mp3", "otre"),
+    Ses("cim", "ses/cim.mp3", "ustun"),
+    Ses("ha", "ses/ha.mp3", "esre"),
+    Ses("ğhı", "ses/hı.mp3", "otre"),
+    Ses("dal", "ses/dal.mp3", "ustun"),
+    Ses("zel", "ses/zel.mp3", "esre"),
+    Ses("ra", "ses/ra.mp3", "otre"),
+    Ses("ze", "ses/ze.mp3", "ustun"),
+    Ses("sin", "ses/sin.mp3", "esre"),
+    Ses("şin", "ses/şin.mp3", "otre"),
+    Ses("sad", "ses/sad.mp3", "ustun"),
+    Ses("dad", "ses/dad.mp3", "esre"),
+    Ses("ta", "ses/te.mp3", "otre"),
+    Ses("ayın", "ses/ayın.mp3", "ustun"),
+    Ses("ğayn", "ses/gayın.mp3", "esre"),
+    Ses("fe", "ses/fe.mp3", "otre"),
+    Ses("gaf", "ses/gaf.mp3", "ustun"),
+    Ses("kef", "ses/kef.mp3", "esre"),
+    Ses("lam", "ses/lam.mp3", "otre"),
+    Ses("mim", "ses/mim.mp3", "ustun"),
+    Ses("nun", "ses/nun.mp3", "esre"),
+    Ses("vav", "ses/vav.mp3", "otre"),
+    Ses("he", "ses/he.mp3", "ustun"),
+    Ses("ye", "ses/ye.mp3", "esre"),
+  ];
+  static List<Soru> _resimler = [
+    Soru("elif", "ustun"),
+    Soru("be", "esre"),
+    Soru("te", "otre"),
+    Soru("peltekSe", "ustun"),
+    Soru("cim", "esre"),
+    Soru("ha", "otre"),
+    Soru("ğhı", "ustun"),
+    Soru("dal", "esre"),
+    Soru("zel", "otre"),
+    Soru("ra", "ustun"),
+    Soru("ze", "esre"),
+    Soru("sin", "otre"),
+    Soru("şin", "ustun"),
+    Soru("sad", "esre"),
+    Soru("dad", "otre"),
+    Soru("ta", "ustun"),
+    Soru("ayın", "esre"),
+    Soru("ğayn", "otre"),
+    Soru("fe", "ustun"),
+    Soru("gaf", "esre"),
+    Soru("kef", "otre"),
+    Soru("lam", "ustun"),
+    Soru("mim", "esre"),
+    Soru("nun", "otre"),
+    Soru("vav", "ustun"),
+    Soru("he", "esre"),
+    Soru("ye", "otre"),
+    Soru("elif", "esre"),
+    Soru("be", "otre"),
+    Soru("te", "ustun"),
+    Soru("peltekSe", "esre"),
+    Soru("cim", "otre"),
+    Soru("ha", "ustun"),
+    Soru("ğhı", "esre"),
+    Soru("dal", "otre"),
+    Soru("zel", "ustun"),
+    Soru("ra", "esre"),
+    Soru("ze", "otre"),
+    Soru("sin", "ustun"),
+    Soru("şin", "esre"),
+    Soru("sad", "otre"),
+    Soru("dad", "ustun"),
+    Soru("ta", "esre"),
+    Soru("ayın", "otre"),
+    Soru("ğayn", "ustun"),
+    Soru("fe", "esre"),
+    Soru("gaf", "otre"),
+    Soru("kef", "ustun"),
+    Soru("lam", "esre"),
+    Soru("mim", "otre"),
+    Soru("nun", "ustun"),
+    Soru("vav", "esre"),
+    Soru("he", "otre"),
+    Soru("ye", "ustun"),
+    Soru("elif", "otre"),
+    Soru("be", "ustun"),
+    Soru("te", "esre"),
+    Soru("peltekSe", "otre"),
+    Soru("cim", "ustun"),
+    Soru("ha", "esre"),
+    Soru("ğhı", "otre"),
+    Soru("dal", "ustun"),
+    Soru("zel", "esre"),
+    Soru("ra", "otre"),
+    Soru("ze", "ustun"),
+    Soru("sin", "esre"),
+    Soru("şin", "otre"),
+    Soru("sad", "ustun"),
+    Soru("dad", "esre"),
+    Soru("ta", "otre"),
+    Soru("ayın", "ustun"),
+    Soru("ğayn", "esre"),
+    Soru("fe", "otre"),
+    Soru("gaf", "ustun"),
+    Soru("kef", "esre"),
+    Soru("lam", "otre"),
+    Soru("mim", "ustun"),
+    Soru("nun", "esre"),
+    Soru("vav", "otre"),
+    Soru("he", "ustun"),
+    Soru("ye", "esre"),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Hadi Oyun Oynayalım",
-              style: GoogleFonts.comicNeue(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900)),
-          backgroundColor: Color(0xFF975FD0),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
+    return WillPopScope(
+      onWillPop: () async {
+        _timer.cancel();
+        bool exit = await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OyunSinifi(user: widget.user)),
+            (route) => false);
+        return exit;
+      },
+      child: AdvancedDrawer(
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
+            ),
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Hadi Oyun Oynayalım",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                  },
+                  icon: Icon(Icons.exit_to_app)
+              )
+            ],
+          ),
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            child: Center(
+              child: Column(
+                children: [
+                  customSizedBox(),
+                  row(),
+                  customSizedBox(),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: 5,
+                            itemBuilder: (context, index) => ses(_sesler.first),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: 5,
+                            itemBuilder: (context, index) => harf(index),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ),
-        body: Column(
-          children: [
-            customSizedBox(),
-            row(),
-            customSizedBox(),
-            Expanded(
-              child: Container(
-                // kartlar için dikey bir liste oluşturun
-                child: ListView.builder(
-                  itemCount: 5, // 5 kart göstereceğiz
-                  itemBuilder: (context, index) {
-                    return ses();
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 300.0,
-                  height: 200.0,
-                  margin: const EdgeInsets.only(
-                    top: 24.0,
-                    bottom: 64.0,
-                    right: 10,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/resim/Elif-Baa.png'),
-                      fit: BoxFit.cover,
+        drawer: SafeArea(
+          child: Container(
+            child: ListTileTheme(
+              textColor: Colors.white,
+              iconColor: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 300.0,
+                    height: 200.0,
+                    margin: const EdgeInsets.only(
+                      top: 24.0,
+                      bottom: 64.0,
+                      right: 10,
                     ),
-                    //color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage(
-                                  user: widget.user,
-                                  letter: letter,
-                                ))).then((value) => Navigator.pop(context));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.home),
-                  title: Text(
-                    'Ana Sayfa',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      //color: Colors.black26,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dersler(
-                                  user: widget.user,
-                                ))).then((value) => Navigator.pop(context));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.play_lesson),
-                  title: Text(
-                    'Dersler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                OyunSinifi(user: widget.user)));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.extension),
-                  title: Text(
-                    'Alıştırmalar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.import_contacts_sharp),
-                  title: Text(
-                    'Sureler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AyarlarPage(
-                                  letter: letter,
-                                  user: widget.user,
-                                )));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'Ayarlar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _showResendDialog();
-                  },
-                  leading: Icon(Icons.power_settings_new),
-                  title: Text(
-                    'Çıkış Yap',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                    user: widget.user,
+                                    letter: letter,
+                                  ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Ana Sayfa',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                    user: widget.user,
+                                  ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.play_lesson),
+                    title: Text(
+                      'Dersler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  OyunSinifi(user: widget.user)));
+                    },
+                    leading: Icon(Icons.extension),
+                    title: Text(
+                      'Alıştırmalar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {},
+                    leading: Icon(Icons.import_contacts_sharp),
+                    title: Text(
+                      'Sureler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                    letter: letter,
+                                    user: widget.user,
+                                  )));
+                    },
+                    leading: Icon(Icons.settings),
+                    title: Text(
+                      'Ayarlar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _showResendDialog();
+                    },
+                    leading: Icon(Icons.power_settings_new),
+                    title: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white54,
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+  void _checkAnswer(String cevap) {
+    if (_ses.dogruCevap == cevap) {
+      // Doğru harf resmi bulundu, tebrik mesajı gösterilebilir.
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Tebrikler!'),
+          content: Text('Doğru harf resmini buldunuz!'),
+          actions: [
+            TextButton(
+              child: Text('Tamam'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
 
   Widget customSizedBox() => SizedBox(
         height: 20,
@@ -345,57 +508,113 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
     );
   }
 
-  Widget ses() {
-    return Card(
-      margin: EdgeInsets.only(right: 200, top: 10),
+  Future<void> _play(Ses ses) async {
+    int result = await audioPlayer.play(ses.ses!);
+    if (result == 1) {
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+  }
+  Future<void> _pause() async {
+    if (mounted) {
+      int result = await audioPlayer.pause();
+      if (result == 1) {
+        _isPlaying = false;
+      }
+    }
+  }
+  late String musicPath;
+  Future<void> _loadAudio() async {
+    try {
+      await audioPlayer.setUrl(musicPath);
+    } catch (e) {
+      print('Error loading audio: $e');
+    }
+  }
+  Widget ses(Ses ses) {
+    return InkWell(
+      onTap: () async {
+        await _loadAudio();
+        if (_isPlaying) {
+          await _pause();
+          _play(ses);
+          setState(() {
+            _isPlaying = false;
+          });
+        } else {
+          await _play(ses);
+          setState(() {
+            _isPlaying = true;
+          });
+        }
+      },
       child: Container(
-        height: 120, // Card'ın yüksekliğini belirleyin
-        width: double.infinity,
-        decoration: BoxDecoration(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Image.asset(
-                "assets/ses/ses.jpg",
-                fit: BoxFit.contain, // resim boyutunu uygun hale getirir
+        //width: 150,
+        alignment: Alignment.center,
+        child: Center(
+          child: Card(
+            //margin: EdgeInsets.only(left: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            color: Color(0xffbea1ea),
+            elevation: 8,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/elifba/ses/ses.jpg',
+                    //fit: BoxFit.cover,
+                    //height: 150,
+                    height: 85,
+                    width: 140,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.play_arrow),
+                    onPressed: () {
+                      audioPlayer.play(ses.ses);
+                      _checkAnswer(_ses.dogruCevap);
+                    },
+                  ),
+
+                ],
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.play_arrow),
-              onPressed: () {
-                // oyunu oynatmak için gerekli kodları buraya yazın
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget harf() {
-    return Card(
-      margin: EdgeInsets.only(right: 200, top: 10),
+  Widget harf(int index) {
+    return InkWell(
+      onTap: () {},
       child: Container(
-        height: 120, // Card'ın yüksekliğini belirleyin
-        width: double.infinity,
-        decoration: BoxDecoration(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Image.asset(
-                "",
-                fit: BoxFit.cover,
+        alignment: Alignment.center,
+        child: Center(
+          child: Card(
+            //margin: EdgeInsets.only(left: 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            color: Color(0xffbea1ea),
+            elevation: 8,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Image.asset(
+                    "assets/elifba/${_sesler[index].harf}.png",
+                    height: 130,
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.play_arrow),
-              onPressed: () {
-                // oyunu oynatmak için gerekli kodları buraya yazın
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -781,6 +1000,8 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _ses=_sesler.first;
+    _sesler.shuffle();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,

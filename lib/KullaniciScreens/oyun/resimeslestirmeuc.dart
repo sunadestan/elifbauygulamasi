@@ -196,285 +196,303 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdropColor: Color(0xffad80ea),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      openScale: 1.0,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Hadi Oyun Oynayalım",
-              style: GoogleFonts.comicNeue(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900)),
-          backgroundColor: Color(0xFF975FD0),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            customSizedBox(),
-            row(),
-            customSizedBox(),
-            //buildcizgi(),
-            //customSizedBox(),
-            Expanded(
-              child: Center(
-                child: GridView.builder(
-                  itemCount: resimler.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (!eslesmeTamamlandi && !tappingDisabled) {
-                            if (seciliIndex == -1) {
-                              seciliIndex = index;
-                              gizliResimler[index] = resimler[index];
-                            } else if (seciliIndex != index) {
-                              if (resimler[index] == resimler[seciliIndex]) {
-                                gizliResimler[index] = resimler[index];
-                                seciliIndex = -1;
-                                skor += 1; // Skoru artır
-                                if (gizliResimler.every((resim) =>
-                                resim != 'assets/resim/Elif.png')) {
-                                  eslesmeTamamlandi = true;
-                                  _timer.cancel();
-                                  _showDialogg();
-                                }
-                              } else {
-                                tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
-                                gizliResimler[index] = resimler[index];
-                                Timer(Duration(milliseconds: 500), () {
-                                  if (seciliIndex != -1 && seciliIndex != -2) {
-                                    if (index != seciliIndex) {
-                                      gizliResimler[index] = 'assets/resim/Elif.png';
-                                      gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
-                                      seciliIndex = -1;
-                                      tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
-                                      setState(() {});
-                                    }
-                                  }
-                                });
-                              }
-                            }
-                          }
-                        });
-                      },
-                      child: Card(
-                        color: Colors.lightBlueAccent,
-                        child: Container(
-                          height: 150,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border:
-                            Border.all(color: Color(0xffbea1ea), width: 2),
-                          ),
-                          child: Image.asset(
-                            gizliResimler[index],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Text(
-              'Skor: $skor',
-              style: GoogleFonts.comicNeue(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-
-              ),
+    return WillPopScope(
+      onWillPop: () async {
+        _timer.cancel();
+        bool exit =await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user)),
+                (route) => false);
+        return exit;
+      },
+      child: AdvancedDrawer(
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
             ),
           ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 300.0,
-                  height: 200.0,
-                  margin: const EdgeInsets.only(
-                    top: 24.0,
-                    bottom: 64.0,
-                    right: 10,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/resim/Elif-Baa.png'),
-                      fit: BoxFit.cover,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Hadi Oyun Oynayalım",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
                     ),
-                    //color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage(
-                              user: widget.user,
-                              letter: letter,
-                            ))).then((value) => Navigator.pop(context));
-                    togglePause();
+                  );
+                },
+              ),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
                   },
-                  leading: Icon(Icons.home),
-                  title: Text(
-                    'Ana Sayfa',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                  icon: Icon(Icons.exit_to_app)
+              )
+            ],
+          ),
+          body: Column(
+            children: [
+              customSizedBox(),
+              row(),
+              customSizedBox(),
+              //buildcizgi(),
+              //customSizedBox(),
+              Expanded(
+                child: Center(
+                  child: GridView.builder(
+                    itemCount: resimler.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
                     ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (!eslesmeTamamlandi && !tappingDisabled) {
+                              if (seciliIndex == -1) {
+                                seciliIndex = index;
+                                gizliResimler[index] = resimler[index];
+                              } else if (seciliIndex != index) {
+                                if (resimler[index] == resimler[seciliIndex]) {
+                                  gizliResimler[index] = resimler[index];
+                                  seciliIndex = -1;
+                                  skor += 1; // Skoru artır
+                                  if (gizliResimler.every((resim) =>
+                                  resim != 'assets/resim/Elif.png')) {
+                                    eslesmeTamamlandi = true;
+                                    _timer.cancel();
+                                    _showDialogg();
+                                  }
+                                } else {
+                                  tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
+                                  gizliResimler[index] = resimler[index];
+                                  Timer(Duration(milliseconds: 500), () {
+                                    if (seciliIndex != -1 && seciliIndex != -2) {
+                                      if (index != seciliIndex) {
+                                        gizliResimler[index] = 'assets/resim/Elif.png';
+                                        gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
+                                        seciliIndex = -1;
+                                        tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
+                                        setState(() {});
+                                      }
+                                    }
+                                  });
+                                }
+                              }
+                            }
+                          });
+                        },
+                        child: Card(
+                          color: Colors.lightBlueAccent,
+                          child: Container(
+                            height: 150,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border:
+                              Border.all(color: Color(0xffbea1ea), width: 2),
+                            ),
+                            child: Image.asset(
+                              gizliResimler[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dersler(
-                              user: widget.user,
-                            ))).then((value) => Navigator.pop(context));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.play_lesson),
-                  title: Text(
-                    'Dersler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+              ),
+              Text(
+                'Skor: $skor',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OyunSinifi(user: widget.user)));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.extension),
-                  title: Text(
-                    'Alıştırmalar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+              ),
+            ],
+          ),
+        ),
+        drawer: SafeArea(
+          child: Container(
+            child: ListTileTheme(
+              textColor: Colors.white,
+              iconColor: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 300.0,
+                    height: 200.0,
+                    margin: const EdgeInsets.only(
+                      top: 24.0,
+                      bottom: 64.0,
+                      right: 10,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      //color: Colors.black26,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.import_contacts_sharp),
-                  title: Text(
-                    'Sureler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AyarlarPage(
-                              letter: letter,
-                              user: widget.user,
-                            )));
-                    togglePause();
-                  },
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'Ayarlar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _showResendDialog();
-                  },
-                  leading: Icon(Icons.power_settings_new),
-                  title: Text(
-                    'Çıkış Yap',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                user: widget.user,
+                                letter: letter,
+                              ))).then((value) => Navigator.pop(context));
+                      togglePause();
+                    },
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Ana Sayfa',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                user: widget.user,
+                              ))).then((value) => Navigator.pop(context));
+                      togglePause();
+                    },
+                    leading: Icon(Icons.play_lesson),
+                    title: Text(
+                      'Dersler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(user: widget.user)));
+                      togglePause();
+                    },
+                    leading: Icon(Icons.extension),
+                    title: Text(
+                      'Alıştırmalar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {},
+                    leading: Icon(Icons.import_contacts_sharp),
+                    title: Text(
+                      'Sureler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                letter: letter,
+                                user: widget.user,
+                              )));
+                      togglePause();
+                    },
+                    leading: Icon(Icons.settings),
+                    title: Text(
+                      'Ayarlar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _showResendDialog();
+                    },
+                    leading: Icon(Icons.power_settings_new),
+                    title: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white54,
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

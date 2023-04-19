@@ -716,284 +716,301 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdropColor: Color(0xffad80ea),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      openScale: 1.0,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Hadi Oyun Oynayalım",
-              style: GoogleFonts.comicNeue(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900)),
-          backgroundColor: Color(0xFF975FD0),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
+    return WillPopScope(
+      onWillPop: () async {
+        bool exit =await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user)),
+                (route) => false);
+        return exit;
+      },
+      child: AdvancedDrawer(
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
             ),
-          ),
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              row(),
-              Container(
-                width: 150.0,
-                height: 150.0,
-                margin: const EdgeInsets.only(
-                  top: 24.0,
-                  bottom: 64.0,
-                ),
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      'assets/elifba/${_resim.harf}.png',
-                    ),
-                    fit: BoxFit.scaleDown,
-                  ),
-                  color: Colors.black26,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Text(
-                '${_sorularr[_randomIndex]}',
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Hadi Oyun Oynayalım",
                 style: GoogleFonts.comicNeue(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
+                    ),
+                  );
+                },
               ),
-              SizedBox(height: 20),
-              // Şıkları liste halinde göster
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      _cevapKontrol(_resim.resim1.contains(_resim.dogruCevap)
-                          ? 'ustun'
-                          : _resim.resim1.contains('ustun')
-                              ? 'ustun'
-                              : 'ustun');
-                    },
-                    child: Image.asset(
-                      'assets/elifba/${_resim.resim1}',
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      _cevapKontrol(_resim.resim2.contains(_resim.dogruCevap)
-                          ? 'esre'
-                          : _resim.resim2.contains('esre')
-                              ? 'esre'
-                              : 'esre');
-                    },
-                    child: Image.asset(
-                      'assets/elifba/${_resim.resim2}',
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      _cevapKontrol(_resim.resim3.contains(_resim.dogruCevap)
-                          ? 'otre'
-                          : _resim.resim3.contains('otre')
-                              ? 'otre'
-                              : 'otre');
-                    },
-                    child: Image.asset(
-                      'assets/elifba/${_resim.resim3}',
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
-                ],
-              ),
-              nextIcon(),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                  },
+                  icon: Icon(Icons.exit_to_app)
+              )
             ],
           ),
-        ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
+          body: Center(
             child: Column(
-              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                row(),
                 Container(
-                  width: 300.0,
-                  height: 200.0,
+                  width: 150.0,
+                  height: 150.0,
                   margin: const EdgeInsets.only(
                     top: 24.0,
                     bottom: 64.0,
-                    right: 10,
                   ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/resim/Elif-Baa.png'),
-                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        'assets/elifba/${_resim.harf}.png',
+                      ),
+                      fit: BoxFit.scaleDown,
                     ),
-                    //color: Colors.black26,
+                    color: Colors.black26,
                     shape: BoxShape.circle,
                   ),
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage(
-                                  user: widget.user,
-                                  letter: letter,
-                                ))).then((value) => Navigator.pop(context));
-                  },
-                  leading: Icon(Icons.home),
-                  title: Text(
-                    'Ana Sayfa',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+                Text(
+                  '${_sorularr[_randomIndex]}',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dersler(
-                                  user: widget.user,
-                                ))).then((value) => Navigator.pop(context));
-                  },
-                  leading: Icon(Icons.play_lesson),
-                  title: Text(
-                    'Dersler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                SizedBox(height: 20),
+                // Şıkları liste halinde göster
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _cevapKontrol(_resim.resim1.contains(_resim.dogruCevap)
+                            ? 'ustun'
+                            : _resim.resim1.contains('ustun')
+                                ? 'ustun'
+                                : 'ustun');
+                      },
+                      child: Image.asset(
+                        'assets/elifba/${_resim.resim1}',
+                        width: 100,
+                        height: 100,
+                      ),
                     ),
-                  ),
+                    TextButton(
+                      onPressed: () {
+                        _cevapKontrol(_resim.resim2.contains(_resim.dogruCevap)
+                            ? 'esre'
+                            : _resim.resim2.contains('esre')
+                                ? 'esre'
+                                : 'esre');
+                      },
+                      child: Image.asset(
+                        'assets/elifba/${_resim.resim2}',
+                        width: 100,
+                        height: 100,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _cevapKontrol(_resim.resim3.contains(_resim.dogruCevap)
+                            ? 'otre'
+                            : _resim.resim3.contains('otre')
+                                ? 'otre'
+                                : 'otre');
+                      },
+                      child: Image.asset(
+                        'assets/elifba/${_resim.resim3}',
+                        width: 100,
+                        height: 100,
+                      ),
+                    ),
+                  ],
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                OyunSinifi(user: widget.user)));
-                  },
-                  leading: Icon(Icons.extension),
-                  title: Text(
-                    'Alıştırmalar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                nextIcon(),
+              ],
+            ),
+          ),
+        ),
+        drawer: SafeArea(
+          child: Container(
+            child: ListTileTheme(
+              textColor: Colors.white,
+              iconColor: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 300.0,
+                    height: 200.0,
+                    margin: const EdgeInsets.only(
+                      top: 24.0,
+                      bottom: 64.0,
+                      right: 10,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      //color: Colors.black26,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.import_contacts_sharp),
-                  title: Text(
-                    'Sureler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AyarlarPage(
-                                  letter: letter,
-                                  user: widget.user,
-                                )));
-                  },
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'Ayarlar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _showResendDialog();
-                  },
-                  leading: Icon(Icons.power_settings_new),
-                  title: Text(
-                    'Çıkış Yap',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                    user: widget.user,
+                                    letter: letter,
+                                  ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Ana Sayfa',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                    user: widget.user,
+                                  ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.play_lesson),
+                    title: Text(
+                      'Dersler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  OyunSinifi(user: widget.user)));
+                    },
+                    leading: Icon(Icons.extension),
+                    title: Text(
+                      'Alıştırmalar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {},
+                    leading: Icon(Icons.import_contacts_sharp),
+                    title: Text(
+                      'Sureler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                    letter: letter,
+                                    user: widget.user,
+                                  )));
+                    },
+                    leading: Icon(Icons.settings),
+                    title: Text(
+                      'Ayarlar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _showResendDialog();
+                    },
+                    leading: Icon(Icons.power_settings_new),
+                    title: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white54,
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
