@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "373086257887",
+    "project_id": "elifba-380711",
+    "storage_bucket": "elifba-380711.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373086257887:android:9c449706191d33d8d89f6a",
+        "android_client_info": {
+          "package_name": "com.example.elifbauygulamasi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373086257887-19loik5uctm9tr1b22r83gi428847f02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.elifbauygulamasi",
+            "certificate_hash": "ce94eef1fa76642e28a2f1498469e93121970c27"
+          }
+        },
+        {
+          "client_id": "373086257887-45ucqrtenpo87mqen3t8i3cnjekuk8dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXuytM1UvT3qmOMxnEd257TEzyZsNW7Jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373086257887-45ucqrtenpo87mqen3t8i3cnjekuk8dh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

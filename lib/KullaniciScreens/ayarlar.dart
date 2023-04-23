@@ -57,253 +57,253 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdropColor: Color(0xffad80ea),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      openScale: 1.0,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text("Ayarlar",
-              style: GoogleFonts.comicNeue(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900)),
-          backgroundColor: Color(0xFF975FD0),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(user: widget.user, letter: widget.letter)),
+              (route) => false,
+        );
+        return false; // Geri tuşu işleme alınmadı
+      },
+      child: AdvancedDrawer(
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
             ),
-          ),
-          actions: <Widget>[
-            PopupMenuButton<Options>(
-                onSelected: selectProcess,
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<Options>>[
-                      PopupMenuItem<Options>(
-                        value: Options.delete,
-                        child: Text(
-                          "Hesabı sil",
-                          style: GoogleFonts.comicNeue(
-                            //fontWeight: FontWeight.normal,
-                            //color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      PopupMenuItem<Options>(
-                        value: Options.update,
-                        child:  Text(
-                          "Güncelle",
-                          style: GoogleFonts.comicNeue(
-                            //fontWeight: FontWeight.normal,
-                            //color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ])
           ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        body: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  customSizedBox(),
-                  customSizedBox(),
-                  Text(
-                    "Hesap Bilgileri",
-                    style: GoogleFonts.comicNeue(
-                      color: Color(0xff935ccf),
-                      fontSize: 25,
-                      fontWeight: FontWeight.w900,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: Text("Ayarlar",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
                     ),
-                  ),
-                  customSizedBox(),
-                  buildNameField(),
-                  buildLastNameField(),
-                  buildUserNameField(),
-                  buildMailField(),
-                  buildPasswordField(),
-                ],
+                  );
+                },
+              ),
+            ),
+            actions: <Widget>[
+              PopupMenuButton<Options>(
+                  onSelected: selectProcess,
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<Options>>[
+                        PopupMenuItem<Options>(
+                          value: Options.delete,
+                          child: Text(
+                            "Hesabı sil",
+                            style: GoogleFonts.comicNeue(
+                              //fontWeight: FontWeight.normal,
+                              //color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem<Options>(
+                          value: Options.update,
+                          child:  Text(
+                            "Güncelle",
+                            style: GoogleFonts.comicNeue(
+                              //fontWeight: FontWeight.normal,
+                              //color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ])
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    customSizedBox(),
+                    customSizedBox(),
+                    Text(
+                      "Hesap Bilgileri",
+                      style: GoogleFonts.comicNeue(
+                        color: Color(0xff935ccf),
+                        fontSize: 25,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    customSizedBox(),
+                    buildNameField(),
+                    buildLastNameField(),
+                    buildUserNameField(),
+                    buildMailField(),
+                    buildPasswordField(),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 300.0,
-                  height: 200.0,
-                  margin: const EdgeInsets.only(
-                    top: 24.0,
-                    bottom: 64.0,
-                    right: 10,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/resim/Elif-Baa.png'),
-                      fit: BoxFit.cover,
+        drawer: SafeArea(
+          child: Container(
+            child: ListTileTheme(
+              textColor: Colors.white,
+              iconColor: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 300.0,
+                    height: 200.0,
+                    margin: const EdgeInsets.only(
+                      top: 24.0,
+                      bottom: 64.0,
+                      right: 10,
                     ),
-                    //color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage(
-                              user: widget.user,
-                              letter: letter,
-                            ))).then((value) => Navigator.pop(context));
-                  },
-                  leading: Icon(Icons.home),
-                  title: Text(
-                    'Ana Sayfa',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      //color: Colors.black26,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dersler(
-                              user: widget.user,
-                            ))).then((value) => Navigator.pop(context));
-                  },
-                  leading: Icon(Icons.play_lesson),
-                  title: Text(
-                    'Dersler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OyunSinifi(user: user,)));
-                  },
-                  leading: Icon(Icons.extension),
-                  title: Text(
-                    'Alıştırmalar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.import_contacts_sharp),
-                  title: Text(
-                    'Sureler',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AyarlarPage(
-                              letter: letter,
-                              user: widget.user,
-                            )));
-                  },
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'Ayarlar',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _showResendDialogg();
-                  },
-                  leading: Icon(Icons.power_settings_new),
-                  title: Text(
-                    'Çıkış Yap',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                user: widget.user,
+                                letter: letter,
+                              ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Ana Sayfa',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                user: widget.user,
+                                letter: widget.letter,
+
+                              ))).then((value) => Navigator.pop(context));
+                    },
+                    leading: Icon(Icons.play_lesson),
+                    title: Text(
+                      'Dersler',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(user: user,letter: widget.letter,)));
+                    },
+                    leading: Icon(Icons.extension),
+                    title: Text(
+                      'Alıştırmalar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                letter: letter,
+                                user: widget.user,
+                              )));
+                    },
+                    leading: Icon(Icons.settings),
+                    title: Text(
+                      'Ayarlar',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _showResendDialogg();
+                    },
+                    leading: Icon(Icons.power_settings_new),
+                    title: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white54,
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

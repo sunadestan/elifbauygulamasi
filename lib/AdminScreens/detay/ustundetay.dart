@@ -27,11 +27,13 @@ class UstunPage extends StatefulWidget {
       required this.letter,
       required this.user,
       required this.deneme,
-      required this.harf})
+        required this.denemeiki,
+        required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
+  final int denemeiki;
   final Harfharake harf;
   @override
   State<UstunPage> createState() => _UstunPageState(harf);
@@ -279,6 +281,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                           builder: (context) => AdminPage(
                                 user: widget.user,
                                 deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
                               )),
                     );
                   },
@@ -300,7 +303,9 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                           builder: (context) => ListeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                              )),
+                            denemeiki: widget.denemeiki,
+
+                          )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -321,7 +326,9 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                           builder: (context) => HarfeklemeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                              )),
+                            denemeiki: widget.denemeiki,
+
+                          )),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -513,6 +520,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
                             builder: (context) => UstunListePage(
                                   user: widget.user,
                                   deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
@@ -708,6 +716,7 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
           builder: (context) => UstunListePage(
                 user: widget.user,
                 deneme: widget.deneme,
+            denemeiki: widget.denemeiki,
               )),
     );
     setState(() {});

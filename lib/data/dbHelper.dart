@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import '../models/forget.dart';
 import '../models/harf.dart';
 import '../models/harfharake.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 
-class DbHelper {
+class DbHelper{
+
   static final DbHelper dbProvider = DbHelper();
   Database? _db;
 
@@ -45,7 +47,7 @@ class DbHelper {
 
   void createDb(Database db, int version) async {
     await db.execute(
-        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER DEFAULT = 0)''');
+        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER)''');
     await db.execute(
         '''CREATE TABLE letters(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, annotation TEXT, image_path BLOB, music_path BLOB)''');
     await db.execute(
@@ -53,6 +55,47 @@ class DbHelper {
     await db.execute(
         '''CREATE TABLE harflerharake(id INTEGER PRIMARY KEY AUTOINCREMENT, harfharakename TEXT, 
         harfharakeannotation TEXT, harfharakeimage_path BLOB, harfharakemusic_path BLOB,harfTur INT)''');
+    await db.execute(
+        '''CREATE TABLE sureler(id INTEGER PRIMARY KEY AUTOINCREMENT, sureadi TEXT, 
+        sureanlami TEXT,sureanlamiarapca TEXT,suremusic_path BLOB,hangisure INT)''');
+  }
+
+  Future<int?> insertResetCode(int userId, String resetCode) async {
+    Database? db = await this.db;
+    var result = await db?.update(
+      "users",
+      {"reset_code": resetCode},
+      where: "id = ?",
+      whereArgs: [userId],
+    );
+    return result;
+  }
+  Future<void> insertForgotPassword(ForgotPassword forgotPassword) async {
+    Database? db = await this.db;
+    await db.insert('users',
+      forgotPassword.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+  Future<ForgotPassword?> getForgotPassword(String email) async {
+    Database? db = await this.db;
+    final maps = await db.query('users',
+      where: '$email = ?',
+      whereArgs: [email],
+    );
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return ForgotPassword.fromMap(maps.first);
+  }
+  Future<void> deleteForgotPassword(String email) async {
+    Database? db = await this.db;
+    await db.delete(
+      'users',
+      where: '$email = ?',
+      whereArgs: [email],
+    );
   }
 
   Future<List<Harfharake>> getHarfharake() async {

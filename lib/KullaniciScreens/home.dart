@@ -80,12 +80,50 @@ class _HomeState extends State<HomePage> {
               ),
             ),
           ),
-          body: Center(
+          body: Container(
             child: Container(
-              child: Column(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/homee.jpg"),
+                  colorFilter: ColorFilter.mode(
+                      Colors.white.withOpacity(0.5), BlendMode.darken),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
                 children: [
-                  customSizedBox(),
-                  _title(),
+                  Positioned(
+                    child: _title(),
+                    top: 20,
+                    left: 30,
+                    right: 30,
+                  ),
+                  Positioned(
+                    child: not(),
+                    top: 100,
+                    left: 30,
+                    right: 30,
+                  ),
+                  Positioned(
+                    child: birinciListe(),
+                    top: 360,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: ikinciListe(),
+                    top: 430,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: ucuncuListe(),
+                    top: 500,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: dorduncuListe(),
+                    top: 570,
+                    left: 100,
+                  ),
                 ],
               ),
             ),
@@ -144,7 +182,9 @@ class _HomeState extends State<HomePage> {
                           MaterialPageRoute(
                               builder: (context) => Dersler(
                                     user: widget.user,
-                                  ))).then((value) => Navigator.pop(context));
+                                letter: widget.letter,
+
+                              ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -161,23 +201,11 @@ class _HomeState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user))).then((value) => Navigator.pop(context));
+                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
                       'Alıştırmalar',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {},
-                    leading: Icon(Icons.import_contacts_sharp),
-                    title: Text(
-                      'Sureler',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -247,6 +275,229 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
+  Widget not() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+      decoration: BoxDecoration(
+        //color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+        gradient: LinearGradient(
+          colors: [Color(0xffbea1ea), Color(0xffad80ea)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              'Hoş Geldin'+" "+'${widget.user.name}',
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              'Bu uygulama ile Kuran harflerini öğrenirken çok eğleneceksin! '
+                  'Harfleri öğrenmek için derslere girebilir, oyunlar oynayabilir, eşleştirme yapabilir veya sorular çözebilirsin.',
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Center(
+            child: Text(
+              textAlign: TextAlign.center,
+             'Hadi Başlayalım...',
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget birinciListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Dersler(
+                      user: widget.user,
+                      letter: widget.letter,
+                    )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Dersler',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget ikinciListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => OyunSinifi(
+                      user: widget.user,
+                      letter: widget.letter,
+                    )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Alıştırmalar',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget ucuncuListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Sureler',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget dorduncuListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AyarlarPage(
+                      user: widget.user,
+                      letter: widget.letter,
+                    )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Ayarlar',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget kutu(Widget child) {
     return InkWell(

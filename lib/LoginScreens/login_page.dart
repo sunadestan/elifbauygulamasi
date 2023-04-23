@@ -44,13 +44,23 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: height * .20,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage("assets/images/topImage.png")),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      height: height * .20,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage("assets/images/topImage.png"),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 60,
+                      left: 0,
+                      child: logo(),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 0),
@@ -104,11 +114,9 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                         SizedBox(
                           height: 10,
                         ),
-                        buildcizgi(),
                         SizedBox(
                           height: 10,
                         ),
-                        _googleButton(),
                       ],
                     ),
                   ),
@@ -268,7 +276,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-  Widget _googleButton() {
+  /*Widget _googleButton() {
     return TextButton(
       onPressed: () async {
         signIn();
@@ -312,6 +320,19 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
         ),
       ),
     );
+  }*/
+
+  Widget logo(){
+    return Container(
+      margin: EdgeInsets.only(left: 300,),
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/Diyanet.png'),
+        ),
+      ),
+    );
   }
 
   Future<void> girisYap(String x, String y) async {
@@ -333,7 +354,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AdminPage(
+                builder: (context) => AdminPage(denemeiki: deneme,
                       user: result, deneme: deneme,)),
           );
         }

@@ -27,11 +27,13 @@ class EsrePage extends StatefulWidget {
       required this.letter,
       required this.user,
       required this.deneme,
+        required this.denemeiki,
       required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
+  final int denemeiki;
   final Harfharake harf;
   @override
   State<EsrePage> createState() => _EsrePageState(harf);
@@ -42,8 +44,6 @@ enum Options { delete, update }
 class _EsrePageState extends State<EsrePage> with ValidationMixin {
   late final Harfharake harfler = widget.harf;
   final _advancedDrawerController = AdvancedDrawerController();
-  late int deneme;
-
   var dbHelper = DbHelper();
 
   ImagePicker picker = ImagePicker();
@@ -279,6 +279,7 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => AdminPage(
                                 user: widget.user,
                                 deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
                               )),
                     );
                   },
@@ -300,7 +301,9 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => ListeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                              )),
+                            denemeiki: widget.denemeiki,
+
+                          )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -321,7 +324,9 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => HarfeklemeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                              )),
+                            denemeiki: widget.denemeiki,
+
+                          )),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -516,7 +521,9 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                                   deneme: widget.deneme,
                                   harf: widget.harf,
                                   letter: widget.letter,
-                                )),
+                              denemeiki: widget.denemeiki,
+
+                            )),
                       );
                     },
                     style: ButtonStyle(
@@ -604,7 +611,6 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                 border: InputBorder.none, //kenarlıkları yok eder
                 filled: true),
             validator: validateLetterName,
-            //
             onSaved: (String? value) {
               _name = value!;
             },
@@ -711,6 +717,7 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
           builder: (context) => EsreListePage(
                 user: widget.user,
                 deneme: widget.deneme,
+            denemeiki: widget.denemeiki,
               )),
     );
     setState(() {});

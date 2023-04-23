@@ -1,5 +1,4 @@
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
-import 'package:elifbauygulamasi/AdminScreens/harfekleme/harfyazilis.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfeklememen%C3%BC.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%B6treliste.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/esreliste.dart';
@@ -17,9 +16,12 @@ import 'listeler/elifbaliste.dart';
 import 'listeler/üstünliste.dart';
 
 class ListeMenu extends StatefulWidget {
-  ListeMenu({Key? key,required this.user,required this.deneme}) : super(key: key);
+  ListeMenu({Key? key, required this.user, required this.deneme, required this.denemeiki})
+      : super(key: key);
   User user;
   final int deneme;
+  final int denemeiki;
+
 
   @override
   State<ListeMenu> createState() => _ListeMenuState();
@@ -27,183 +29,249 @@ class ListeMenu extends StatefulWidget {
 
 class _ListeMenuState extends State<ListeMenu> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  var harf = Harfharake(harfharakename:"",harfharakeannotation: "",harfharakeimage_path: "",harfharakemusic_path: "");
+
+  var harf = Harfharake(
+      harfharakename: "",
+      harfharakeannotation: "",
+      harfharakeimage_path: "",
+      harfharakemusic_path: "");
   final _advancedDrawerController = AdvancedDrawerController();
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
-      backdropColor: Color(0xffad80ea),
-      controller: _advancedDrawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      openScale: 1.0,
-      disabledGestures: false,
-      childDecoration: const BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 0.0,
-          ),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Harfleri Görüntül",
-              style: GoogleFonts.comicNeue(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900)),
-          backgroundColor: Color(0xFF975FD0),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AdminPage(
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  denemeiki:widget.denemeiki
+                  )),
+          (route) => false,
+        );
+        return false; // Geri tuşu işleme alınmadı
+      },
+      child: AdvancedDrawer(
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
             ),
-          ),
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        body: Container(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/resim/arkaplan.jpg"),
-                colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.darken),
-                fit: BoxFit.cover,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Harfleri Listele",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
+                    ),
+                  );
+                },
               ),
             ),
-            child: Stack(
-              children: [
-                Positioned(child: _title(),top: 40,left: 30,right: 30,),
-                Positioned(child: birinciListe(),top: 200,left: 100,),
-                Positioned(child: ikinciListe(),top: 270,left: 100,),
-                Positioned(child: ucuncuListe(),top: 340,left: 100,),
-                Positioned(child: dorduncuListe(),top: 410,left: 100,),
-                Positioned(child: besinciListe(),top: 480,left: 100,),
-              ],
+          ),
+          body: Container(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/home.jpg"),
+                  colorFilter: ColorFilter.mode(
+                      Colors.white.withOpacity(0.5), BlendMode.darken),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: _title(),
+                    top: 40,
+                    left: 30,
+                    right: 30,
+                  ),
+                  Positioned(
+                    child: birinciListe(),
+                    top: 200,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: ikinciListe(),
+                    top: 270,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: ucuncuListe(),
+                    top: 340,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: dorduncuListe(),
+                    top: 410,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: besinciListe(),
+                    top: 480,
+                    left: 100,
+                  ),
+
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 300.0,
-                  height: 200.0,
-                  margin: const EdgeInsets.only(
-                    top: 24.0,
-                    bottom: 64.0,
-                    right: 10,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/resim/Elif-Baa.png'),
-                      fit: BoxFit.cover,
+        drawer: SafeArea(
+          child: Container(
+            child: ListTileTheme(
+              textColor: Colors.white,
+              iconColor: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 300.0,
+                    height: 200.0,
+                    margin: const EdgeInsets.only(
+                      top: 24.0,
+                      bottom: 64.0,
+                      right: 10,
                     ),
-                    //color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                ),ListTile(
-                  onTap: ()  {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>AdminPage(user:widget.user,deneme: widget.deneme,)),
-                  );},
-                  leading: Icon(Icons.home),
-                  title: Text(
-                    'Ana Sayfa',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        fit: BoxFit.cover,
+                      ),
+                      //color: Colors.black26,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                ),
-                ListTile(
-                  onTap: ()  {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
-                    );},
-                  leading: Icon(Icons.list),
-                  title: Text(
-                    'Harfleri Listele',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
-                    );
-                  },
-                  leading: Icon(Icons.add),
-                  title:Text(
-                    'Harf Ekle',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _showResendDialogg();
-                  },
-                  leading: Icon(Icons.power_settings_new),
-                  title: Text(
-                    'Çıkış Yap',
-                    style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child:Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdminPage(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                denemeiki:widget.denemeiki
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Ana Sayfa',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.list),
+                    title: Text(
+                      'Harfleri Listele',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.add),
+                    title: Text(
+                      'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _showResendDialogg();
+                    },
+                    leading: Icon(Icons.power_settings_new),
+                    title: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white54,
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -227,12 +295,16 @@ class _ListeMenuState extends State<ListeMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ListePage(user:widget.user,deneme: widget.deneme,)),
+                MaterialPageRoute(
+                    builder: (context) => ListePage(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                        )),
               );
-
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ' Elif Ba',
@@ -249,6 +321,7 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
   Widget ikinciListe() {
     return Container(
       width: 200,
@@ -265,11 +338,16 @@ class _ListeMenuState extends State<ListeMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UstunListePage(user: widget.user,deneme:widget.deneme,)),
+                MaterialPageRoute(
+                    builder: (context) => UstunListePage(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                        )),
               );
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ' Üstün',
@@ -286,6 +364,7 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
   Widget ucuncuListe() {
     return Container(
       width: 200,
@@ -302,11 +381,16 @@ class _ListeMenuState extends State<ListeMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>EsreListePage(user:widget.user, deneme: widget.deneme,)),
+                MaterialPageRoute(
+                    builder: (context) => EsreListePage(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                        )),
               );
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ' Esre',
@@ -323,6 +407,7 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
   Widget dorduncuListe() {
     return Container(
       width: 200,
@@ -339,11 +424,16 @@ class _ListeMenuState extends State<ListeMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>OtreListePage(user:widget.user, deneme: widget.deneme,)),
+                MaterialPageRoute(
+                    builder: (context) => OtreListePage(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                        )),
               );
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ' Ötre',
@@ -360,6 +450,7 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
   Widget besinciListe() {
     return Container(
       width: 200,
@@ -376,11 +467,16 @@ class _ListeMenuState extends State<ListeMenu> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>HarfYazilisListePage(user:widget.user,deneme: widget.deneme,)),
+                MaterialPageRoute(
+                    builder: (context) => HarfYazilisListePage(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                        )),
               );
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   ' Harflerin Yazılışı',
@@ -397,12 +493,11 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
-
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'HARF ',
+          text: 'HARFLERİ ',
           style: GoogleFonts.comicNeue(
             fontSize: 38,
             fontWeight: FontWeight.w900,
@@ -421,13 +516,15 @@ class _ListeMenuState extends State<ListeMenu> {
               style: GoogleFonts.comicNeue(
                 color: Color(0xff935ccf),
                 fontSize: 38,
-                fontWeight: FontWeight.w900,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(3.0, 3.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w900,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(3.0, 3.0),
+                  ),
+                ],
+              ),
             ),
           ]),
     );
@@ -473,7 +570,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -486,11 +583,14 @@ class _ListeMenuState extends State<ListeMenu> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -508,11 +608,9 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
 }
-
-
-

@@ -21,7 +21,8 @@ class ResimEslestirme extends StatefulWidget {
   _ResimEslestirmeState createState() => _ResimEslestirmeState();
 }
 
-class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderStateMixin {
+class _ResimEslestirmeState extends State<ResimEslestirme>
+    with TickerProviderStateMixin {
   int seciliIndex = -1;
   int skor = 0;
   bool tappingDisabled = false;
@@ -66,7 +67,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
     'assets/elifba/sad.png',
     'assets/elifba/dad.png',
     'assets/elifba/dad.png',
-
     'assets/elifba/ta.png',
     'assets/elifba/ta.png',
     'assets/elifba/za.png',
@@ -192,9 +192,10 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Bu oyunda...",
+                  "Bu oyunda harflerin hepsini göreceğiz ve onları eşleştirmeye çalışacağız. "
+                      "Oyunun en zor seviyesi budur. İyi eğlenceler!",
                   style: GoogleFonts.comicNeue(
-                    fontSize:18,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -206,27 +207,29 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                 SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OyunSinifi(
+                                      user: widget.user,
+                                      letter: widget.letter,
+                                    ))).then((value) => Navigator.pop(context));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Çıkış Yap',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
                       ),
                     ),
-                  ),
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -255,16 +258,20 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
         _timer.cancel();
-        bool exit =await Navigator.pushAndRemoveUntil(
+        togglePause();
+        pause();
+        bool exit = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user)),
-                (route) => false);
+            MaterialPageRoute(
+                builder: (context) => OyunSinifi(
+                      user: widget.user,
+                      letter: letter,
+                    )));
         return exit;
       },
       child: AdvancedDrawer(
@@ -311,10 +318,16 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OyunSinifi(
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Column(
@@ -349,15 +362,20 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                                     _showDialogg();
                                   }
                                 } else {
-                                  tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
+                                  tappingDisabled =
+                                      true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
                                   gizliResimler[index] = resimler[index];
                                   Timer(Duration(milliseconds: 500), () {
-                                    if (seciliIndex != -1 && seciliIndex != -2) {
+                                    if (seciliIndex != -1 &&
+                                        seciliIndex != -2) {
                                       if (index != seciliIndex) {
-                                        gizliResimler[index] = 'assets/resim/Elif.png';
-                                        gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
+                                        gizliResimler[index] =
+                                            'assets/resim/Elif.png';
+                                        gizliResimler[seciliIndex] =
+                                            'assets/resim/Elif.png';
                                         seciliIndex = -1;
-                                        tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
+                                        tappingDisabled =
+                                            false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
                                         setState(() {});
                                       }
                                     }
@@ -374,8 +392,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                             width: 150,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border:
-                                  Border.all(color: Color(0xffbea1ea), width: 2),
+                              border: Border.all(
+                                  color: Color(0xffbea1ea), width: 2),
                             ),
                             child: Image.asset(
                               gizliResimler[index],
@@ -393,7 +411,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                 style: GoogleFonts.comicNeue(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-
                 ),
               ),
             ],
@@ -427,14 +444,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage(
-                                    user: widget.user,
-                                    letter: letter,
-                                  ))).then((value) => Navigator.pop(context));
                       togglePause();
+                      _cikmakistiyorMusunuzbir();
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -448,13 +459,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Dersler(
-                                    user: widget.user,
-                                  ))).then((value) => Navigator.pop(context));
                       togglePause();
+                      _cikmakistiyorMusunuziki();
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -468,11 +474,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user)));
                       togglePause();
+                      _cikmakistiyorMusunuzuc();
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -485,27 +488,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                     ),
                   ),
                   ListTile(
-                    onTap: () {},
-                    leading: Icon(Icons.import_contacts_sharp),
-                    title: Text(
-                      'Sureler',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AyarlarPage(
-                                    letter: letter,
-                                    user: widget.user,
-                                  )));
                       togglePause();
+                      _cikmakistiyorMusunuzdort();
                     },
                     leading: Icon(Icons.settings),
                     title: Text(
@@ -519,6 +504,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   ),
                   ListTile(
                     onTap: () {
+                      togglePause();
                       _showResendDialog();
                     },
                     leading: Icon(Icons.power_settings_new),
@@ -560,15 +546,15 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
     );
   }
 
-
-  Widget row(){
+  Widget row() {
     return Row(
       children: [
-            timer(),
-            _title(),
+        timer(),
+        _title(),
       ],
     );
-}
+  }
+
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -576,7 +562,10 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       child: Row(
         children: [
           GestureDetector(
-            onTap: togglePause,
+            onTap: () {
+              togglePause();
+              pause();
+            },
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -621,6 +610,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -644,13 +634,15 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Harfler ',
@@ -690,6 +682,98 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
         height: 20,
       );
 
+  void pause() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Oyun Durdu!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(
+                                  user: widget.user, letter: widget.letter)),
+                          (route) => false);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Devam Et',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -727,10 +811,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      togglePause();
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -743,12 +828,14 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -766,6 +853,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+
   void _showDialog() {
     showDialog(
       context: context,
@@ -790,7 +878,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
-              ), SizedBox(height: 16),
+              ),
+              SizedBox(height: 16),
               Text(
                 textAlign: TextAlign.center,
                 "Oyunu yeniden başlatmak ister misiniz?",
@@ -798,7 +887,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   color: Colors.black,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-
                 ),
               ),
               SizedBox(height: 24),
@@ -816,8 +904,9 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -835,10 +924,10 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _secondsLeft=120;
+                      _secondsLeft = 120;
                       startTimer();
                       reset();
-                      skor=0;
+                      skor = 0;
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -860,6 +949,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+
   void _showDialogg() {
     showDialog(
       context: context,
@@ -884,7 +974,8 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
-              ), SizedBox(height: 16),
+              ),
+              SizedBox(height: 16),
               Text(
                 textAlign: TextAlign.center,
                 'Tüm harfleri eşleştirdiniz!',
@@ -909,12 +1000,13 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Çıkış Yap',
@@ -931,7 +1023,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
                       _secondsLeft = 120;
                       startTimer();
                       reset();
-                      skor=0;
+                      skor = 0;
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -953,6 +1045,431 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+
+  void _cikmakistiyorMusunuzbir() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                    user: widget.user,
+                                    letter: letter,
+                                  )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _cikmakistiyorMusunuziki() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                  ))).then((value) => Navigator.pop(context));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _cikmakistiyorMusunuzuc() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                  )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _cikmakistiyorMusunuzdort() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                    letter: letter,
+                                    user: widget.user,
+                                  )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
@@ -964,6 +1481,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
     _animationController.dispose();
     super.dispose();
   }
+
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
@@ -980,6 +1498,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       ),
     );
   }
+
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -996,11 +1515,13 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       });
     }
   }
+
   void liste() {
     setState(() {
       resimler.shuffle(Random());
     });
   }
+
   void reset() {
     setState(() {
       resimler.shuffle();
@@ -1009,6 +1530,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme> with TickerProviderSt
       eslesmeTamamlandi = false;
     });
   }
+
   IconData getIcon() {
     if (_isPaused) {
       return Icons.hourglass_empty;

@@ -27,11 +27,13 @@ class OtrePage extends StatefulWidget {
         required this.letter,
         required this.user,
         required this.deneme,
+        required this.denemeiki,
         required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
+  final int denemeiki;
   final Harfharake harf;
   @override
   State<OtrePage> createState() => _OtrePageState(harf);
@@ -279,6 +281,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                           builder: (context) => AdminPage(
                             user: widget.user,
                             deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
                           )),
                     );
                   },
@@ -300,6 +303,8 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                           builder: (context) => ListeMenu(
                             user: widget.user,
                             deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
+
                           )),
                     );
                   },
@@ -321,6 +326,8 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                           builder: (context) => HarfeklemeMenu(
                             user: widget.user,
                             deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
+
                           )),
                     );
                   },
@@ -513,6 +520,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                             builder: (context) => OtreListePage(
                               user: widget.user,
                               deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
                             )),
                       );
                     },
@@ -708,6 +716,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
           builder: (context) => OtreListePage(
             user: widget.user,
             deneme: widget.deneme,
+            denemeiki: widget.denemeiki,
           )),
     );
     setState(() {});

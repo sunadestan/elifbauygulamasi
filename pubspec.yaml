@@ -74,6 +74,8 @@ dev_dependencies:
   charts_flutter:
   assets_audio_player:
   flutter_neumorphic:
+  firebase_auth:
+  firebase_core:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -88,6 +90,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+      - assets/images/Diyanet.png
       - assets/images/topImage.png
       - assets/images/baykus.png
       - assets/images/erkek.png
@@ -106,7 +109,10 @@ flutter:
       - assets/images/baloniki.jpg
       - assets/images/renkli.jpg
       - assets/images/sade.jpg
+      - assets/images/home.jpg
+      - assets/images/homee.jpg
       - assets/resim/n.png
+      - assets/resim/mavilmorlu.jpg
       - assets/resim/kitap.png
       - assets/resim/1.png
       - assets/resim/2.png

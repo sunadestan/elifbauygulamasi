@@ -230,7 +230,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
         bool exit = await Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) => OyunSinifi(user: widget.user)),
+                builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)),
             (route) => false);
         return exit;
       },
@@ -278,7 +278,8 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
+                        OyunSinifi(user: widget.user,letter: widget.letter,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -370,7 +371,9 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           MaterialPageRoute(
                               builder: (context) => Dersler(
                                     user: widget.user,
-                                  ))).then((value) => Navigator.pop(context));
+                                letter: widget.letter,
+
+                              ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -388,23 +391,11 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  OyunSinifi(user: widget.user)));
+                                  OyunSinifi(user: widget.user,letter: widget.letter,)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
                       'Alıştırmalar',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {},
-                    leading: Icon(Icons.import_contacts_sharp),
-                    title: Text(
-                      'Sureler',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -854,7 +845,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: widget.user,
+                                    user: widget.user,letter: widget.letter,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -948,7 +939,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: widget.user,
+                                    user: widget.user,letter: widget.letter,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -1054,7 +1045,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => OyunSinifi(
-                                      user: widget.user,
+                                      user: widget.user,letter: widget.letter,
                                     ))).then((value) => Navigator.pop(context));
                       },
                       style: ButtonStyle(

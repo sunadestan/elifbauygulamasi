@@ -1,18 +1,17 @@
 import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
-import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/dbHelper.dart';
-import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'harfeklememenü.dart';
 import 'listemenü.dart';
 
 class AdminPage extends StatefulWidget {
-  AdminPage({Key? key, required this.user,required this.deneme}) : super(key: key);
+  AdminPage({Key? key, required this.user,required this.deneme,required this.denemeiki}) : super(key: key);
   final user;
   final int deneme;
+  final int denemeiki;
 
   @override
   State<AdminPage> createState() => _AdminState();
@@ -84,12 +83,36 @@ class _AdminState extends State<AdminPage> {
               ),
             ),
           ),
-          body: Center(
-            child: Column(
-              children: [
-                customSizedBox(),
-                _title(),
-              ],
+          body: Container(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/home.jpg"),
+                  colorFilter: ColorFilter.mode(
+                      Colors.white.withOpacity(0.5), BlendMode.darken),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: _title(),
+                    top: 40,
+                    left: 30,
+                    right: 30,
+                  ),
+                  Positioned(
+                    child: birinciListe(),
+                    top: 200,
+                    left: 100,
+                  ),
+                  Positioned(
+                    child: ikinciListe(),
+                    top: 270,
+                    left: 100,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -119,25 +142,11 @@ class _AdminState extends State<AdminPage> {
                       shape: BoxShape.circle,
                     ),
                   ),
-                 /* ListTile(
-                    onTap: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> AdminPage(user:widget.user,deneme: widget.deneme,)), (route) => false);
-                    },
-                    leading: Icon(Icons.home),
-                    title: Text(
-                      'Ana Sayfa',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),*/
                   ListTile(
                     onTap: ()  {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,denemeiki: widget.denemeiki,)),
                       );},
                     leading: Icon(Icons.list),
                     title: Text(
@@ -153,7 +162,7 @@ class _AdminState extends State<AdminPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki:widget.denemeiki,user: widget.user,deneme: widget.deneme,)),
                       );
                     },
                     leading: Icon(Icons.add),
@@ -205,6 +214,91 @@ class _AdminState extends State<AdminPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget birinciListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ListeMenu(
+                      user: widget.user,
+                      deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                    )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Harfleri Listele',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget ikinciListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HarfeklemeMenu(
+                      user: widget.user,
+                      deneme: widget.deneme,
+                        denemeiki:widget.denemeiki
+                    )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  ' Harf Ekle',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

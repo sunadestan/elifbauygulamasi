@@ -4,33 +4,34 @@ import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../LoginScreens/login_page.dart';
-import '../data/dbHelper.dart';
-import '../models/letter.dart';
+import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../models/user.dart';
-import 'admin.dart';
-import 'harfekleme/harfekle.dart';
-import 'harfeklememenü.dart';
-import 'listeler/elifbaliste.dart';
+import '../../models/user.dart';
+import '../admin.dart';
+import '../harfeklememenü.dart';
+import '../listeler/elifbaliste.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'listemenü.dart';
+import '../listemenü.dart';
 
 class DetayPage extends StatefulWidget {
   DetayPage(
       {Key? key,
       required this.letter,
       required this.user,
+        required this.denemeiki,
       required this.deneme})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
+  final int denemeiki;
   @override
   State<DetayPage> createState() => _DetayPageState(letter);
 }
@@ -276,6 +277,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => AdminPage(
                                   user: widget.user,
                                   deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
@@ -297,6 +299,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => ListeMenu(
                                   user: widget.user,
                                   deneme: deneme,
+                              denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
@@ -318,6 +321,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => HarfeklemeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
@@ -467,7 +471,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Hesabı kalıcı olarak silmek istediğinize emin misiniz?",
+                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
@@ -510,6 +514,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => ListePage(
                                   user: widget.user,
                                   deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
@@ -703,6 +708,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
           builder: (context) => ListePage(
                 user: widget.user,
                 deneme: widget.deneme,
+            denemeiki: widget.denemeiki,
               )),
     );
     setState(() {});

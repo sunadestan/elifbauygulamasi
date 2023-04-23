@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:elifbauygulamasi/data/dbHelper.dart';
 import 'package:elifbauygulamasi/LoginScreens/code.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
@@ -7,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../models/user.dart';
 
 
 void main() {}
@@ -99,12 +103,11 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   }
   Widget _submitButton() {
     return TextButton(
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const CodePage()));
-        }
+          sendResetCode(_email);
+          }
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 75,),
@@ -137,18 +140,6 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
         ),
       ),
     );
-  }
-
-  Future<void> mailGonder(String x) async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      var result = await dbHelper.checkEmail(x);
-      if (result != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const CodePage()));
-      } else {
-        print("Mail Bulunamadı");
-      }
-    }
   }
 
   Widget buildForgetPasswordField() {
@@ -238,4 +229,66 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
     super.debugFillProperties(properties);
     properties.add(StringProperty('_email', _email));
   }
+
+  final smtpServer = SmtpServer('smtp.gmail.com',
+      username: 'sunsumeyyedestan@gmail.com',
+      password: 'my_password',
+      port: 587);
+
+  String generateResetCode() {
+    final random = Random.secure();
+    final code = List.generate(6, (i) => random.nextInt(10)).join();
+    return code;
+  }
+
+  Future<void> sendResetCode(String email) async {
+    final user = await getUserByEmail(email);
+    if (user == null) {
+      final user = await getUserByEmail(_emailController.text);
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Bu e-posta adresine sahip kullanıcı bulunamadı.'),
+        ));
+        return;
+      } else {
+        await sendResetCode(_emailController.text);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Şifre sıfırlama kodu e-posta olarak gönderildi.'),
+        ));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const CodePage()));
+        return;
+      }
+    }
+
+    final resetCode = generateResetCode();
+    await insertResetCode(user.id!, resetCode);
+
+    final message = Message()
+      ..from = Address('sunasumeyyedestan@gmail.com', 'suna')
+      ..recipients.add(user.email)
+      ..subject = 'Şifrenizi sıfırlama talebi'
+      ..text = 'Şifrenizi sıfırlamak için aşağıdaki kodu kullanabilirsiniz: $resetCode';
+
+    await sendMessaage(message, smtpServer);
+  }
+
+  Future<User?> getUserByEmail(String email) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      var result = await dbHelper.checkEmail(email);
+      if (result != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const CodePage()));
+      } else {
+        print("Mail Bulunamadı");
+      }
+    }
+  }
+  Future<void> insertResetCode(int userId, String resetCode) async {
+    await dbHelper.insertResetCode(userId, resetCode);
+  }
+  Future<void> sendMessaage(Message message, SmtpServer smtpServer) async {
+    await send(message, smtpServer);
+  }
+
 }
+

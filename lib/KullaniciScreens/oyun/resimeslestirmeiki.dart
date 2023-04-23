@@ -136,7 +136,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Bu oyunda...",
+                  "Bu oyunda Hraflerin ilk yarısını göreceğiz ve onları eşleştirmeye çalışacağız. İyi eğlenceler!",
                   style: GoogleFonts.comicNeue(
                     fontSize:18,
                     fontWeight: FontWeight.w600,
@@ -156,7 +156,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
+                                user: widget.user,letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -205,7 +205,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
         _timer.cancel();
         bool exit =await Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user)),
+            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)),
                 (route) => false);
         return exit;
       },
@@ -253,7 +253,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> OyunSinifi(user: widget.user)), (route) => false);
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
+                        OyunSinifi(user: widget.user,letter: widget.letter,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -371,14 +372,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: letter,
-                              ))).then((value) => Navigator.pop(context));
                       togglePause();
+                      _cikmakistiyorMusunuzbir();
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -392,13 +387,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Dersler(
-                                user: widget.user,
-                              ))).then((value) => Navigator.pop(context));
                       togglePause();
+                      _cikmakistiyorMusunuziki();
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -412,11 +402,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user)));
                       togglePause();
+                      _cikmakistiyorMusunuzuc();
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -429,27 +416,9 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                     ),
                   ),
                   ListTile(
-                    onTap: () {},
-                    leading: Icon(Icons.import_contacts_sharp),
-                    title: Text(
-                      'Sureler',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AyarlarPage(
-                                letter: letter,
-                                user: widget.user,
-                              )));
                       togglePause();
+                      _cikmakistiyorMusunuzdort();
                     },
                     leading: Icon(Icons.settings),
                     title: Text(
@@ -463,6 +432,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   ),
                   ListTile(
                     onTap: () {
+                      togglePause();
                       _showResendDialog();
                     },
                     leading: Icon(Icons.power_settings_new),
@@ -513,6 +483,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ],
     );
   }
+
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -520,7 +491,10 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       child: Row(
         children: [
           GestureDetector(
-            onTap: togglePause,
+            onTap: () {
+              togglePause();
+              pause();
+            },
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -565,6 +539,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -671,6 +646,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      togglePause();
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -759,7 +735,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
+                                user: widget.user,letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -853,7 +829,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
+                                user: widget.user,letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -898,7 +874,520 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
       ),
     );
   }
+  void pause() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Oyun Durdu!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(
+                                  user: widget.user, letter: widget.letter)),
+                              (route) => false);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Devam Et',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  void _cikmakistiyorMusunuzbir() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                user: widget.user,
+                                letter: letter,
+                              )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
+  void _cikmakistiyorMusunuziki() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Dersler(
+                                user: widget.user,
+                                letter: widget.letter,
+                              ))).then((value) => Navigator.pop(context));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _cikmakistiyorMusunuzuc() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OyunSinifi(
+                                user: widget.user,
+                                letter: widget.letter,
+                              )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _cikmakistiyorMusunuzdort() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Oyundan Çıkış Yapmak İstediğinize Emin Misiniz?',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skorunuz Sıfırlanıcaktır!',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                'Skor: ${skor}  Kalan Süre:  ${_pausedTime}',
+                style: GoogleFonts.comicNeue(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      togglePause();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'İptal',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AyarlarPage(
+                                letter: letter,
+                                user: widget.user,
+                              )));
+                      togglePause();
+                      _timer.cancel();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Çıkış Yap',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
