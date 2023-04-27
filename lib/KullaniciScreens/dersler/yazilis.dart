@@ -32,7 +32,8 @@ class _kullaniciHarfleryazilis extends State<kullaniciHarfleryazilis> {
   final _advancedDrawerController = AdvancedDrawerController();
   //var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   //var Harf =Harfharake(harfharakename: "",harfharakeannotation: "",harfharakeimage_path: "",harfharakemusic_path: "",);
-  var user = User("", "", "", "", "", "", "", isadmin: 0);
+  var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
+
   late Future<List<Harf>> _lettersFuture;
   var dbHelper = DbHelper();
   AudioPlayer audioPlayer = AudioPlayer();
@@ -134,7 +135,7 @@ class _kullaniciHarfleryazilis extends State<kullaniciHarfleryazilis> {
                           height: double.infinity,
                           width: double.infinity,
                           child: GridView.count(
-                            crossAxisCount: 4,
+                            crossAxisCount: 3,
                             childAspectRatio: 0.8,
                             children: List.generate(
                               letters!.length,
@@ -336,6 +337,7 @@ class _kullaniciHarfleryazilis extends State<kullaniciHarfleryazilis> {
       children: [
         InkWell(
           onTap: () async {
+            _showResendDialog(harf);
             await _loadAudio();
             if (_isPlaying) {
               await _pause();
@@ -349,7 +351,6 @@ class _kullaniciHarfleryazilis extends State<kullaniciHarfleryazilis> {
                 _isPlaying = true;
               });
             }
-            _showResendDialog(harf);
           },
           child: Container(
             alignment: Alignment.center,

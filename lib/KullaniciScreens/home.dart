@@ -114,14 +114,10 @@ class _HomeState extends State<HomePage> {
                     top: 430,
                     left: 100,
                   ),
-                  Positioned(
-                    child: ucuncuListe(),
-                    top: 500,
-                    left: 100,
-                  ),
+
                   Positioned(
                     child: dorduncuListe(),
-                    top: 570,
+                    top: 500,
                     left: 100,
                   ),
                 ],

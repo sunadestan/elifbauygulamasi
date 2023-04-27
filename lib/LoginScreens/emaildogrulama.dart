@@ -1,35 +1,44 @@
+import 'package:elifbauygulamasi/LoginScreens/register.dart';
+import 'package:elifbauygulamasi/data/dbHelper.dart';
+import 'package:flutter/cupertino.dart';
 import 'dart:math';
-import 'package:elifbauygulamasi/LoginScreens/forgetpassword.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:elifbauygulamasi/reset/Deneme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
-import '../data/dbHelper.dart';
+import '../models/user.dart';
 import 'login_page.dart';
 
-class CodePage extends StatefulWidget {
+class MailDogrulama extends StatefulWidget {
   final String email;
   final String kod;
-  CodePage({required this.email, required this.kod});
+  final User user;
+  MailDogrulama({
+    Key? key,
+    required this.email,
+    required this.kod,
+    required this.user,
+  }) : super(key: key);
 
   @override
-  State<CodePage> createState() => _CodeState();
+  State<MailDogrulama> createState() => _MailDogrulamaState();
 }
 
-class _CodeState extends State<CodePage> with ValidationMixin {
+class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController codeController = TextEditingController();
+  var codeController = TextEditingController();
+  var dbhelper = DbHelper();
   bool _isLoading = false;
   var deneme = ResetPasswordPageUser();
   final int _initialSeconds = 120; // başlangıç süresini 2 dakikaya ayarla
   int _secondsRemaining = 120;
   late Timer _timer;
   late int zaman = 0;
+
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
@@ -61,7 +70,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                   height: 25,
                 ),
                 Text(
-                  'Şifre sıfırlama kodu e-posta adresinize gönderildi.',
+                  'Mail doğrulama kodu e-posta adresinize gönderildi.',
                   style: GoogleFonts.comicNeue(
                     fontSize: 16,
                     color: Color(0xff935ccf),
@@ -76,7 +85,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                     keyboardType: TextInputType.number,
                     maxLength: 6,
                     decoration: InputDecoration(
-                      labelText: 'Şifre Sıfırlama Kodu',
+                      labelText: 'Mail doğrulama kodu',
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -182,10 +191,9 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()));
+                      _timer.cancel();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -203,7 +211,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _startTimer();
+                      initState();
                       sendEmail();
                     },
                     style: ButtonStyle(
@@ -227,45 +235,12 @@ class _CodeState extends State<CodePage> with ValidationMixin {
     );
   }
 
-  Widget _entryField(String title) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: kutucuk(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("6 Haneli Kodu Girin"),
-      ],
-    );
-  }
-
   Widget _backButton() {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
-        _stopTimer();
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
+        _timer.cancel();
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -300,11 +275,12 @@ class _CodeState extends State<CodePage> with ValidationMixin {
     return TextButton(
       onPressed: _isLoading
           ? null
-          : () {
+          : () async {
               if (_formKey.currentState!.validate()) {
                 if (widget.kod == codeController.text) {
+                  await dbhelper.insert(widget.user);
+                  _timer.cancel();
                   showDialog(
-                    barrierDismissible: false,
                     context: context,
                     builder: (context) => Dialog(
                       shape: RoundedRectangleBorder(
@@ -330,7 +306,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                             SizedBox(height: 16),
                             Text(
                               textAlign: TextAlign.center,
-                              'Şifre sıfırlandıi',
+                              'Mail doğrulandı',
                               style: GoogleFonts.comicNeue(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -348,16 +324,84 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                               children: [
                                 TextButton(
                                   onPressed: () {
+                                    _timer.cancel();
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => PasswordRecover(
-                                              email: widget.email,
-                                            )));
+                                            builder: (context) => LoginPage()));
                                   },
                                   style: ButtonStyle(
                                     backgroundColor:
-                                    MaterialStateProperty.all<Color>(Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                  ),
+                                  child: Text(
+                                    'Tamam',
+                                    style: GoogleFonts.comicNeue(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.lightBlueAccent,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: Colors.lightBlueAccent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Hata!',
+                              style: GoogleFonts.comicNeue(
+                                color: Colors.lightBlueAccent,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              textAlign: TextAlign.center,
+                              'Kod yanlış',
+                              style: GoogleFonts.comicNeue(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                            Divider(
+                              color: Colors.white,
+                              thickness: 2,
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    _stopTimer();
+                                    Navigator.of(context).pop();
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
                                   child: Text(
                                     'Tamam',
@@ -412,94 +456,6 @@ class _CodeState extends State<CodePage> with ValidationMixin {
     );
   }
 
-  Widget _gonderButton() {
-    return ElevatedButton(
-      child: _isLoading ? CircularProgressIndicator() : Text('Devam'),
-      onPressed: _isLoading
-          ? null
-          : () {
-              if (_formKey.currentState!.validate()) {
-                if (widget.kod == codeController.text) {
-                  showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) => Dialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: Colors.lightBlueAccent,
-                          width: 2,
-                        ),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Başarılı!',
-                              style: GoogleFonts.comicNeue(
-                                color: Colors.lightBlueAccent,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              textAlign: TextAlign.center,
-                              'Şifre sıfırlanma ekranına gidiliyor.',
-                              style: GoogleFonts.comicNeue(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 24),
-                            Divider(
-                              color: Colors.white,
-                              thickness: 2,
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    _stopTimer();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PasswordRecover(
-                                                  email: widget.email,
-                                                )));
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                  ),
-                                  child: Text(
-                                    'Tamam',
-                                    style: GoogleFonts.comicNeue(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.lightBlueAccent,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-            },
-    );
-  }
-
   void sendEmail() async {
     String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
     String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
@@ -512,13 +468,13 @@ class _CodeState extends State<CodePage> with ValidationMixin {
         .padLeft(6, '0'); // 6 haneli rastgele sayı oluştur
 
     final message = Message()
-      ..from = Address(username, 'Şifre Sıfırlama Uygulaması')
+      ..from = Address(username, 'Mail doğrulama ')
       ..recipients.add(widget.email)
-      ..subject = 'Şifre Sıfırlama İsteği'
+      ..subject = 'Mail doğrulama İsteği'
       ..text =
-          'Merhaba, şifrenizi sıfırlamak için aşağıdaki kodu kullanın: $resetCode'
+          'Merhaba , mailinizi doğrulamak için aşağıdaki kodu kullanın: $resetCode'
       ..html =
-          "<h1>Merhaba</h1>\n<p>Şifrenizi sıfırlamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
+          "<h1>Merhaba1</h1>\n<p>Mailinizi doğrulamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
 
     try {
       final sendReport = await send(message, smtpServer);
@@ -550,7 +506,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                 SizedBox(height: 16),
                 Text(
                   textAlign: TextAlign.center,
-                  'Şifre sıfırlama bağlantısı gönderildi',
+                  'Mail doğrulama bağlantısı gönderildi',
                   style: GoogleFonts.comicNeue(
                     color: Colors.black,
                     fontSize: 15,
@@ -568,13 +524,9 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CodePage(
-                                      email: widget.email,
-                                      kod: resetCode,
-                                    )));
+                        Navigator.of(context).pop();
+                        _startTimer();
+                        _secondsRemaining = 120;
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -598,40 +550,179 @@ class _CodeState extends State<CodePage> with ValidationMixin {
     } on MailerException catch (e) {
       print('Hata: $e');
       showDialog(
+        barrierDismissible: false,
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Hata'),
-          content: Text('E-posta gönderilemedi'),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text('Tamam'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
             ),
-          ],
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata!',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'E-posta gönderilemedi.',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _timer.cancel();
+                        Navigator.of(context).pop();
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       );
     } catch (e) {
       print('Hata: $e');
       showDialog(
+        barrierDismissible: false,
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Hata'),
-          content: Text('Beklenmeyen bir hata oluştu'),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text('Tamam'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
             ),
-          ],
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata!',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Beklenmeyen bir hata oluştu.',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _timer.cancel();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
   }
 
+  /*Widget _entryField(String title) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: GoogleFonts.comicNeue(
+              color: Color(0xff935ccf),
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: kutucuk(),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _emailPasswordWidget() {
+    return Column(
+      children: <Widget>[
+        _entryField("6 Haneli Kodu Girin"),
+      ],
+    );
+  }
   List<Widget> kutucuk() {
     return List.generate(
       6,
@@ -661,195 +752,5 @@ class _CodeState extends State<CodePage> with ValidationMixin {
         ),
       ),
     );
-  }
-}
-
-class PasswordRecover extends StatefulWidget {
-  final String email;
-  PasswordRecover({Key? key, required this.email}) : super(key: key);
-
-  @override
-  State<PasswordRecover> createState() => _PasswordRecoverState();
-}
-
-class _PasswordRecoverState extends State<PasswordRecover>
-    with ValidationMixin {
-  var txtpassWord = TextEditingController();
-  var txtpassWord2 = TextEditingController();
-  var formKey = GlobalKey<FormState>();
-  var dbHelper = DbHelper();
-
-  Widget _backButton() {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ForgetPasswordPage(
-              )),
-        );
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 25,
-          vertical: 15,
-        ),
-        child: Row(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(
-                left: 0,
-                top: 0,
-                bottom: 0,
-              ),
-              child: Icon(Icons.keyboard_arrow_left, color: Colors.white),
-            ),
-            Text(
-              "Geri",
-              style: GoogleFonts.comicNeue(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var f = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: formKey,
-          child: Center(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 50),
-                        height: f * .20,
-                        //width:f* .100,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: AssetImage("assets/images/topImage.png")),
-                        ),
-                      ),
-                      Positioned(
-                          top: 0, left: 0, bottom: 0, child: _backButton()),
-                    ],
-                  ),
-                  buildPassword(),
-                  buildPassword2(),
-                  buildSaveButton(),
-                ]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildPassword() {
-    bool isPassword = true;
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Şifre",
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          TextFormField(
-            validator: validatePassword,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock),
-            ),
-            controller: txtpassWord,
-            obscureText: true,
-            keyboardType: TextInputType.visiblePassword,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget buildPassword2() {
-    bool isPassword = true;
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Şifre",
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          TextFormField(
-            validator: validatePassword,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock),
-            ),
-            controller: txtpassWord2,
-            obscureText: true,
-            keyboardType: TextInputType.visiblePassword,
-          ),
-        ],
-      ),
-    );
-  }
-
-  late String _password;
-
-  buildSaveButton() {
-    return TextButton(
-      onPressed: () async {
-        if (formKey.currentState!.validate()){
-          formKey.currentState!.save();
-          var temp=await dbHelper.getUserByEmail(widget.email);
-          if(txtpassWord.text==txtpassWord2.text){
-            temp!.password=txtpassWord.text;
-            await dbHelper.update(temp);
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
-          }
-        }
-      },
-      child: Text(
-        "Şifreyi güncelle",
-        style: GoogleFonts.comicNeue(
-          fontSize: 17,
-          color: Color(0xff935ccf),
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(StringProperty('_password', _password));
-  }
+  }*/
 }

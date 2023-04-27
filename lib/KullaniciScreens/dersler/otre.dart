@@ -31,7 +31,9 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
   final _advancedDrawerController = AdvancedDrawerController();
   //var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   var Harf =Harfharake(harfharakename: "",harfharakeannotation: "",harfharakeimage_path: "",harfharakemusic_path: "",);
-  var user = User("", "", "", "", "", "", "", isadmin: 0);
+  var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
+
+
   late Future<List<Harfharake>> _lettersFuture;
   var dbHelper = DbHelper();
   AudioPlayer audioPlayer = AudioPlayer();

@@ -653,7 +653,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Bu oyunda...",
+                  "Bu oyunda harflerin harekelerini pekiştireceğiz.",
                   style: GoogleFonts.comicNeue(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,

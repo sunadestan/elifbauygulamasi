@@ -8,9 +8,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/letter.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import '../detay/yazilisdetay.dart';
 import '../harfeklememenü.dart';
 
 class HarfYazilisListePage extends StatefulWidget {
@@ -27,7 +29,8 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
   late int deneme;
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
-  //var letter=Letter(imagePath: "");
+  var letter=Letter(imagePath: "");
+  var harf=Harf(harfimagePath: "");
 
   @override
   void initState() {
@@ -117,7 +120,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                         height: double.infinity,
                         width: double.infinity,
                         child: GridView.count(
-                          crossAxisCount: 4,
+                          crossAxisCount: 3,
                           childAspectRatio: 0.8,
                           children: List.generate(
                             letters!.length,
@@ -369,9 +372,77 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
           ]),
     );
   }
+  void _showResendDialog(Harf selectedLetter) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(selectedLetter.harfname ?? "",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.lightBlueAccent,
+                ),),
+              SizedBox(height: 16),
+              Text(selectedLetter.harfannotation ?? "",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  fontSize: 18,
+                ),),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Tamam',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget kutuu(Harf harf) {
     return InkWell(
-      onTap: (){},
+      onTap: (){
+        //_showResendDialog(harf);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>YazilisPage(deneme: widget.deneme,denemeiki: widget.denemeiki,user: widget.user,
+          letter:letter,harf: harf,)));
+      },
       child: Container(
         alignment: Alignment.center,
         child: Center(

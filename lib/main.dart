@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Letter letter = Letter(imagePath: "");
-    User user =User("", "", "", "", "", "", "", isadmin: 0);
+    var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
     return MaterialApp(
       title: "LOGİN",
       debugShowCheckedModeBanner: false,

@@ -28,7 +28,9 @@ class kullaniciHarfler extends StatefulWidget {
 class _kullaniciHarflerState extends State<kullaniciHarfler> {
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  var user = User("", "", "", "", "", "", "", isadmin: 0);
+  var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
+
+
   late Future<List<Letter>> _lettersFuture;
   var dbHelper = DbHelper();
   AudioPlayer audioPlayer = AudioPlayer();

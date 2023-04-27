@@ -9,8 +9,10 @@ class User {
   late String email;
   bool temp=false;
   int? isadmin=0;
+  bool tempp=false;
+  int? isVerified=0;
 
-  User( this.username,this.password,this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin}) {}
+  User( this.username,this.password,this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin, required int isVerified}) {}
   User.withId(this.id,this.username, this.password , this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin}) {}
 
   Map<String,dynamic> toMap(){
@@ -23,6 +25,8 @@ class User {
     map["password"]=password;
     map["email"]=email;
     map["isadmin"]=isadmin;
+    map["isVerified"]=isVerified;
+
     if(id!=null){
       map["id"]=id;
     }
@@ -38,6 +42,8 @@ class User {
     this.password = o["password"];
     this.email = o["email"];
     this.isadmin=o["isadmin"];
+    this.isVerified=o["isVerified"];
+
   }
 }
 

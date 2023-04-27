@@ -31,7 +31,7 @@ class kullaniciHarfleresre extends StatefulWidget {
 class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
   final _advancedDrawerController = AdvancedDrawerController();
   var Harf =Harfharake(harfharakename: "",harfharakeannotation: "",harfharakeimage_path: "",harfharakemusic_path: "",);
-  var user = User("", "", "", "", "", "", "", isadmin: 0);
+  var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
   late Future<List<Harfharake>> _lettersFuture;
   var dbHelper = DbHelper();
   AudioPlayer audioPlayer = AudioPlayer();

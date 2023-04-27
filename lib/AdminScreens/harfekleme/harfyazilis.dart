@@ -16,7 +16,6 @@ import 'package:flutter/widgets.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-
 import '../harfeklememenü.dart';
 import '../listeler/harfyazilisliste.dart';
 
@@ -45,7 +44,6 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
   final picker = ImagePicker();
   final dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
-  get deneme => null;
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +253,6 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
     );
   }
   void _handleMenuButtonPressed() {
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
   Future getImage() async {
@@ -350,7 +347,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
           saveToDatabase();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HarfYazilisListePage(denemeiki: widget.denemeiki,user: widget.user,deneme: deneme,)),);
+            MaterialPageRoute(builder: (context) => HarfYazilisListePage(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),);
           _showResendDialog(context);
         }
       },
@@ -471,7 +468,6 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ],
     );
   }
-
   Future<void> saveToDatabase() async {
     var result = await dbHelper.insertHarf(
       Harf(

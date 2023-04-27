@@ -194,6 +194,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                 Text(
                   "Bu oyunda harflerin hepsini göreceğiz ve onları eşleştirmeye çalışacağız. "
                       "Oyunun en zor seviyesi budur. İyi eğlenceler!",
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.comicNeue(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,

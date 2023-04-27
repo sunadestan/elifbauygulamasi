@@ -12,6 +12,8 @@ import '../data/googlesign.dart';
 import '../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../reset/Deneme.dart';
+
 void main() {}
 
 class LoginPage extends StatefulWidget {
@@ -111,6 +113,8 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                         ),
                         _LoginButton(),
                         _submitButton(),
+                        //buildcizgi(),
+                        //_googleButton(),
                         SizedBox(
                           height: 10,
                         ),
@@ -276,7 +280,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-  /*Widget _googleButton() {
+  Widget _googleButton() {
     return TextButton(
       onPressed: () async {
         signIn();
@@ -320,7 +324,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
         ),
       ),
     );
-  }*/
+  }
 
   Widget logo(){
     return Container(
@@ -335,7 +339,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     );
   }
 
-  Future<void> girisYap(String x, String y) async {
+  /*Future<void> girisYap(String x, String y) async {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -363,12 +367,107 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
         print("Hatalı Giriş");
       }
     }
+  }*/
+  Future<void> girisYap(String x, String y) async {
+    var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      var result = await dbHelper.checkUser(x, y);
+      bool isAdmin = result?.isadmin == 1;
+      bool isVerified = result?.isVerified == 1;
+      if (result != null && isAdmin) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminPage(
+              denemeiki: deneme,
+              user: result,
+              deneme: deneme,
+            ),
+          ),
+        );
+      } else if (result != null && isVerified) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              user: result,
+              letter: letter,
+            ),
+          ),
+        );
+      } else if (result != null) {
+        _showResendDialogg(message: "Hesabınızı doğrulamanız gerekiyor.");
+      } else {
+        _showResendDialog();
+      }
+    }
   }
+
+  void _showResendDialogg({String message = ""}) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Uyarı!",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.lightBlueAccent,
+                ),
+              ),
+              SizedBox(height:16,),
+              Text(message,textAlign: TextAlign.center,style: GoogleFonts.comicNeue(
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                color: Colors.black,
+              ),),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                ),
+                child: Text(
+                  "Tamam",
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<User> _convertGoogleSignInToUser(GoogleSignInAccount account) async {
     final GoogleSignInAuthentication auth = await account.authentication;
     final String email = account.email;
     final String token = auth.accessToken.toString();
-    return User(email, "", "", "", "", "", "", isadmin: 0);
+    return User(email, "", "", "", "", "", "", isadmin: 0,isVerified: 0);
   }
   Future<void> signIn() async {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
@@ -498,22 +597,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
-  InputDecoration customInputDecoration(String hintText) {
-    return InputDecoration(
-      hintText: hintText,
-      hintStyle: TextStyle(color: Colors.grey),
-      enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(
-          color: Colors.grey,
-        ),
-      ),
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

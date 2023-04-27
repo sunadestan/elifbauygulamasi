@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import '../models/forget.dart';
 import '../models/harf.dart';
 import '../models/harfharake.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class DbHelper{
-
   static final DbHelper dbProvider = DbHelper();
   Database? _db;
 
@@ -26,28 +26,10 @@ class DbHelper{
     return elifDb;
   }
 
-  List<Map<String, dynamic>> _randomImages = [];
-
-  Future<void> getRandomImages() async {
-    // Veritabanına bağlan
-    final Database db = await openDatabase(
-      join(await getDatabasesPath(), 'your_database_name.db'),
-    );
-    final List<Map<String, dynamic>> allImages = await db.query('letters');
-    _randomImages = allImages..shuffle();
-    _randomImages = _randomImages.sublist(0, 10);
-    await db.close();
-  }
-
-  List<String> getRandomImagePaths() {
-    return _randomImages
-        .map((Letter) => Letter['image_path'].toString())
-        .toList();
-  }
-
   void createDb(Database db, int version) async {
     await db.execute(
-        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER)''');
+        '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,
+        address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER,isVerified INTEGER)''');
     await db.execute(
         '''CREATE TABLE letters(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, annotation TEXT, image_path BLOB, music_path BLOB)''');
     await db.execute(
@@ -58,44 +40,6 @@ class DbHelper{
     await db.execute(
         '''CREATE TABLE sureler(id INTEGER PRIMARY KEY AUTOINCREMENT, sureadi TEXT, 
         sureanlami TEXT,sureanlamiarapca TEXT,suremusic_path BLOB,hangisure INT)''');
-  }
-
-  Future<int?> insertResetCode(int userId, String resetCode) async {
-    Database? db = await this.db;
-    var result = await db?.update(
-      "users",
-      {"reset_code": resetCode},
-      where: "id = ?",
-      whereArgs: [userId],
-    );
-    return result;
-  }
-  Future<void> insertForgotPassword(ForgotPassword forgotPassword) async {
-    Database? db = await this.db;
-    await db.insert('users',
-      forgotPassword.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-  Future<ForgotPassword?> getForgotPassword(String email) async {
-    Database? db = await this.db;
-    final maps = await db.query('users',
-      where: '$email = ?',
-      whereArgs: [email],
-    );
-    if (maps.isEmpty) {
-      return null;
-    }
-
-    return ForgotPassword.fromMap(maps.first);
-  }
-  Future<void> deleteForgotPassword(String email) async {
-    Database? db = await this.db;
-    await db.delete(
-      'users',
-      where: '$email = ?',
-      whereArgs: [email],
-    );
   }
 
   Future<List<Harfharake>> getHarfharake() async {
@@ -192,19 +136,27 @@ class DbHelper{
       return User.fromObject(result[i]);
     });
   }
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
   Future<int> insert(User user) async {
     int isAdmin = user.email.endsWith('@elifba.com') ? 1 : 0;
+    int isVerified = user.email.endsWith('@elifba.com') ? 1 : (user.isVerified != null ? 1 : 0);
+    String hashedPassword = hashPassword(user.password);
     Database? db = await this.db;
     var result = await db.insert("users", {
       "username": user.username,
-      "password": user.password,
+      "password": hashedPassword,
       "email": user.email,
       "name": user.name,
       "address": user.address,
       "lastname": user.lastname,
       "phone": user.phone,
       "isadmin": isAdmin,
+      "isVerified": isVerified,  // true için 1, false   için 0 olarak kaydet
     });
     return result;
   }
@@ -230,7 +182,7 @@ class DbHelper{
     final result = await db.query(
       'users',
       where: 'username = ? AND password = ?',
-      whereArgs: [username, password],
+      whereArgs: [username, hashPassword(password)],
     );
     if (result != null && result.isNotEmpty) {
       return User.fromObject(result.first);
@@ -238,7 +190,16 @@ class DbHelper{
       return null;
     }
   }
-
+  Future<User?> getUserByEmail(String mail) async {
+    final db = await dbProvider.db;
+    final result =
+    await db.query('users', where: 'email = ?', whereArgs: [mail]);
+    if (result.isNotEmpty) {
+      return User.fromObject(result.first);
+    } else {
+      return null;
+    }
+  }
   Future<User?> checkUserGoogle(String username, String password) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -290,6 +251,18 @@ class DbHelper{
     }
   }
 
+  Future<bool> mailkontrolet(String mail) async {
+    final db = await dbProvider.db;
+    if (db == null) {
+      throw Exception('Veritabanı bağlantısı kurulamadı');
+    }
+    final result = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [mail],
+    );
+    return result.isNotEmpty;
+  }
   Future<bool> kullaniciAdiKontrolEt(String kullaniciAdi) async {
     final db = await dbProvider.db;
     if (db == null) {

@@ -8,9 +8,15 @@ import '../data/dbHelper.dart';
 import 'login_page.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+import 'dart:math';
+import 'package:elifbauygulamasi/LoginScreens/emaildogrulama.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  RegisterPage({
+    Key? key,
+  }) : super(key: key);
   @override
   State<RegisterPage> createState() => _RegisterState();
 }
@@ -27,6 +33,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
   late String _address;
   var txtusername = TextEditingController();
   var txtpassword = TextEditingController();
+  var txtpassword2 = TextEditingController();
   var txtemail = TextEditingController();
   var txtname = TextEditingController();
   var txtlastname = TextEditingController();
@@ -71,6 +78,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                 buildAddressField(),
                 buildMailField(),
                 buildPasswordField(),
+                buildPasswordField2(),
                 _submitButton(),
                 _loginAccountLabel(),
               ],
@@ -333,6 +341,42 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     );
   }
 
+  Widget buildPasswordField2() {
+    bool isPassword = true;
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Şifre Tekrar",
+            style: GoogleFonts.comicNeue(
+              color: Color(0xff935ccf),
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextFormField(
+            controller: txtpassword2,
+            obscureText: isPassword,
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+                border: InputBorder.none, //kenarlıkları yok eder
+                filled: true),
+            validator:
+                validatePassword, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
+            onSaved: (String? value) {
+              _password = value!;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> mailKontrol(String mail) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -349,10 +393,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       if (kullaniciVarMi == false) {
         addUser();
         mailKontrol(txtemail.text);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
       } else {
         _showResendDialog();
       }
@@ -361,31 +401,39 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
 
   Future<void> addUser() async {
     int isAdmin = txtemail.text.endsWith('@elifba.com') ? 1 : 0;
-    var result = await dbHelper.insert(
-      User(
-        txtusername.text,
-        txtpassword.text,
-        txtemail.text,
-        txtname.text,
-        txtadres.text,
-        txtlastname.text,
-        txtphone.text,
-        isadmin: isAdmin,
-      ),
-    );
-    if (result > 0) {
-      print("Kullanıcı başarıyla eklendi.");
-    } else {
-      print("Kullanıcı eklenirken bir hata oluştu.");
+    if (isAdmin == 1) {
+      var result = await dbHelper.insert(
+        User(
+          txtusername.text,
+          txtpassword.text,
+          txtemail.text,
+          txtname.text,
+          txtadres.text,
+          txtlastname.text,
+          txtphone.text,
+          isadmin: isAdmin,
+          isVerified: 1, // yeni kullanıcıların doğrulanmamış olduğunu varsayalım
+        ),
+      );
+      if (result > 0) {
+        print("Kullanıcı başarıyla eklendi.");
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
+      } else {
+        print("Kullanıcı eklenirken bir hata oluştu.");
+      }
+    } else if (isAdmin == 0) {
+      await sendEmail(txtemail.text);
+
     }
   }
 
   Widget _submitButton() {
     return TextButton(
       onPressed: () async {
-        await kayit(
-          txtusername.text,
-        );
+        if (txtpassword.text == txtpassword2.text) {
+          await kayit(txtusername.text,);}
+        else {_showResendDialogg();}
       },
       child: Container(
         margin: EdgeInsets.symmetric(
@@ -561,24 +609,306 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     );
   }
 
-  Widget buildBody(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: LayoutBuilder(builder: (BuildContext, BoxConstraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[],
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
+  void _showResendDialogg() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Uyarı!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Parolalar eşleşmiyor.',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Tamam',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Future<String> sendEmail(String recipientEmail,) async {
+    String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
+    String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
+    final smtpServer = gmail(username, password);
+    var deneme = User(txtusername.text, txtpassword.text, txtemail.text,
+        txtname.text, txtadres.text, txtlastname.text, txtphone.text,
+        isadmin: 0, isVerified: 0);
+    final random = Random();
+    final resetCode = random
+        .nextInt(1000000)
+        .toString()
+        .padLeft(6, '0'); // 6 haneli rastgele sayı oluştur
+    final message = Message()
+      ..from = Address(username, 'Mail doğrulama')
+      ..recipients.add(txtemail.text)
+      ..subject = 'Mail doğrulama İsteği'
+      ..text =
+          'Merhaba, mailinizi doğrulamak için aşağıdaki kodu kullanın: $resetCode'
+      ..html =
+          "<h1>Merhaba2</h1>\n<p>Mailinizi doğrulamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('E-posta gönderildi: ' + sendReport.toString());
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Başarılı',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Mail doğrulama bağlantısı gönderildi',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                            MailDogrulama(email: txtemail.text, kod: resetCode, user: deneme)));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } on MailerException catch (e) {
+      print('Hata: $e');
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'E-posta gönderilemedi. Daha sonra tekrar deneyin',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Hata: $e');
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Beklenmeyen bir hata oluştu',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return resetCode;
+  }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

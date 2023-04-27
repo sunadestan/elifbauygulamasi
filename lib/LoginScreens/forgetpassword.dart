@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:elifbauygulamasi/LoginScreens/login_page.dart';
 import 'package:elifbauygulamasi/data/dbHelper.dart';
 import 'package:elifbauygulamasi/LoginScreens/code.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
@@ -10,10 +10,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../models/user.dart';
 
-
-void main() {}
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -29,7 +26,6 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
 
   @override
   Widget build(BuildContext context) {
-    //final height = MediaQuery.of(context).size.height;
     var f = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SingleChildScrollView(
@@ -71,7 +67,12 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   Widget _backButton() {
     return InkWell(
       onTap: () {
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  LoginPage()),
+        );
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -101,13 +102,76 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
       ),
     );
   }
+  void _showResendDialogg() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Bu Kullanıcı Kayıtlı Değil!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Tamam',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _submitButton() {
     return TextButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          _formKey.currentState!.save();
-          sendResetCode(_email);
+          var temp= await dbHelper.mailkontrolet(_emailController.text);
+          if(temp){
+            sendEmail();
+          }else{
+            _showResendDialogg();
           }
+        }
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 75,),
@@ -140,6 +204,230 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
         ),
       ),
     );
+  }
+  void sendEmail() async {
+    String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
+    String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
+    final smtpServer = gmail(username, password);
+
+
+    final random = Random();
+    final resetCode = random.nextInt(1000000).toString().padLeft(6, '0'); // 6 haneli rastgele sayı oluştur
+
+    final message = Message()
+      ..from = Address(username, 'Şifre Sıfırlama Uygulaması')
+      ..recipients.add(_emailController.text)
+      ..subject = 'Şifre Sıfırlama İsteği'
+      ..text = 'Merhaba, şifrenizi sıfırlamak için aşağıdaki kodu kullanın: $resetCode'
+      ..html = "<h1>Merhaba</h1>\n<p>Şifrenizi sıfırlamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('E-posta gönderildi: ' + sendReport.toString());
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Başarılı',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Şifre sıfırlama bağlantısı gönderildi',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CodePage(email: _emailController.text,kod: resetCode,)));
+
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } on MailerException catch (e) {
+      print('Hata: $e');
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'E-posta gönderilemedi',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Hata: $e');
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.lightBlueAccent,
+              width: 2,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hata',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Beklenmeyen bir hata oluştu',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Divider(
+                  color: Colors.white,
+                  thickness: 2,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   Widget buildForgetPasswordField() {
@@ -230,65 +518,6 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
     properties.add(StringProperty('_email', _email));
   }
 
-  final smtpServer = SmtpServer('smtp.gmail.com',
-      username: 'sunsumeyyedestan@gmail.com',
-      password: 'my_password',
-      port: 587);
-
-  String generateResetCode() {
-    final random = Random.secure();
-    final code = List.generate(6, (i) => random.nextInt(10)).join();
-    return code;
-  }
-
-  Future<void> sendResetCode(String email) async {
-    final user = await getUserByEmail(email);
-    if (user == null) {
-      final user = await getUserByEmail(_emailController.text);
-      if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Bu e-posta adresine sahip kullanıcı bulunamadı.'),
-        ));
-        return;
-      } else {
-        await sendResetCode(_emailController.text);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Şifre sıfırlama kodu e-posta olarak gönderildi.'),
-        ));
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const CodePage()));
-        return;
-      }
-    }
-
-    final resetCode = generateResetCode();
-    await insertResetCode(user.id!, resetCode);
-
-    final message = Message()
-      ..from = Address('sunasumeyyedestan@gmail.com', 'suna')
-      ..recipients.add(user.email)
-      ..subject = 'Şifrenizi sıfırlama talebi'
-      ..text = 'Şifrenizi sıfırlamak için aşağıdaki kodu kullanabilirsiniz: $resetCode';
-
-    await sendMessaage(message, smtpServer);
-  }
-
-  Future<User?> getUserByEmail(String email) async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      var result = await dbHelper.checkEmail(email);
-      if (result != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const CodePage()));
-      } else {
-        print("Mail Bulunamadı");
-      }
-    }
-  }
-  Future<void> insertResetCode(int userId, String resetCode) async {
-    await dbHelper.insertResetCode(userId, resetCode);
-  }
-  Future<void> sendMessaage(Message message, SmtpServer smtpServer) async {
-    await send(message, smtpServer);
-  }
 
 }
 

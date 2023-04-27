@@ -132,6 +132,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                 ),
                 SizedBox(height: 8),
                 Text(
+                  textAlign: TextAlign.center,
                   "Bu oyunda harflerin son yarısını göreceğiz ve onları eşleştirmeye çalışacağız. İyi eğlenceler!",
                   style: GoogleFonts.comicNeue(
                     fontSize:18,

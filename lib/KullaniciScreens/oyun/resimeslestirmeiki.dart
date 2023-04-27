@@ -136,7 +136,8 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Bu oyunda Hraflerin ilk yarısını göreceğiz ve onları eşleştirmeye çalışacağız. İyi eğlenceler!",
+                  textAlign: TextAlign.center,
+                  "Bu oyunda Harflerin ilk yarısını göreceğiz ve onları eşleştirmeye çalışacağız. İyi eğlenceler!",
                   style: GoogleFonts.comicNeue(
                     fontSize:18,
                     fontWeight: FontWeight.w600,
