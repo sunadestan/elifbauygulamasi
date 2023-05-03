@@ -141,7 +141,7 @@ class _DerslerState extends State<Dersler> {
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                 user: widget.user,
-                                letter: letter,
+                                letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -180,7 +180,7 @@ class _DerslerState extends State<Dersler> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user,letter:letter,)));
+                              builder: (context) => OyunSinifi(user: widget.user,letter:widget.letter,)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -198,7 +198,7 @@ class _DerslerState extends State<Dersler> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: letter,
+                                letter: widget.letter,
                                 user: widget.user,
                               )));
                     },

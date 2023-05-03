@@ -13,7 +13,7 @@ class User {
   int? isVerified=0;
 
   User( this.username,this.password,this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin, required int isVerified}) {}
-  User.withId(this.id,this.username, this.password , this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin}) {}
+  User.withId(this.id,this.username, this.password , this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin,required int isVerified}) {}
 
   Map<String,dynamic> toMap(){
     var map =  Map<String,dynamic>();

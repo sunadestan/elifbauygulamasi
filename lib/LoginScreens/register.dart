@@ -469,7 +469,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget _loginAccountLabel() {
     return InkWell(
       onTap: () {
@@ -506,7 +505,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -540,23 +538,6 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
-  void _showResendDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          "Kullanıcı Adı Alınmıştır",
-          style: GoogleFonts.comicNeue(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -678,7 +659,21 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
-
+  void _showResendDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          "Kullanıcı Adı Alınmıştır",
+          style: GoogleFonts.comicNeue(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<String> sendEmail(String recipientEmail,) async {
     String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi

@@ -1,58 +1,50 @@
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
-import 'package:elifbauygulamasi/LoginScreens/sifreyenile.dart';
-import 'package:elifbauygulamasi/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../LoginScreens/login_page.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'login_page.dart';
 import '../data/dbHelper.dart';
 import '../models/letter.dart';
+import '../models/user.dart';
 import '../models/validation.dart';
-import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'dersmenü.dart';
+import '../KullaniciScreens/ayarlar.dart';
+import '../KullaniciScreens/dersmenü.dart';
+import '../KullaniciScreens/oyunmenü.dart';
 
-class AyarlarPage extends StatefulWidget {
-  AyarlarPage({Key? key, required this.letter, required this.user})
+class SifreYenile extends StatefulWidget {
+  SifreYenile({Key? key, required this.letter, required this.user})
       : super(key: key);
   final Letter letter;
   final User user;
 
   @override
-  State<AyarlarPage> createState() => _AyarlarPageState(user);
+  State<SifreYenile> createState() => _SifreYenileState(user);
 }
 
-enum Options { delete, update }
-
-class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
+class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   final _formKey = GlobalKey<FormState>();
   final _advancedDrawerController = AdvancedDrawerController();
-  var txtusername = TextEditingController();
   var txtpassword = TextEditingController();
-  var txtemail = TextEditingController();
-  var txtname = TextEditingController();
-  var txtlastname = TextEditingController();
-  late String _email;
-  late String _password;
-  late String _userName;
-  late String _name;
-  late String _lastname;
+  var txtpassWord2 = TextEditingController();
+  var txtpassWord3 = TextEditingController();
   var dbHelper = DbHelper();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   User user;
-  _AyarlarPageState(this.user);
-  @override
-  void initState() {
-    txtname.text = user.name;
-    txtlastname.text = user.lastname;
-    txtemail.text = user.email;
-    txtusername.text = user.username;
-    txtpassword.text = user.password;
-    super.initState();
+  _SifreYenileState(this.user);
+
+
+  Widget customSizedBox() => SizedBox(
+        height: 20,
+      );
+  void _handleMenuButtonPressed() {
+    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
+    _advancedDrawerController.showDrawer();
   }
 
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -60,10 +52,10 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  HomePage(user: widget.user, letter: widget.letter)),
+                  AyarlarPage(user: widget.user, letter: widget.letter)),
           (route) => false,
         );
-        return false; // Geri tuşu işleme alınmadı
+        return false;
       },
       child: AdvancedDrawer(
         backdropColor: Color(0xffad80ea),
@@ -107,33 +99,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                 },
               ),
             ),
-            actions: <Widget>[
-              PopupMenuButton<Options>(
-                  onSelected: selectProcess,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<Options>>[
-                        PopupMenuItem<Options>(
-                          value: Options.delete,
-                          child: Text(
-                            "Hesabı sil",
-                            style: GoogleFonts.comicNeue(
-                                //fontWeight: FontWeight.normal,
-                                //color: Colors.black,
-                                ),
-                          ),
-                        ),
-                        PopupMenuItem<Options>(
-                          value: Options.update,
-                          child: Text(
-                            "Güncelle",
-                            style: GoogleFonts.comicNeue(
-                                //fontWeight: FontWeight.normal,
-                                //color: Colors.black,
-                                ),
-                          ),
-                        ),
-                      ])
-            ],
           ),
           body: SingleChildScrollView(
             child: Form(
@@ -145,7 +110,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                     customSizedBox(),
                     customSizedBox(),
                     Text(
-                      "Hesap Bilgileri",
+                      "Şifre Yenileme",
                       style: GoogleFonts.comicNeue(
                         color: Color(0xff935ccf),
                         fontSize: 25,
@@ -153,11 +118,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                       ),
                     ),
                     customSizedBox(),
-                    buildNameField(),
-                    buildLastNameField(),
-                    buildUserNameField(),
-                    buildMailField(),
-                    buildPasswordField(),
+                    buildForgetPasswordField1(),
+                    buildForgetPasswordField2(),
+                    buildForgetPasswordField3(),
+                    buildSaveButton(),
+                    //buildPasswordFields(),
                   ],
                 ),
               ),
@@ -197,7 +162,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                     user: widget.user,
-                                    letter: letter,
+                                    letter: widget.letter,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -236,7 +201,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: user,
+                                    user: widget.user,
                                     letter: widget.letter,
                                   )));
                     },
@@ -256,7 +221,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                    letter: letter,
+                                    letter: widget.letter,
                                     user: widget.user,
                                   )));
                     },
@@ -313,14 +278,20 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
     );
   }
 
-  Widget buildNameField() {
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Widget buildForgetPasswordField1() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Ad",
+            "Mevcut Şifre",
             style: GoogleFonts.comicNeue(
               color: Color(0xff935ccf),
               fontSize: 17,
@@ -331,32 +302,28 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             height: 5,
           ),
           TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: txtname,
-            keyboardType: TextInputType.name,
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              border: InputBorder.none, //kenarlıkları yok eder
+              border: InputBorder.none,
               filled: true,
-              hintText: '${widget.user.name}',
             ),
-            validator: validateName, //
-            onSaved: (String? value) {
-              _name = value!;
+            onChanged: (value) {
+              _currentPassword = hashPassword(value);
             },
           ),
         ],
       ),
     );
   }
-
-  Widget buildLastNameField() {
+  Widget buildForgetPasswordField2() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Soyad",
+            "Yeni Şifre ",
             style: GoogleFonts.comicNeue(
               color: Color(0xff935ccf),
               fontSize: 17,
@@ -367,32 +334,29 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             height: 5,
           ),
           TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: txtlastname,
-            keyboardType: TextInputType.name,
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              border: InputBorder.none, //kenarlıkları yok eder
-              filled: true,
-              hintText: '${widget.user.lastname}',
-            ),
-            validator: validateLastName, //
-            onSaved: (String? value) {
-              _lastname = value!;
+                border: InputBorder.none, //kenarlıkları yok eder
+                filled: true),
+            validator: validatePassword,
+            onChanged: (value) {
+              _newPassword = value;
             },
           ),
         ],
       ),
     );
   }
-
-  Widget buildUserNameField() {
+  Widget buildForgetPasswordField3() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Kullanıcı Adı",
+            "Yeni Şifre Tekrar",
             style: GoogleFonts.comicNeue(
               color: Color(0xff935ccf),
               fontSize: 17,
@@ -403,16 +367,14 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             height: 5,
           ),
           TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: txtusername,
-            keyboardType: TextInputType.name,
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              border: InputBorder.none, //kenarlıkları yok eder
-              filled: true, hintText: '${widget.user.username}',
-            ),
-            validator: validateUserName, //
-            onSaved: (String? value) {
-              _userName = value!;
+                border: InputBorder.none, //kenarlıkları yok eder
+                filled: true),
+            validator: validatePassword,
+            onChanged: (value) {
+              _confirmPassword = value;
             },
           ),
         ],
@@ -420,100 +382,110 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
     );
   }
 
-  Widget buildMailField() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "E-Posta",
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
+  String? _currentPassword;
+  String? _newPassword;
+  String? _confirmPassword;
+
+  Widget buildPasswordFields() {
+    return Column(
+      children: [
+        TextFormField(
+          onChanged: (value) {
+            _currentPassword = hashPassword(value);
+          },
+          decoration: InputDecoration(
+            labelText: 'Mevcut Şifre',
+            border: OutlineInputBorder(),
           ),
-          SizedBox(
-            height: 5,
+          obscureText: true,
+        ),
+        SizedBox(height: 16),
+        TextFormField(
+          onChanged: (value) {
+            _newPassword = value;
+          },
+          decoration: InputDecoration(
+            labelText: 'Yeni Şifre',
+            border: OutlineInputBorder(),
           ),
-          TextFormField(
-            controller: txtemail,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              border: InputBorder.none, //kenarlıkları yok eder
-              filled: true, hintText: '${widget.user.email}',
-            ),
-            validator: validateForgetPassword, //
-            onSaved: (String? value) {
-              _email = value!;
-            },
+          obscureText: true,
+        ),
+        SizedBox(height: 16),
+        TextFormField(
+          onChanged: (value) {
+            _confirmPassword = value;
+          },
+          decoration: InputDecoration(
+            labelText: 'Yeni Şifre Tekrar',
+            border: OutlineInputBorder(),
           ),
-        ],
+          obscureText: true,
+        ),
+      ],
+    );
+  }
+
+  Widget buildSaveButton() {
+    return TextButton(
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+          User user = widget.user;
+          User? dbUser = await dbHelper.getUserById(user.id!);
+          if (dbUser != null && _currentPassword == dbUser.password) {
+            if (_newPassword == _confirmPassword) {
+              // Yeni şifreyi güncelle
+              dbUser.password = _newPassword!;
+              await dbHelper.update(dbUser);
+              print(_newPassword);
+              // Şifre güncellendi mesajı göster
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AyarlarPage(letter: widget.letter, user: widget.user)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Şifre güncellendi!")));
+            } else {
+              // Yeni şifreler eşit değil uyarısı göster
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Girilen şifreler eşit değil!")));
+            }
+          } else {
+            // Mevcut şifre yanlış uyarısı göster
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Mevcut şifre yanlış")));
+          }
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Color(0xffad89d7),
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xff823ac6),
+                  Color(0xff703dd0),
+                ])),
+        child: Text(
+          "Şifreyi Güncelle",
+          style: GoogleFonts.comicNeue(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
 
-  Widget buildPasswordField() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Şifre",
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          TextFormField(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SifreYenile(
-                          letter: widget.letter, user: widget.user)));
-            },
-            keyboardType: TextInputType.name,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                filled: true,
-                hintText: "Şifreni yenile"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void selectProcess(Options options) async {
-    switch (options) {
-      case Options.delete:
-        _showResendDialog();
-        break;
-      case Options.update:
-        await dbHelper.update(User.withId(
-          user.id,
-          txtusername.text,
-          "${widget.user.password}",
-          txtemail.text,
-          txtname.text,
-          "${widget.user.address}",
-          txtlastname.text,
-          "${widget.user.phone}",
-          isadmin: 0,
-          isVerified: 1,
-        ));
-        Navigator.pop(context, true);
-        setState(() {});
-        break;
-      default:
-    }
-  }
 
   void _showResendDialogg() {
     showDialog(
@@ -593,7 +565,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
-
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -687,22 +658,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
-
-  Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
-  void _handleMenuButtonPressed() {
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
-    _advancedDrawerController.showDrawer();
-  }
-
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('_email', _email));
-    properties.add(StringProperty('_password', _password));
-    properties.add(StringProperty('_userName', _userName));
-    properties.add(StringProperty('_name', _name));
-    properties.add(StringProperty('_lastname', _lastname));
+    properties.add(StringProperty('_currentPassword', _currentPassword));
+    properties.add(StringProperty('_newPassword', _newPassword));
+    properties.add(StringProperty('_confirmPassword', _confirmPassword));
   }
 }

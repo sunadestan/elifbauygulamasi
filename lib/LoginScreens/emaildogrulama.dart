@@ -1,11 +1,9 @@
-import 'package:elifbauygulamasi/LoginScreens/register.dart';
 import 'package:elifbauygulamasi/data/dbHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
-import 'package:elifbauygulamasi/reset/Deneme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -33,7 +31,6 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
   var codeController = TextEditingController();
   var dbhelper = DbHelper();
   bool _isLoading = false;
-  var deneme = ResetPasswordPageUser();
   final int _initialSeconds = 120; // başlangıç süresini 2 dakikaya ayarla
   int _secondsRemaining = 120;
   late Timer _timer;

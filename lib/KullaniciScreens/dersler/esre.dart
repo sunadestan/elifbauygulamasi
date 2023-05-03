@@ -229,7 +229,7 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -369,6 +369,9 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
                         File(harf.harfharakeimage_path ?? ""),
                         fit: BoxFit.cover,
                       ),
+                      Text(harf.harfharakename ?? "",
+                        style: GoogleFonts.comicNeue(
+                            fontSize:15,fontWeight: FontWeight.w600),),
                     ],
                   ),
                 ),
@@ -429,8 +432,6 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
           ]),
     );
   }
-
-
   void _showResendDialog(Harfharake selectedLetter) {
     showDialog(
       context: context,

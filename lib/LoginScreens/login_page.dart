@@ -12,10 +12,6 @@ import '../data/googlesign.dart';
 import '../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../reset/Deneme.dart';
-
-void main() {}
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
   @override
@@ -32,7 +28,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
   final _passwordController = TextEditingController();
   late String _errorMessage;
   GoogleSignInAccount? user;
-   int deneme=1;
+  int deneme = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +58,11 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                       left: 0,
                       child: logo(),
                     ),
+                   /*Positioned(
+                      top: 40,
+                      left: 15,
+                      child: _title(),
+                    ),*/
                   ],
                 ),
                 Padding(
@@ -166,6 +167,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildPasswordField() {
     bool isPassword = true;
     return Container(
@@ -189,8 +191,8 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
               obscureText: isPassword,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
-                  border: InputBorder.none, //kenarlıkları yok eder
-                  filled: true,
+                border: InputBorder.none, //kenarlıkları yok eder
+                filled: true,
               ),
               validator:
                   validatePasswordd, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
@@ -326,9 +328,11 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     );
   }
 
-  Widget logo(){
+  Widget logo() {
     return Container(
-      margin: EdgeInsets.only(left: 300,),
+      margin: EdgeInsets.only(
+        left: 300,
+      ),
       width: 70,
       height: 70,
       decoration: BoxDecoration(
@@ -338,36 +342,223 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+  Widget _title() {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+          text: 'Elif',
+          style: GoogleFonts.comicNeue(
+            fontSize: 40,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                blurRadius: 5.0,
+                color: Color(0xffad80ea),
+                offset: Offset(2.0, 2.0),
+              ),
+            ],
+          ),
+          children: [
+            TextSpan(
+              text: '-',
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Color(0xffad80ea),
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
+            ),
+            TextSpan(
+              text: 'Ba',
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Color(0xffad80ea),
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+    );
+  }
 
-  /*Future<void> girisYap(String x, String y) async {
+  void _showResendDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Kullanıcı Bulunamadı",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                ),
+                child: Text(
+                  "Kayıt olmak ister misin?",
+                  style: GoogleFonts.comicNeue(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ForgetPasswordPage()),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                ),
+                child: Text(
+                  "Şifreni mi unuttun?",
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  void _showResendDialogg({String message = ""}) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Uyarı!",
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.lightBlueAccent,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.comicNeue(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                ),
+                child: Text(
+                  "Tamam",
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<User> _convertGoogleSignInToUser(GoogleSignInAccount account) async {
+    final GoogleSignInAuthentication auth = await account.authentication;
+    final String email = account.email;
+    final String token = auth.accessToken.toString();
+    return User(email, "", "", "", "", "", "", isadmin: 0, isVerified: 0);
+  }
+  Future<void> signIn() async {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      var result = await dbHelper.checkUser(x, y);
-      bool isAdmin = result?.isadmin == 1;
-      if (result != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                    user: result,
-                    letter: letter,
-                  )),
-        );
-        if (isAdmin == true) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AdminPage(denemeiki: deneme,
-                      user: result, deneme: deneme,)),
-          );
-        }
-      } else {
-        _showResendDialog();
-        print("Hatalı Giriş");
-      }
+    final user = await GoogleSignInApi.login();
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Oturum açma başarısız!',
+          style: GoogleFonts.comicNeue(fontWeight: FontWeight.w600),
+        ),
+      ));
+    } else {
+      final convertedUser = await _convertGoogleSignInToUser(user);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => HomePage(
+                user: convertedUser,
+                letter: letter,
+              )));
     }
-  }*/
+  }
   Future<void> girisYap(String x, String y) async {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     if (_formKey.currentState!.validate()) {
@@ -404,165 +595,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     }
   }
 
-  void _showResendDialogg({String message = ""}) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Uyarı!",
-                style: GoogleFonts.comicNeue(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: Colors.lightBlueAccent,
-                ),
-              ),
-              SizedBox(height:16,),
-              Text(message,textAlign: TextAlign.center,style: GoogleFonts.comicNeue(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Colors.black,
-              ),),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-
-                },
-                style: ButtonStyle(
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
-                ),
-                child: Text(
-                  "Tamam",
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<User> _convertGoogleSignInToUser(GoogleSignInAccount account) async {
-    final GoogleSignInAuthentication auth = await account.authentication;
-    final String email = account.email;
-    final String token = auth.accessToken.toString();
-    return User(email, "", "", "", "", "", "", isadmin: 0,isVerified: 0);
-  }
-  Future<void> signIn() async {
-    var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-    final user = await GoogleSignInApi.login();
-    if (user == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(
-        'Oturum açma başarısız!',
-        style: GoogleFonts.comicNeue(fontWeight: FontWeight.w600),),));
-    } else {
-      final convertedUser = await _convertGoogleSignInToUser(user);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => HomePage(
-                user: convertedUser,
-                letter: letter,
-              )));
-    }
-  }
-  void _showResendDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Kullanıcı Bulunamadı",
-                style: GoogleFonts.comicNeue(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              SizedBox(height: 8),
-
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                       "Kayıt olmak ister misin?",
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                      "Şifreni mi unuttun?",
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-          ),
-        ),
-      ),
-    );
-  }
-
   buildcizgi() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -593,11 +625,9 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
-
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
@@ -606,6 +636,3 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     properties.add(StringProperty('_errorMessage', _errorMessage));
   }
 }
-
-
-

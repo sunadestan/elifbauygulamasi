@@ -232,7 +232,7 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -372,6 +372,9 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
                         File(harf.harfharakeimage_path ?? ""),
                         fit: BoxFit.cover,
                       ),
+                      Text(harf.harfharakename ?? "",
+                        style: GoogleFonts.comicNeue(
+                            fontSize:15,fontWeight: FontWeight.w600),),
                     ],
                   ),
                 ),

@@ -10,8 +10,6 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
-
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
   @override
@@ -27,37 +25,47 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 50),
-                      height: f * .20,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/topImage.png")),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+        );
+        return false; // Geri tuşu işleme alınmadı
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 50),
+                        height: f * .20,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/topImage.png")),
+                        ),
                       ),
-                    ),
-                    Positioned(
-                        top: 0, left: 0, bottom: 0, child: _backButton()),
-                    customSizedBox(),
-                    customSizedBox(),
-                  ],
-                ),
-                _title(),
-                customSizedBox(),
-                customSizedBox(),
-                buildForgetPasswordField(),
-                _submitButton(),
-              ],
+                      Positioned(
+                          top: 0, left: 0, bottom: 0, child: _backButton()),
+                      customSizedBox(),
+                      customSizedBox(),
+                    ],
+                  ),
+                  _title(),
+                  customSizedBox(),
+                  customSizedBox(),
+                  buildForgetPasswordField(),
+                  _submitButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -67,11 +75,10 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   Widget _backButton() {
     return InkWell(
       onTap: () {
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
         );
       },
       child: Container(
@@ -120,10 +127,19 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Bu Kullanıcı Kayıtlı Değil!',
+                'Uyarı!',
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16,),
+              Text(
+                'Bu Kullanıcı Kayıtlı Değil!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -210,7 +226,6 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
     String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
     final smtpServer = gmail(username, password);
 
-
     final random = Random();
     final resetCode = random.nextInt(1000000).toString().padLeft(6, '0'); // 6 haneli rastgele sayı oluştur
 
@@ -219,7 +234,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
       ..recipients.add(_emailController.text)
       ..subject = 'Şifre Sıfırlama İsteği'
       ..text = 'Merhaba, şifrenizi sıfırlamak için aşağıdaki kodu kullanın: $resetCode'
-      ..html = "<h1>Merhaba</h1>\n<p>Şifrenizi sıfırlamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
+      ..html = "<h1>Merhaba1</h1>\n<p>Şifrenizi sıfırlamak için aşağıdaki kodu kullanın: <strong>$resetCode</strong></p>";
 
     try {
       final sendReport = await send(message, smtpServer);
@@ -269,18 +284,34 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CodePage(email: _emailController.text,kod: resetCode,)));
-
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
                       },
                       style: ButtonStyle(
                         backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       child: Text(
-                        'Tamam',
+                        'İptal',
                         style: GoogleFonts.comicNeue(
                           fontWeight: FontWeight.w600,
                           color: Colors.lightBlueAccent,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16,),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CodePage(email: _emailController.text,kod: resetCode,)));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      ),
+                      child: Text(
+                        'Tamam',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -338,7 +369,8 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                              (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -406,7 +438,8 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                                (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:

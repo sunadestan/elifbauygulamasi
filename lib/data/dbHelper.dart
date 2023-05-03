@@ -169,8 +169,9 @@ class DbHelper{
 
   Future<int> update(User user) async {
     Database? db = await this.db;
+    String hashedPassword = hashPassword(user.password);
     var result = await db
-        .update(" users ", user.toMap(), where: "id=?", whereArgs: [user.id]);
+        .update(" users ", {...user.toMap(), 'password': hashedPassword},where: "id=?", whereArgs: [user.id]);
     return result;
   }
 
@@ -200,6 +201,30 @@ class DbHelper{
       return null;
     }
   }
+  Future<User?> getUserByPassword(String password,int id) async {
+    final db = await dbProvider.db;
+    final result =
+    await db.query('users', where: 'password = ?', whereArgs: [hashPassword(password)]);
+    if (result.isNotEmpty) {
+      return User.fromObject(result.first);
+    } else {
+      return null;
+    }
+  }
+  Future<User?> getUserById(int id,) async {
+    final db = await dbProvider.db;
+    final userMap = await db.query(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (userMap.isNotEmpty) {
+      return User.fromObject(userMap.first);
+    } else {
+      return null;
+    }
+  }
+
   Future<User?> checkUserGoogle(String username, String password) async {
     final db = await dbProvider.db;
     if (db == null) {

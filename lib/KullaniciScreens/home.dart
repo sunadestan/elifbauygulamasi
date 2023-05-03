@@ -158,7 +158,7 @@ class _HomeState extends State<HomePage> {
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                 user: widget.user,
-                                letter: letter,
+                                letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -215,7 +215,7 @@ class _HomeState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                    letter: letter,
+                                    letter: widget.letter,
                                     user: widget.user,
                                   ))).then((value) => Navigator.pop(context));
                     },

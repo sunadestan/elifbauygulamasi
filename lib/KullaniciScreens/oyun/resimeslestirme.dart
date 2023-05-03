@@ -33,8 +33,6 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
   late Timer _timer;
   late AnimationController _animationController;
   final _advancedDrawerController = AdvancedDrawerController();
-  var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  //var userr = User("", "", "", "", "", "", "", isadmin: 0);
 
   List<String> resimler = [
     'assets/elifba/elif.png',
@@ -271,7 +269,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
             MaterialPageRoute(
                 builder: (context) => OyunSinifi(
                       user: widget.user,
-                      letter: letter,
+                      letter: widget.letter,
                     )));
         return exit;
       },
@@ -1127,7 +1125,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                     user: widget.user,
-                                    letter: letter,
+                                    letter: widget.letter,
                                   )));
                       togglePause();
                       _timer.cancel();
@@ -1444,7 +1442,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                    letter: letter,
+                                    letter: widget.letter,
                                     user: widget.user,
                                   )));
                       togglePause();

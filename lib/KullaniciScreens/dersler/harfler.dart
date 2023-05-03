@@ -190,7 +190,7 @@ class _kullaniciHarflerState extends State<kullaniciHarfler> {
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                 user: widget.user,
-                                letter: letter,
+                                letter: widget.letter,
                               ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -229,7 +229,7 @@ class _kullaniciHarflerState extends State<kullaniciHarfler> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -385,6 +385,9 @@ class _kullaniciHarflerState extends State<kullaniciHarfler> {
                         File(letters.imagePath ?? ""),
                         fit: BoxFit.cover,
                       ),
+                      Text(letters.name ?? "",
+                        style: GoogleFonts.comicNeue(
+                            fontSize:15,fontWeight: FontWeight.w600),),
                     ],
                   ),
                 ),

@@ -1046,7 +1046,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                 user: widget.user,
-                                letter: letter,
+                                letter: widget.letter,
                               )));
                       togglePause();
                       _timer.cancel();
@@ -1363,7 +1363,7 @@ class _ResimEslestirmeikiState extends State<ResimEslestirmeiki> with TickerProv
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: letter,
+                                letter: widget.letter,
                                 user: widget.user,
                               )));
                       togglePause();

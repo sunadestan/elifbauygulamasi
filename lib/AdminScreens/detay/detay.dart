@@ -42,36 +42,22 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   late final Letter letters = widget.letter;
   final _advancedDrawerController = AdvancedDrawerController();
   late int deneme;
-
   var dbHelper = DbHelper();
-
   ImagePicker picker = ImagePicker();
   AudioPlayer audioPlayer = AudioPlayer();
-
   String? imagePath;
   String? musicPath;
   String? _name;
   String? _aciklama;
   String? _ses;
   bool _isPlaying = false;
-
   Letter letter;
   _DetayPageState(this.letter);
   var txtlettername = TextEditingController();
   var txtletterannotation = TextEditingController();
   var txtses;
 
-  @override
-  void initState() {
-    txtlettername.text = letter.name!;
-    txtletterannotation.text = letter.annotation!;
-    super.initState();
-    audioPlayer = AudioPlayer();
-    _loadAudio();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  @override Widget build(BuildContext context) {
     return AdvancedDrawer(
         backdropColor: Color(0xffad80ea),
         controller: _advancedDrawerController,
@@ -115,7 +101,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                 },
               ),
             ),
-            actions: <Widget>[
+            /*actions: <Widget>[
               PopupMenuButton<Options>(
                   onSelected: selectProcess,
                   itemBuilder: (BuildContext context) =>
@@ -141,7 +127,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                           ),
                         ),
                       ])
-            ],
+            ],*/
             backgroundColor: Color(0xFF975FD0),
           ),
           body: ListView(
@@ -240,9 +226,10 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
               buildLetterName(),
               buildLetterAnnotation(),
               customSizedBox(),
+              _updateButton(),
+              _deleteButton(),
             ],
-          ),
-        ),
+          ),),
         drawer: SafeArea(
           child: Container(
             child: ListTileTheme(
@@ -377,175 +364,18 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
     );
   }
 
-  void _showResendDialogg() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Güvenli Çıkış Yapın!',
-                style: GoogleFonts.comicNeue(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Hayır',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                      'Evet',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  @override void initState() {
+    txtlettername.text = letter.name!;
+    txtletterannotation.text = letter.annotation!;
+    super.initState();
+    audioPlayer = AudioPlayer();
+    _loadAudio();
   }
-
-  void _showResendDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.lightBlueAccent,
-            width: 2,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
-                style: GoogleFonts.comicNeue(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.white,
-                thickness: 2,
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Hayır',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      dbHelper.deleteLetter(letter.id!);
-                      setState(() {});
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ListePage(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
-                                )),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.lightBlueAccent),
-                    ),
-                    child: Text(
-                      'Evet',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
+  @override void dispose() {
     _pause();
     audioPlayer.stop();
     super.dispose();
   }
-
   Future<void> _loadAudio() async {
     try {
       await audioPlayer.setUrl(musicPath ?? widget.letter.musicPath!);
@@ -553,7 +383,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       print('Error loading audio: $e');
     }
   }
-
   Future<void> _play() async {
     int result = await audioPlayer.play(musicPath ?? widget.letter.musicPath!);
     if (result == 1) {
@@ -562,7 +391,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       });
     }
   }
-
   Future<void> _pause() async {
     if (mounted) {
       int result = await audioPlayer.pause();
@@ -570,6 +398,106 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
         _isPlaying = false;
       }
     }
+  }
+  Widget _updateButton() {
+    return TextButton(
+      onPressed: () async {selectProcess(Options.update);},
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Color(0xffad89d7),
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xff9a6ed3),
+                  Color(0xffbea1ea),
+                  Color(0xff9a6ed3),
+                ])),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.update,
+              color: Colors.white,
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            Text(
+              "Güncelle",
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _deleteButton() {
+    return TextButton(
+      onPressed: () async {selectProcess(Options.delete);},
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Color(0xffad89d7),
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xff9a6ed3),
+                  Color(0xffbea1ea),
+                  Color(0xff9a6ed3),
+                ])),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            Text(
+              "Sil",
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<List<Letter>> liste() async {
@@ -611,7 +539,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildLetterAnnotation() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -657,7 +584,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       });
     }
   }
-
   void getMusicc() async {
     final pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -667,7 +593,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       musicPath = pickedFile.files.first.path!;
     }
   }
-
   void getMusic() async {
     final pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -694,7 +619,6 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       default:
     }
   }
-
   void updateLetter() async {
     Letter updatedLetter = widget.letter.copyWith(
         imagePath: imagePath,
@@ -713,16 +637,184 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
     );
     setState(() {});
   }
-
-  Widget customSizedBox() => SizedBox(
-        height: 20,
-      );
-
+  void _showResendDialogg() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Güvenli Çıkış Yapın!',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Hayır',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context)=> LoginPage()),
+                              (route) => false);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Evet',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  void _showResendDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.lightBlueAccent,
+            width: 2,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                "Uyarı",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),SizedBox(height: 16,),
+              Text(
+                textAlign: TextAlign.center,
+                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),),
+              SizedBox(height: 24),
+              Divider(
+                color: Colors.white,
+                thickness: 2,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'Hayır',
+                      style: GoogleFonts.comicNeue(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      dbHelper.deleteLetter(letter.id!);
+                      setState(() {});
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListePage(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                            )),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
+                    ),
+                    child: Text(
+                      'Evet',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
-
+  Widget customSizedBox() => SizedBox(
+        height: 20,
+      );
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

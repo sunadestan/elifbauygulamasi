@@ -1369,7 +1369,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           MaterialPageRoute(
                               builder: (context) => HomePage(
                                 user: widget.user,
-                                letter: letter,
+                                letter: widget.letter,
                               )));
                       togglePause();
                       _timer.cancel();
@@ -1686,7 +1686,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: letter,
+                                letter: widget.letter,
                                 user: widget.user,
                               )));
                       togglePause();

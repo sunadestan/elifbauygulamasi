@@ -477,13 +477,22 @@ class _UstunPageState extends State<UstunPage> with ValidationMixin {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
+                textAlign: TextAlign.center,
+                "Uyarı",
                 style: GoogleFonts.comicNeue(
                   color: Colors.lightBlueAccent,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              ),SizedBox(height: 16,),
+              Text(
+                textAlign: TextAlign.center,
+                "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
