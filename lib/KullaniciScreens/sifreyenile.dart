@@ -6,14 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'login_page.dart';
+import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import '../models/validation.dart';
-import '../KullaniciScreens/ayarlar.dart';
-import '../KullaniciScreens/dersmenü.dart';
-import '../KullaniciScreens/oyunmenü.dart';
+import 'ayarlar.dart';
+import 'dersmenü.dart';
+import 'oyunmenü.dart';
 
 class SifreYenile extends StatefulWidget {
   SifreYenile({Key? key, required this.letter, required this.user})
@@ -385,45 +385,6 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   String? _currentPassword;
   String? _newPassword;
   String? _confirmPassword;
-
-  Widget buildPasswordFields() {
-    return Column(
-      children: [
-        TextFormField(
-          onChanged: (value) {
-            _currentPassword = hashPassword(value);
-          },
-          decoration: InputDecoration(
-            labelText: 'Mevcut Şifre',
-            border: OutlineInputBorder(),
-          ),
-          obscureText: true,
-        ),
-        SizedBox(height: 16),
-        TextFormField(
-          onChanged: (value) {
-            _newPassword = value;
-          },
-          decoration: InputDecoration(
-            labelText: 'Yeni Şifre',
-            border: OutlineInputBorder(),
-          ),
-          obscureText: true,
-        ),
-        SizedBox(height: 16),
-        TextFormField(
-          onChanged: (value) {
-            _confirmPassword = value;
-          },
-          decoration: InputDecoration(
-            labelText: 'Yeni Şifre Tekrar',
-            border: OutlineInputBorder(),
-          ),
-          obscureText: true,
-        ),
-      ],
-    );
-  }
 
   Widget buildSaveButton() {
     return TextButton(

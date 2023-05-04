@@ -39,76 +39,148 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 50),
-                      height: f * .20,
-                      //width:f* .100,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/topImage.png")),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+        );
+        return false; // Geri tuşu işleme alınmadı
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 50),
+                        height: f * .20,
+                        //width:f* .100,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/topImage.png")),
+                        ),
                       ),
+                      Positioned(
+                          top: 0, left: 0, bottom: 0, child: _backButton()),
+                      customSizedBox(),
+                      customSizedBox(),
+                    ],
+                  ),
+                  _title(),
+                  customSizedBox(),
+                  customSizedBox(),
+                  buildForgetPasswordField(),
+                  _gonderButtton(),
+                  SizedBox(height: 20),
+                  Text(
+                    "Kalan Saniye: $_secondsRemaining",
+                    style: GoogleFonts.comicNeue(
+                      color: Color(0xff935ccf),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
-                    Positioned(
-                        top: 0, left: 0, bottom: 0, child: _backButton()),
-                  ],
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  'Mail doğrulama kodu e-posta adresinize gönderildi.',
-                  style: GoogleFonts.comicNeue(
-                    fontSize: 16,
-                    color: Color(0xff935ccf),
-                    fontWeight: FontWeight.w600,
                   ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    controller: codeController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    decoration: InputDecoration(
-                      labelText: 'Mail doğrulama kodu',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Kod zorunlu';
-                      } else if (value.length != 6) {
-                        return 'Kod 6 haneli olmalı';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                _gonderButtton(),
-                SizedBox(height: 20),
-                Text(
-                  "Kalan Saniye: $_secondsRemaining",
-                  style: GoogleFonts.comicNeue(
-                    color: Color(0xff935ccf),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget customSizedBox() => SizedBox(height: 20,);
+  Widget _title() {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+          text: 'Elif',
+          style: GoogleFonts.comicNeue(
+            fontSize: 40,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff935ccf),
+            shadows: [
+              Shadow(
+                blurRadius: 5.0,
+                color: Colors.grey,
+                offset: Offset(2.0, 2.0),
+              ),
+            ],
+          ),
+          children: [
+            TextSpan(
+              text: '-',
+              style: GoogleFonts.comicNeue(
+                color: Color(0xffad80ea),
+                fontSize: 40,
+                fontWeight: FontWeight.w700,shadows: [
+                Shadow(
+                  blurRadius: 5.0,
+                  color: Colors.grey,
+                  offset: Offset(2.0, 2.0),
+                ),
+              ],),
+            ),
+            TextSpan(
+              text: 'Ba',
+              style: GoogleFonts.comicNeue(
+                color: Color(0xff935ccf),
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+    );
+  }
+  Widget buildForgetPasswordField() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Mail Doğrulama Kodu",
+            style: GoogleFonts.comicNeue(
+              color: Color(0xff935ccf),
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextFormField(
+            controller: codeController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            decoration: InputDecoration(
+                border: InputBorder.none, //kenarlıkları yok eder
+                filled: true),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Kod zorunlu';
+              } else if (value.length != 6) {
+                return 'Kod 6 haneli olmalı';
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }
@@ -118,7 +190,6 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
     super.initState();
     _startTimer();
   }
-
   @override
   void dispose() {
     _stopTimer();
@@ -138,7 +209,6 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
       });
     });
   }
-
   void _stopTimer() {
     _timer.cancel();
     // _timer = 0;
@@ -688,66 +758,4 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
     }
   }
 
-  /*Widget _entryField(String title) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: GoogleFonts.comicNeue(
-              color: Color(0xff935ccf),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: kutucuk(),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("6 Haneli Kodu Girin"),
-      ],
-    );
-  }
-  List<Widget> kutucuk() {
-    return List.generate(
-      6,
-      (index) => Container(
-        height: 50,
-        width: 50,
-        child: TextFormField(
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          style: GoogleFonts.comicNeue(
-            color: Colors.black,
-            fontSize: 25,
-            fontWeight: FontWeight.w700,
-          ),
-          decoration: InputDecoration(
-              fillColor: Color(0xfff3f3f4),
-              filled: true,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none),
-              counter: null),
-          onChanged: (value) {
-            if (value.length == 1) {
-              FocusScope.of(context).nextFocus(); // bir sonraki kutuya odaklan
-            }
-          },
-        ),
-      ),
-    );
-  }*/
 }

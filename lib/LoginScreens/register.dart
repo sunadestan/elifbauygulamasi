@@ -183,12 +183,13 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
             },
             selectorConfig: SelectorConfig(
               selectorType: PhoneInputSelectorType.DIALOG,
+              showFlags: true,
             ),
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
             selectorTextStyle:
                 TextStyle(color: Colors.black, fontFamily: 'Comic Neue'),
-            initialValue: PhoneNumber(isoCode: 'TR'), // başlangıç ülke kodu
+            //initialValue: PhoneNumber(isoCode: ''), // başlangıç ülke kodu
             formatInput: true,
             keyboardType:
                 TextInputType.numberWithOptions(signed: true, decimal: true),

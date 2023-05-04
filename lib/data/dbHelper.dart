@@ -175,6 +175,27 @@ class DbHelper{
     return result;
   }
 
+  Future<int> updateUser(User user) async {
+    Database? db = await this.db;
+    var result = await db.update(
+      "users",
+      {
+        "username": user.username,
+        "email": user.email,
+        "name": user.name,
+        "address": user.address,
+        "lastname": user.lastname,
+        "phone": user.phone,
+        "isadmin": 0,
+        "isVerified": 1,
+      },
+      where: "id = ?",
+      whereArgs: [user.id],
+    );
+    return result;
+  }
+
+
   Future<User?> checkUser(String username, String password) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -333,4 +354,5 @@ class DbHelper{
       },
     );
   }
+
 }

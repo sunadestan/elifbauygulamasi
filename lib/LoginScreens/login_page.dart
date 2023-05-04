@@ -114,8 +114,8 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                         ),
                         _LoginButton(),
                         _submitButton(),
-                        //buildcizgi(),
-                        //_googleButton(),
+                        buildcizgi(),
+                        _googleButton(),
                         SizedBox(
                           height: 10,
                         ),

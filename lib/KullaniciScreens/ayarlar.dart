@@ -1,6 +1,6 @@
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
-import 'package:elifbauygulamasi/LoginScreens/sifreyenile.dart';
+import 'package:elifbauygulamasi/KullaniciScreens/sifreyenile.dart';
 import 'package:elifbauygulamasi/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -107,33 +107,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                 },
               ),
             ),
-            actions: <Widget>[
-              PopupMenuButton<Options>(
-                  onSelected: selectProcess,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<Options>>[
-                        PopupMenuItem<Options>(
-                          value: Options.delete,
-                          child: Text(
-                            "Hesabı sil",
-                            style: GoogleFonts.comicNeue(
-                                //fontWeight: FontWeight.normal,
-                                //color: Colors.black,
-                                ),
-                          ),
-                        ),
-                        PopupMenuItem<Options>(
-                          value: Options.update,
-                          child: Text(
-                            "Güncelle",
-                            style: GoogleFonts.comicNeue(
-                                //fontWeight: FontWeight.normal,
-                                //color: Colors.black,
-                                ),
-                          ),
-                        ),
-                      ])
-            ],
           ),
           body: SingleChildScrollView(
             child: Form(
@@ -158,6 +131,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                     buildUserNameField(),
                     buildMailField(),
                     buildPasswordField(),
+                    buildSaveButton(),
                   ],
                 ),
               ),
@@ -419,7 +393,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildMailField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -453,7 +426,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
-
   Widget buildPasswordField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -473,10 +445,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
           ),
           TextFormField(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SifreYenile(
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SifreYenile(
                           letter: widget.letter, user: widget.user)));
             },
             keyboardType: TextInputType.name,
@@ -489,17 +458,18 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
+  void _saveForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
-  void selectProcess(Options options) async {
-    switch (options) {
-      case Options.delete:
-        _showResendDialog();
-        break;
-      case Options.update:
-        await dbHelper.update(User.withId(
+      User user = widget.user;
+      User? dbUser = await dbHelper.getUserById(user.id!);
+
+      try {
+        await dbHelper.updateUser(User.withId(
           user.id,
           txtusername.text,
-          "${widget.user.password}",
+          "",
           txtemail.text,
           txtname.text,
           "${widget.user.address}",
@@ -508,8 +478,64 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
           isadmin: 0,
           isVerified: 1,
         ));
-        Navigator.pop(context, true);
-        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Kullanıcı güncellendi"),
+          duration: const Duration(seconds: 3),
+        ));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Hata: Kullanıcı güncellenemedi"),
+          duration: const Duration(seconds: 3),
+        ));
+      }
+    }
+  }
+
+  Widget buildSaveButton() {
+    return TextButton(
+      onPressed: () async {
+_saveForm();
+      },
+
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Color(0xffad89d7),
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xff823ac6),
+                  Color(0xff703dd0),
+                ])),
+        child: Text(
+          "Kaydet",
+          style: GoogleFonts.comicNeue(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void selectProcess(Options options) async {
+    switch (options) {
+      case Options.delete:
+        _showResendDialog();
         break;
       default:
     }
