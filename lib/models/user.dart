@@ -11,8 +11,11 @@ class User {
   int? isadmin=0;
   bool tempp=false;
   int? isVerified=0;
+  bool temppp=false;
+  int? isGoogleUser = 0;
 
-  User( this.username,this.password,this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin, required int isVerified}) {}
+  User( this.username,this.password,this.email,this.name,this.address,this.lastname,this.phone,
+      {required int isadmin, required int isVerified,required int isGoogleUser }) {}
   User.withId(this.id,this.username, this.password , this.email,this.name,this.address,this.lastname,this.phone,{required int isadmin,required int isVerified}) {}
 
   Map<String,dynamic> toMap(){
@@ -26,6 +29,7 @@ class User {
     map["email"]=email;
     map["isadmin"]=isadmin;
     map["isVerified"]=isVerified;
+    map["isGoogleUser"]=isGoogleUser;
 
     if(id!=null){
       map["id"]=id;
@@ -43,7 +47,7 @@ class User {
     this.email = o["email"];
     this.isadmin=o["isadmin"];
     this.isVerified=o["isVerified"];
-
+    this.isGoogleUser=o["isGoogleUser"];
   }
 }
 

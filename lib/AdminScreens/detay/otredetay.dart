@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%BCst%C3%BCnliste.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../listeler/ötreliste.dart';
 import '../listemenü.dart';
+import '../log.dart';
 
 class OtrePage extends StatefulWidget {
   OtrePage(
@@ -27,7 +29,7 @@ class OtrePage extends StatefulWidget {
         required this.letter,
         required this.user,
         required this.deneme,
-        required this.denemeiki,
+        required this.denemeiki,required this.log,
         required this.harf})
       : super(key: key);
   final Letter letter;
@@ -35,6 +37,7 @@ class OtrePage extends StatefulWidget {
   final int deneme;
   final int denemeiki;
   final Harfharake harf;
+  Log log;
   @override
   State<OtrePage> createState() => _OtrePageState(harf);
 }
@@ -57,6 +60,8 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
   String? _aciklama;
   String? _ses;
   bool _isPlaying = false;
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   Harfharake harf;
   _OtrePageState(this.harf);
@@ -281,7 +286,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                           builder: (context) => AdminPage(
                             user: widget.user,
                             deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,
+                            denemeiki: widget.denemeiki,log: widget.log,
                           )),
                     );
                   },
@@ -304,7 +309,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                             user: widget.user,
                             deneme: widget.deneme,
                             denemeiki: widget.denemeiki,
-
+                            log: widget.log,
                           )),
                     );
                   },
@@ -327,13 +332,35 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                             user: widget.user,
                             deneme: widget.deneme,
                             denemeiki: widget.denemeiki,
-
+                            log: widget.log,
                           )),
                     );
                   },
                   leading: Icon(Icons.add),
                   title: Text(
                     'Harf Ekle',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LogGiris(
+                            user: widget.user,
+                            deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,log: widget.log,
+                          )),
+                    );
+                  },
+                  leading: Icon(Icons.verified_user_outlined),
+                  title: Text(
+                    'Giriş Bilgileri',
                     style: GoogleFonts.comicNeue(
                       color: Colors.white,
                       fontSize: 18,
@@ -436,7 +463,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -529,7 +556,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
                             builder: (context) => OtreListePage(
                               user: widget.user,
                               deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,log: widget.log,
                             )),
                       );
                     },
@@ -725,7 +752,7 @@ class _OtrePageState extends State<OtrePage> with ValidationMixin {
           builder: (context) => OtreListePage(
             user: widget.user,
             deneme: widget.deneme,
-            denemeiki: widget.denemeiki,
+            denemeiki: widget.denemeiki,log: widget.log,
           )),
     );
     setState(() {});

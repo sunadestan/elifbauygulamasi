@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import 'package:flutter/widgets.dart';
 import '../../models/user.dart';
@@ -18,14 +20,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../harfeklememenü.dart';
 import '../listeler/harfyazilisliste.dart';
+import '../log.dart';
 
 
 class HarfYazilisEkle extends StatefulWidget {
-  const HarfYazilisEkle({Key? key,required this.user,required this.letter,required this.deneme,required this.denemeiki,}) : super(key: key);
+   HarfYazilisEkle({Key? key,required this.user,required this.letter,required this.deneme,required this.denemeiki,required this.log}) : super(key: key);
   final User user;
   final Letter letter;
   final int deneme;
   final int denemeiki;
+  Log log;
 
   @override
   _HarfYazilisEkleState createState() => _HarfYazilisEkleState();
@@ -44,6 +48,8 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
   final picker = ImagePicker();
   final dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +57,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HarfeklemeMenu(user: widget.user, deneme: widget.deneme,denemeiki: widget.denemeiki,)),
+          MaterialPageRoute(builder: (context) => HarfeklemeMenu(log: widget.log,user: widget.user, deneme: widget.deneme,denemeiki: widget.denemeiki,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -104,7 +110,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
               IconButton(
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                        MaterialPageRoute(builder: (context)=> HarfeklemeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -165,7 +171,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                   ),ListTile(
                     onTap: ()  {Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                      MaterialPageRoute(builder: (context) =>AdminPage(log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                     );},
                     leading: Icon(Icons.home),
                     title: Text(
@@ -181,7 +187,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                     onTap: ()  {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => ListeMenu(log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                       );},
                     leading: Icon(Icons.list),
                     title: Text(
@@ -197,12 +203,35 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),
                       );
                     },
                     leading: Icon(Icons.add),
                     title:Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                              log: widget.log,
+                            )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -347,7 +376,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
           saveToDatabase();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HarfYazilisListePage(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),);
+            MaterialPageRoute(builder: (context) => HarfYazilisListePage(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),);
           _showResendDialog(context);
         }
       },
@@ -575,7 +604,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
 
                     },
                     style: ButtonStyle(

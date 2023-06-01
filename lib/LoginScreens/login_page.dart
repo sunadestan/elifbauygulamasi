@@ -3,32 +3,45 @@ import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/LoginScreens/forgetpassword.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/home.dart';
 import 'package:elifbauygulamasi/LoginScreens/register.dart';
+import 'package:elifbauygulamasi/models/Log.dart';
 import 'package:elifbauygulamasi/models/letter.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../data/googlesign.dart';
+import '../models/game.dart';
 import '../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'googleregister.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+ LoginPage({Key? key,required this.user,required this.game,required this.log}) : super(key: key);
+ User user;
+ Game game;
+ Log log;
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 //0xffa875ea
 class _LoginPageState extends State<LoginPage> with ValidationMixin {
+  var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   var dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
   late String _password;
   late String _userName;
+  late String email = "";
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   late String _errorMessage;
   GoogleSignInAccount? user;
   int deneme = 1;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +71,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                       left: 0,
                       child: logo(),
                     ),
-                   /*Positioned(
+                    /*Positioned(
                       top: 40,
                       left: 15,
                       child: _title(),
@@ -244,6 +257,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _LoginButton() {
     return TextButton(
       onPressed: () async {
@@ -282,6 +296,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _googleButton() {
     return TextButton(
       onPressed: () async {
@@ -342,57 +357,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
-  Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: 'Elif',
-          style: GoogleFonts.comicNeue(
-            fontSize: 40,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            shadows: [
-              Shadow(
-                blurRadius: 5.0,
-                color: Color(0xffad80ea),
-                offset: Offset(2.0, 2.0),
-              ),
-            ],
-          ),
-          children: [
-            TextSpan(
-              text: '-',
-              style: GoogleFonts.comicNeue(
-                color: Colors.white,
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Color(0xffad80ea),
-                    offset: Offset(2.0, 2.0),
-                  ),
-                ],
-              ),
-            ),
-            TextSpan(
-              text: 'Ba',
-              style: GoogleFonts.comicNeue(
-                color: Colors.white,
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Color(0xffad80ea),
-                    offset: Offset(2.0, 2.0),
-                  ),
-                ],
-              ),
-            ),
-          ]),
-    );
-  }
 
   void _showResendDialog() {
     showDialog(
@@ -433,7 +397,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                 },
                 style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
                 ),
                 child: Text(
                   "Kayıt olmak ister misin?",
@@ -454,7 +418,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                 },
                 style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
                 ),
                 child: Text(
                   "Şifreni mi unuttun?",
@@ -470,6 +434,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+
   void _showResendDialogg({String message = ""}) {
     showDialog(
       context: context,
@@ -534,35 +499,87 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     );
   }
 
-  Future<User> _convertGoogleSignInToUser(GoogleSignInAccount account) async {
-    final GoogleSignInAuthentication auth = await account.authentication;
-    final String email = account.email;
-    final String token = auth.accessToken.toString();
-    return User(email, "", "", "", "", "", "", isadmin: 0, isVerified: 0);
-  }
+
   Future<void> signIn() async {
-    var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     final user = await GoogleSignInApi.login();
-    if (user == null) {
+    email = user!.email ?? "";
+    var result = await dbHelper.getUserByEmail(email);
+    final surname = user.displayName?.split(" ").last ?? "";
+    final name = user.displayName?.split(" ").first ?? "";
+    final formattedName = name[0].toUpperCase() + name.substring(1);
+    final formattedLastName = surname[0].toUpperCase() + surname.substring(1);
+
+    if (result == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          'Oturum açma başarısız!',
+          'Kullanıcı kayıtlı değil!',
           style: GoogleFonts.comicNeue(fontWeight: FontWeight.w600),
         ),
       ));
-    } else {
-      final convertedUser = await _convertGoogleSignInToUser(user);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => HomePage(
-                user: convertedUser,
-                letter: letter,
+          builder: (context) => Googleregister(
+                name: formattedName,
+                lastname: formattedLastName,
+                email: email,
               )));
+      GoogleSignInApi.logout();
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'Oturum açma başarısız!',
+            style: GoogleFonts.comicNeue(fontWeight: FontWeight.w600),
+          ),
+        ));
+      }
+    } else {
+        final name = user.displayName?.split(" ").first ?? "";
+        final formattedName = name[0].toUpperCase() + name.substring(1);
+        final lastname = user.displayName?.split(" ").last ?? "";
+        final formattedLastName =
+            lastname[0].toUpperCase() + lastname.substring(1);
+        User? convertedUser = await dbHelper.getUserByEmail(user.email);
+        DateTime now = DateTime.now();
+        String formattedDateTime = DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbHelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          Log updatedLog = Log(
+            id: existingLog.id,
+            girisTarih: formattedDateTime,
+            cikisTarih: existingLog.cikisTarih,
+            kayitTarih: existingLog.kayitTarih,
+            yapilanIslem: "Google ile giriş",
+            name: existingLog.name,
+            lastname: existingLog.lastname,
+            username: existingLog.username,
+            durum: 1, // Set the durum field to 1 for login
+            kullaniciId: existingLog.kullaniciId,
+          );
+          await dbHelper.updateLog(updatedLog);
+        }
+
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => HomePage(
+              user: convertedUser!,
+                letter: letter,
+              name: formattedName,
+              username: formattedName,
+              email: email,
+              lastname: formattedLastName,
+              game:widget.game,
+
+            )));
     }
   }
+
   Future<void> girisYap(String x, String y) async {
+    String tempname = "";
+    String templastname = "";
+    String tempusername = "";
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       var result = await dbHelper.checkUser(x, y);
       bool isAdmin = result?.isadmin == 1;
       bool isVerified = result?.isVerified == 1;
@@ -574,16 +591,42 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
               denemeiki: deneme,
               user: result,
               deneme: deneme,
+              log: widget.log,
             ),
           ),
         );
       } else if (result != null && isVerified) {
+        DateTime now = DateTime.now();
+        String formattedDateTime = DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbHelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          Log updatedLog = Log(
+            id: existingLog.id,
+            girisTarih: formattedDateTime,
+            cikisTarih: existingLog.cikisTarih,
+            kayitTarih: existingLog.kayitTarih,
+            yapilanIslem: "Giriş",
+            name: existingLog.name,
+            lastname: existingLog.lastname,
+            username: existingLog.username,
+            durum: 1, // Set the durum field to 1 for login
+            kullaniciId: existingLog.kullaniciId,
+          );
+          await dbHelper.updateLog(updatedLog);
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(
               user: result,
               letter: letter,
+              name: tempname,
+              username: tempusername,
+              email: email,
+              lastname: templastname,
+              game: widget.game,
+
             ),
           ),
         );
@@ -625,6 +668,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
       ),
     );
   }
+
   Widget customSizedBox() => SizedBox(
         height: 20,
       );

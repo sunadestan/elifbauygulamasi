@@ -8,20 +8,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../harfeklememenü.dart';
+import '../log.dart';
 
 class EsreListePage extends StatefulWidget {
   final User user;
   final int deneme;
   final int denemeiki;
+  Log log;
   EsreListePage({
     Key? key,
     required this.user,
     required this.deneme,
     required this.denemeiki,
+    required this.log,
   }) : super(key: key);
   @override
   State<EsreListePage> createState() => _EsreListePage();
@@ -37,6 +42,9 @@ class _EsreListePage extends State<EsreListePage> {
     harfharakename: "",
     harfTur: 0,
   );
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
+
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
   //var letter=Letter(imagePath: "");
@@ -58,7 +66,7 @@ class _EsreListePage extends State<EsreListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
+          MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -108,7 +116,7 @@ class _EsreListePage extends State<EsreListePage> {
               IconButton(
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                        MaterialPageRoute(builder: (context)=> ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -186,7 +194,7 @@ class _EsreListePage extends State<EsreListePage> {
                             builder: (context) => AdminPage(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,   log: widget.log,
                                 )),
                       );
                     },
@@ -208,7 +216,7 @@ class _EsreListePage extends State<EsreListePage> {
                             builder: (context) => ListeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,   log: widget.log,
                                 )),
                       );
                     },
@@ -229,7 +237,7 @@ class _EsreListePage extends State<EsreListePage> {
                         MaterialPageRoute(
                             builder: (context) => HarfeklemeMenu(
                                   user: widget.user,
-                                  deneme: widget.deneme,denemeiki: widget.denemeiki,
+                                  deneme: widget.deneme,denemeiki: widget.denemeiki,   log: widget.log,
 
                                 )),
                       );
@@ -237,6 +245,29 @@ class _EsreListePage extends State<EsreListePage> {
                     leading: Icon(Icons.add),
                     title: Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                              log: widget.log,
+                            )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -340,7 +371,7 @@ class _EsreListePage extends State<EsreListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -412,7 +443,7 @@ class _EsreListePage extends State<EsreListePage> {
                     deneme: widget.deneme,
                     harf: harf,
                     letter: letter,
-                denemeiki: widget.denemeiki,
+                denemeiki: widget.denemeiki,log: widget.log,
                   )),
         );
       },

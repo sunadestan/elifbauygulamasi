@@ -1,6 +1,8 @@
+import 'package:elifbauygulamasi/models/Log.dart';
 import 'package:elifbauygulamasi/models/user.dart';
 import 'package:flutter/material.dart';
 import 'LoginScreens/login_page.dart';
+import 'models/game.dart';
 import 'models/letter.dart';
 
 void main() {
@@ -13,11 +15,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Letter letter = Letter(imagePath: "");
-    var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
+    var user = User("", "", "", "", "", "", "",
+        isadmin: 0, isVerified: 0, isGoogleUser: 0);
+    var game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+    var log =Log();
     return MaterialApp(
       title: "LOGİN",
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: LoginPage(
+        user: user,
+        game: game,
+        log: log,
+      ),
     );
   }
 }

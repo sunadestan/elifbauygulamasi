@@ -8,16 +8,33 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/letter.dart';
 import '../models/validation.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'dersmenü.dart';
+import 'package:intl/intl.dart';
 
 class AyarlarPage extends StatefulWidget {
-  AyarlarPage({Key? key, required this.letter, required this.user})
+  AyarlarPage(
+      {Key? key,
+      required this.letter,
+      required this.user,
+      required this.game,
+      required this.name,
+      required this.lastname,
+      required this.email,
+      required this.username})
       : super(key: key);
   final Letter letter;
   final User user;
+  Game game;
+  final name;
+  final email;
+  final username;
+  final lastname;
 
   @override
   State<AyarlarPage> createState() => _AyarlarPageState(user);
@@ -40,14 +57,16 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
   late String _lastname;
   var dbHelper = DbHelper();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
+  final log = Log();
+  var dbhelper = DbHelper();
+
   User user;
   _AyarlarPageState(this.user);
+
   @override
   void initState() {
     txtname.text = user.name;
     txtlastname.text = user.lastname;
-    txtemail.text = user.email;
-    txtusername.text = user.username;
     txtpassword.text = user.password;
     super.initState();
   }
@@ -56,11 +75,29 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        DateTime now = DateTime.now();
+        String formattedDateTime =
+        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbHelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          existingLog.durum = 0;
+          existingLog.cikisTarih = formattedDateTime;
+          existingLog.girisTarih;
+          await dbHelper.updateLog(existingLog);
+        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  HomePage(user: widget.user, letter: widget.letter)),
+              builder: (context) => HomePage(
+                    user: widget.user,
+                    letter: widget.letter,
+                    name: widget.name,
+                    username: widget.username,
+                    lastname: widget.lastname,
+                    email: widget.email,
+                    game: widget.game,
+                  )),
           (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -172,6 +209,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                               builder: (context) => HomePage(
                                     user: widget.user,
                                     letter: letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -192,6 +234,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                               builder: (context) => Dersler(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
@@ -212,6 +259,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                               builder: (context) => OyunSinifi(
                                     user: user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                     },
                     leading: Icon(Icons.extension),
@@ -232,6 +284,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                               builder: (context) => AyarlarPage(
                                     letter: letter,
                                     user: widget.user,
+                                    name: widget.name,
+                                    email: widget.email,
+                                    lastname: widget.lastname,
+                                    username: widget.username,
+                                    game: widget.game,
                                   )));
                     },
                     leading: Icon(Icons.settings),
@@ -311,7 +368,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
               filled: true,
-              hintText: '${widget.user.name}',
+              hintText: (widget.name) + (widget.user.name),
             ),
             validator: validateName, //
             onSaved: (String? value) {
@@ -347,7 +404,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
               filled: true,
-              hintText: '${widget.user.lastname}',
+              hintText: (widget.lastname) + (widget.user.lastname),
             ),
             validator: validateLastName, //
             onSaved: (String? value) {
@@ -381,8 +438,9 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             controller: txtusername,
             keyboardType: TextInputType.name,
             decoration: InputDecoration(
-              border: InputBorder.none, //kenarlıkları yok eder
-              filled: true, hintText: '${widget.user.username}',
+              border: InputBorder.none,
+              filled: true,
+              hintText: (widget.user.username),
             ),
             validator: validateUserName, //
             onSaved: (String? value) {
@@ -393,6 +451,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildMailField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -415,9 +474,10 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
-              filled: true, hintText: '${widget.user.email}',
+              filled: true,
+              hintText: (widget.email),
             ),
-            validator: validateForgetPassword, //
+            validator: validateForgetPassword,
             onSaved: (String? value) {
               _email = value!;
             },
@@ -426,6 +486,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildPasswordField() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -445,8 +506,18 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
           ),
           TextFormField(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SifreYenile(
-                          letter: widget.letter, user: widget.user)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SifreYenile(
+                            letter: widget.letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          )));
             },
             keyboardType: TextInputType.name,
             decoration: InputDecoration(
@@ -458,12 +529,13 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       ),
     );
   }
+
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
       User user = widget.user;
-      User? dbUser = await dbHelper.getUserById(user.id!);
+      //User? dbUser = await dbHelper.getUserById(user.id!);
 
       try {
         await dbHelper.updateUser(User.withId(
@@ -494,9 +566,8 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
   Widget buildSaveButton() {
     return TextButton(
       onPressed: () async {
-_saveForm();
+        _saveForm();
       },
-
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 75,
@@ -593,11 +664,28 @@ _saveForm();
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                          DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbhelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbhelper.updateLog(existingLog);
+                      }
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,
+                                    log: log,
+                                  )),
                           (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -618,6 +706,14 @@ _saveForm();
         ),
       ),
     );
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 
   void _showResendDialog() {
@@ -689,7 +785,12 @@ _saveForm();
                       dbHelper.delete(user.id!);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(
+                            builder: (context) => LoginPage(
+                                  user: widget.user,
+                                  game: widget.game,
+                                  log: log,
+                                )),
                       );
                       setState(() {});
                     },
@@ -717,6 +818,7 @@ _saveForm();
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();

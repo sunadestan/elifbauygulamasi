@@ -1,7 +1,9 @@
+import 'package:elifbauygulamasi/KullaniciScreens/oyun/bitisikoyun.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeiki.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeuc.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyun/soruoyunu.dart';
+import 'package:elifbauygulamasi/models/game.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,16 +11,34 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
+import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
+import '../models/Log.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/dersmenü.dart';
 import 'ayarlar.dart';
 import 'home.dart';
+import 'package:intl/intl.dart';
 
 class OyunSinifi extends StatefulWidget {
-  OyunSinifi({Key? key,required this.user,required this.letter}) : super(key: key);
+  OyunSinifi({
+    Key? key,
+    required this.user,
+    required this.game,
+    required this.letter,
+    required this.name,
+    required this.email,
+    required this.lastname,
+    required this.username,
+  }) : super(key: key);
   User user;
   Letter letter;
+  final name;
+  final username;
+  final lastname;
+  final email;
+  Game game;
 
   @override
   State<OyunSinifi> createState() => _OyunSinifiState();
@@ -28,86 +48,149 @@ class _OyunSinifiState extends State<OyunSinifi> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   final _advancedDrawerController = AdvancedDrawerController();
   late AudioPlayer _audioPlayer;
+  var dbHelper = DbHelper();
+  final log = Log();
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        DateTime now = DateTime.now();
+        String formattedDateTime =
+            DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbHelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          existingLog.durum = 0;
+          existingLog.cikisTarih = formattedDateTime;
+          existingLog.girisTarih;
+          await dbHelper.updateLog(existingLog);
+        }
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(user: widget.user, letter: widget.letter)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    user: widget.user,
+                    letter: widget.letter,
+                    name: widget.name,
+                    username: widget.username,
+                    lastname: widget.lastname,
+                    email: widget.email,
+                    game: widget.game,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
       child: AdvancedDrawer(
-          backdropColor: Color(0xffad80ea),
-          controller: _advancedDrawerController,
-          animationCurve: Curves.easeInOut,
-          animationDuration: const Duration(milliseconds: 300),
-          animateChildDecoration: true,
-          rtlOpening: false,
-          openScale: 1.0,
-          disabledGestures: false,
-          childDecoration: const BoxDecoration(
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 0.0,
-              ),
-            ],
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text("Harfler",
-                  style: GoogleFonts.comicNeue(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900)),
-              backgroundColor: Color(0xFF975FD0),
-              leading: IconButton(
-                onPressed: _handleMenuButtonPressed,
-                icon: ValueListenableBuilder<AdvancedDrawerValue>(
-                  valueListenable: _advancedDrawerController,
-                  builder: (_, value, __) {
-                    return AnimatedSwitcher(
-                      duration: Duration(milliseconds: 250),
-                      child: Icon(
-                        value.visible ? Icons.clear : Icons.menu,
-                        key: ValueKey<bool>(value.visible),
-                      ),
-                    );
-                  },
-                ),
+        backdropColor: Color(0xffad80ea),
+        controller: _advancedDrawerController,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 300),
+        animateChildDecoration: true,
+        rtlOpening: false,
+        openScale: 1.0,
+        disabledGestures: false,
+        childDecoration: const BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 0.0,
+            ),
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Harfler",
+                style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900)),
+            backgroundColor: Color(0xFF975FD0),
+            leading: IconButton(
+              onPressed: _handleMenuButtonPressed,
+              icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                valueListenable: _advancedDrawerController,
+                builder: (_, value, __) {
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 250),
+                    child: Icon(
+                      value.visible ? Icons.clear : Icons.menu,
+                      key: ValueKey<bool>(value.visible),
+                    ),
+                  );
+                },
               ),
             ),
-            body: Container(
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/renkli.jpg"),
-                    colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
-                    fit: BoxFit.cover,
+          ),
+          body: Container(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/renkli.jpg"),
+                  colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3), BlendMode.darken),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: birinciOyun(),
+                    right: 120,
+                    top: 20,
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(child: birinciOyun(),right: 120,top: 20,),
-                    Positioned(child: ikinciOyun(),right: 10,top: 90,),
-                    Positioned(child: ucuncuOyun(),left: 130,top: 160,),
-                    Positioned(child: dorduncuOyun(),right: 10,top: 230,),
-                    Positioned(child: besinciOyun(),right: 120,top: 300,),
-                    Positioned(child: altinciOyun(),right: 10,top: 370,),
-                    Positioned(child: yedinciOyun(),left: 130,top: 440,),
-                    Positioned(child: sekizinciOyun(),right: 10,top: 510,),
-                    Positioned(child: dokuzuncuOyun(),right: 120,top: 590,),
-                    Positioned(child: onuncuOyun(),right: 10,top: 650,),
-                  ],
-                ),
+                  Positioned(
+                    child: ikinciOyun(),
+                    right: 10,
+                    top: 90,
+                  ),
+                  Positioned(
+                    child: ucuncuOyun(),
+                    left: 130,
+                    top: 160,
+                  ),
+                  Positioned(
+                    child: dorduncuOyun(),
+                    right: 10,
+                    top: 230,
+                  ),
+                  Positioned(
+                    child: besinciOyun(),
+                    right: 120,
+                    top: 300,
+                  ),
+                  Positioned(
+                    child: altinciOyun(),
+                    right: 10,
+                    top: 370,
+                  ),
+                  Positioned(
+                    child: yedinciOyun(),
+                    left: 130,
+                    top: 440,
+                  ),
+                  Positioned(
+                    child: sekizinciOyun(),
+                    right: 10,
+                    top: 510,
+                  ),
+                  Positioned(
+                    child: dokuzuncuOyun(),
+                    right: 120,
+                    top: 590,
+                  ),
+                  Positioned(
+                    child: onuncuOyun(),
+                    right: 10,
+                    top: 650,
+                  ),
+                ],
               ),
             ),
           ),
+        ),
         drawer: SafeArea(
           child: Container(
             child: ListTileTheme(
@@ -140,9 +223,14 @@ class _OyunSinifiState extends State<OyunSinifi> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -160,10 +248,14 @@ class _OyunSinifiState extends State<OyunSinifi> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                user: widget.user,
-                                letter: widget.letter,
-
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -180,7 +272,15 @@ class _OyunSinifiState extends State<OyunSinifi> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -198,9 +298,14 @@ class _OyunSinifiState extends State<OyunSinifi> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: letter,
-                                user: widget.user,
-                              )));
+                                    letter: letter,
+                                    user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                     },
                     leading: Icon(Icons.settings),
                     title: Text(
@@ -255,169 +360,449 @@ class _OyunSinifiState extends State<OyunSinifi> {
     );
   }
 
+  Game? game;
+  int? deneme;
+  Color? butonRenk1;
+  Color? butonRenk2;
+  Color? butonRenk3;
+  Color? butonRenk4;
+  Color? butonRenk5;
+
+  Future<int?> getGame(String temp) async {
+    final result =
+        await dbHelper.getGameStatusByUserIdAndLevel(widget.user.id!, temp);
+    return result;
+  }
+
+  Future<void> updateButtonColors() async {
+    butonRenk1 = await changeColor("1");
+    butonRenk2 = await changeColor("2");
+    butonRenk3 = await changeColor("3");
+    butonRenk4 = await changeColor("4");
+    butonRenk5 = await changeColor("5");
+    setState(() {}); // Rebuild the widget tree to reflect the new colors
+  }
+
+  Future<Color?> changeColor(String x) async {
+    Color? butonRenk;
+    int? temp;
+    temp = await dbHelper.getGameStatusByUserIdAndLevel(widget.user.id!, x);
+    print("temp" + "${temp}");
+    if (temp == null) {
+      butonRenk = Color(0xFFD399EA);
+    } else {
+      if (temp == 0) {
+        butonRenk = Color(0xFFD399EA);
+      } else if (temp == 1) {
+        butonRenk = Colors.blue;
+      } else if (temp == 2) {
+        butonRenk = Colors.green;
+      } else {
+        butonRenk = Color(0xFFD399EA);
+      }
+    }
+    return butonRenk;
+  }
+
+  @override
+  void initState() {
+    updateButtonColors();
+    super.initState();
+  }
+
   Widget birinciOyun() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 120),
-
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFD399EA),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeiki(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
-            },
-            child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+    return FutureBuilder<Color?>(
+      future: changeColor("1"),
+      builder: (BuildContext context, AsyncSnapshot<Color?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading indicator while waiting for the color
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          butonRenk1 = snapshot.data;
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 120),
+            child: Column(
               children: [
-                Text(
-                  '1. Seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: butonRenk1,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    String formattedDateTime =
+                        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                    List<Log> logList = await dbHelper.getLog();
+                    if (logList.isNotEmpty) {
+                      Log existingLog = logList.first;
+                      existingLog.durum = 1;
+                      existingLog.cikisTarih;
+                      existingLog.girisTarih;
+                      existingLog.yapilanIslem = "1.seviye oyun";
+                      await dbHelper.updateLog(existingLog);
+                    }
+                    updateButtonColors();
+                    Game updatedGame = Game(
+                      seviyeKilit: 1,
+                      durum: 1,
+                      kullaniciId: widget.user.id,
+                      level:
+                          "1", // Provide the appropriate value for the level field
+                    );
+                    dbHelper.updateGame1(updatedGame, "1");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResimEslestirmeiki(
+                          user: widget.user,
+                          letter: letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '1. Seviye',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+      },
     );
   }
+
   Widget ikinciOyun() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 120),
+    return FutureBuilder<Color?>(
+      future: changeColor("2"),
+      builder: (BuildContext context, AsyncSnapshot<Color?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading indicator while waiting for the color
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 120),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: butonRenk2,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    String formattedDateTime =
+                        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                    List<Log> logList = await dbHelper.getLog();
+                    if (logList.isNotEmpty) {
+                      Log existingLog = logList.first;
+                      existingLog.durum = 1;
+                      existingLog.cikisTarih;
+                      existingLog.girisTarih;
+                      existingLog.yapilanIslem = "2.seviye oyun";
+                      await dbHelper.updateLog(existingLog);
+                    }
+                    updateButtonColors();
+                    Game updatedGame = Game(
+                      seviyeKilit: 1,
+                      durum: 1,
+                      kullaniciId: widget.user.id,
+                      level: "2",
+                    );
+                    await dbHelper.updateGame1(updatedGame, "2");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResimEslestirmeuc(
+                          user: widget.user,
+                          letter: letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '2. Seviye',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
 
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFD399EA),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirmeuc(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
-            },
-            child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
-              children: [
-                Text(
-                  '2. Seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   Widget ucuncuOyun() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 120),
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFD399EA),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ResimEslestirme(
-                        user: widget.user,
-                        letter: letter,
-                      ))).then((value) => Navigator.pop(context));
-            },
-            child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+    return FutureBuilder<Color?>(
+      future: changeColor("3"),
+      builder: (BuildContext context, AsyncSnapshot<Color?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading indicator while waiting for the color
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 120),
+            child: Column(
               children: [
-                Text(
-                  '3. Seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: butonRenk3,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    String formattedDateTime =
+                        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                    List<Log> logList = await dbHelper.getLog();
+                    if (logList.isNotEmpty) {
+                      Log existingLog = logList.first;
+                      existingLog.durum = 1;
+                      existingLog.cikisTarih;
+                      existingLog.girisTarih;
+                      existingLog.yapilanIslem = "3.seviye oyun";
+                      await dbHelper.updateLog(existingLog);
+                    }
+                    Game updatedGame = Game(
+                      seviyeKilit: 0,
+                      durum: 1,
+                      kullaniciId: widget.user.id,
+                      level: "3",
+                    );
+                    dbHelper.updateGame1(updatedGame, "3");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResimEslestirme(
+                          user: widget.user,
+                          letter: letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '3. Seviye',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+      },
     );
   }
+
   Widget dorduncuOyun() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 120),
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFD399EA),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SoruOyunu(
-                        user: widget.user,
-                        letter: widget.letter,
-                      ))).then((value) => Navigator.pop(context));
-            },
-            child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+    return FutureBuilder<Color?>(
+      future: changeColor("4"),
+      builder: (BuildContext context, AsyncSnapshot<Color?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading indicator while waiting for the color
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 120),
+            child: Column(
               children: [
-                Text(
-                  '4. Seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: butonRenk4,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    String formattedDateTime =
+                        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                    List<Log> logList = await dbHelper.getLog();
+                    if (logList.isNotEmpty) {
+                      Log existingLog = logList.first;
+                      existingLog.durum = 1;
+                      existingLog.cikisTarih;
+                      existingLog.girisTarih;
+                      existingLog.yapilanIslem = "4.seviye oyun";
+                      await dbHelper.updateLog(existingLog);
+                    }
+                    Game updatedGame = Game(
+                      seviyeKilit: 0,
+                      durum: 1,
+                      kullaniciId: widget.user.id,
+                      level:
+                          "4", // Provide the appropriate value for the level field
+                    );
+                    dbHelper.updateGame1(updatedGame, "4");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SoruOyunu(
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                  name: widget.name,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
+                                ))).then((value) => Navigator.pop(context));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '4. Seviye',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+      },
     );
   }
+
   Widget besinciOyun() {
+    return FutureBuilder<Color?>(
+      future: changeColor("5"),
+      builder: (BuildContext context, AsyncSnapshot<Color?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading indicator while waiting for the color
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 120),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: butonRenk5,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    String formattedDateTime =
+                        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                    List<Log> logList = await dbHelper.getLog();
+                    if (logList.isNotEmpty) {
+                      Log existingLog = logList.first;
+                      existingLog.durum = 1;
+                      existingLog.cikisTarih;
+                      existingLog.girisTarih;
+                      existingLog.yapilanIslem = "5.seviye oyun";
+                      await dbHelper.updateLog(existingLog);
+                    }
+                    Game updatedGame = Game(
+                      seviyeKilit: 0,
+                      durum: 1,
+                      kullaniciId: widget.user.id,
+                      level:
+                          "5", // Provide the appropriate value for the level field
+                    );
+                    dbHelper.updateGame1(updatedGame, "5");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BitisikOyun(
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                  name: widget.name,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
+                                ))).then((value) => Navigator.pop(context));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '5. Seviye',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget altinciOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
       child: Column(
@@ -434,40 +819,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
               _yakindaSizinle();
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
-              children: [
-                Text(
-                  '5. Seviye',
-                  style: GoogleFonts.comicNeue(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget altinciOyun() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 120),
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFD399EA),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            onPressed: () {_yakindaSizinle();
-            },
-            child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '6. Seviye',
@@ -484,6 +836,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+
   Widget yedinciOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
@@ -497,10 +850,11 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {_yakindaSizinle();
+            onPressed: () {
+              _yakindaSizinle();
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '7. Seviye',
@@ -517,6 +871,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+
   Widget sekizinciOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
@@ -530,10 +885,11 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {_yakindaSizinle();
+            onPressed: () {
+              _yakindaSizinle();
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '8. Seviye',
@@ -550,6 +906,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+
   Widget dokuzuncuOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
@@ -563,10 +920,11 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {_yakindaSizinle();
+            onPressed: () {
+              _yakindaSizinle();
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '9. Seviye',
@@ -583,6 +941,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+
   Widget onuncuOyun() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 120),
@@ -596,10 +955,11 @@ class _OyunSinifiState extends State<OyunSinifi> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {_yakindaSizinle();
+            onPressed: () {
+              _yakindaSizinle();
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '10. Seviye',
@@ -657,7 +1017,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -669,12 +1029,33 @@ class _OyunSinifiState extends State<OyunSinifi> {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                          DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                      }
+
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,
+                                    log: log,
+                                  )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -692,6 +1073,7 @@ class _OyunSinifiState extends State<OyunSinifi> {
       ),
     );
   }
+
   void _yakindaSizinle() {
     showDialog(
       context: context,
@@ -731,8 +1113,8 @@ class _OyunSinifiState extends State<OyunSinifi> {
                       Navigator.pop(context);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Tamam',
@@ -755,7 +1137,12 @@ class _OyunSinifiState extends State<OyunSinifi> {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
+  }
 }
-
-
-

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%BCst%C3%BCnliste.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../listeler/esreliste.dart';
 import '../listemenü.dart';
+import '../log.dart';
 
 class EsrePage extends StatefulWidget {
   EsrePage(
@@ -27,7 +29,8 @@ class EsrePage extends StatefulWidget {
       required this.letter,
       required this.user,
       required this.deneme,
-        required this.denemeiki,
+      required this.denemeiki,
+      required this.log,
       required this.harf})
       : super(key: key);
   final Letter letter;
@@ -35,6 +38,7 @@ class EsrePage extends StatefulWidget {
   final int deneme;
   final int denemeiki;
   final Harfharake harf;
+  Log log;
   @override
   State<EsrePage> createState() => _EsrePageState(harf);
 }
@@ -48,6 +52,8 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
 
   ImagePicker picker = ImagePicker();
   AudioPlayer audioPlayer = AudioPlayer();
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   String? imagePath;
   String? musicPath;
@@ -279,7 +285,8 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => AdminPage(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
                               )),
                     );
                   },
@@ -301,9 +308,9 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => ListeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,
-
-                          )),
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -324,14 +331,37 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                           builder: (context) => HarfeklemeMenu(
                                 user: widget.user,
                                 deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,
-
-                          )),
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.add),
                   title: Text(
                     'Harf Ekle',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LogGiris(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
+                    );
+                  },
+                  leading: Icon(Icons.verified_user_outlined),
+                  title: Text(
+                    'Giriş Bilgileri',
                     style: GoogleFonts.comicNeue(
                       color: Colors.white,
                       fontSize: 18,
@@ -434,8 +464,14 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,log: widget.log,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -483,7 +519,10 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
-              ),SizedBox(height: 16,),
+              ),
+              SizedBox(
+                height: 16,
+              ),
               Text(
                 textAlign: TextAlign.center,
                 "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
@@ -491,7 +530,8 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                ),),
+                ),
+              ),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
@@ -530,9 +570,9 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                                   deneme: widget.deneme,
                                   harf: widget.harf,
                                   letter: widget.letter,
-                              denemeiki: widget.denemeiki,
-
-                            )),
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     style: ButtonStyle(
@@ -726,7 +766,8 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
           builder: (context) => EsreListePage(
                 user: widget.user,
                 deneme: widget.deneme,
-            denemeiki: widget.denemeiki,
+                denemeiki: widget.denemeiki,
+                log: widget.log,
               )),
     );
     setState(() {});

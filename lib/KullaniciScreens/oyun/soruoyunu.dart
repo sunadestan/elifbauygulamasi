@@ -4,6 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/dbHelper.dart';
+import '../../data/googlesign.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../ayarlar.dart';
 import '../dersmenü.dart';
 import '../home.dart';
@@ -11,6 +15,7 @@ import '../oyunmenü.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
+import 'package:intl/intl.dart';
 
 class Soru {
   final String harf;
@@ -26,10 +31,21 @@ class SoruOyunu extends StatefulWidget {
   SoruOyunu({
     Key? key,
     required this.user,
+    required this.game,
     required this.letter,
+    required this.name,
+    required this.lastname,
+    required this.email,
+    required this.username,
   }) : super(key: key);
   User user;
   Letter letter;
+  Game game;
+  final name;
+  final email;
+  final username;
+  final lastname;
+
   @override
   _SoruOyunuState createState() => _SoruOyunuState();
 }
@@ -38,7 +54,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
   final _advancedDrawerController = AdvancedDrawerController();
   late AnimationController _animationController;
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-
+  int skor = 0;
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
@@ -47,6 +63,9 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
   String? _secilenSik;
   String? _dogruSik;
   String? _soru;
+  var dbHelper = DbHelper();
+  final log = Log();
+
   bool _dogruMu = false;
   int _randomIndex = 0;
   int _kalanHak = 11;
@@ -216,7 +235,6 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
         "ustun"),
     Soru("ye", "ustun/ye_üstün.png", "esre/ye_esre.png", "otre/ye_ötre.png",
         "esre"),
-
   ];
   List<String> _sorularr = [
     'Harfin üstün hali nedir?',
@@ -236,7 +254,6 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
     '9. Soru',
     '10. Soru',
   ];
-
 
   void _soruYukle() {
     List<String> secilebilirSorular = _resimler
@@ -312,9 +329,28 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -336,6 +372,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   void _soruYenile() {
     setState(() {
       if (_kalanHak > 0) {
@@ -360,6 +397,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       }
     });
   }
+
   void deneme() {
     if (_kalanHak == 0) {
       if (_dogruMu) {}
@@ -419,11 +457,25 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                   children: [
                     TextButton(
                       onPressed: () {
+                        Game updatedGame = Game(
+                          seviyeKilit: 1,
+                          durum: 2,
+                          kullaniciId: widget.user.id,
+                          level:
+                          "4", // Provide the appropriate value for the level field
+                        );
+                        dbHelper.updateGame1(updatedGame, "4");
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => OyunSinifi(
-                                      user: widget.user,letter: letter,
+                                      user: widget.user,
+                                      letter: letter,
+                                      name: widget.name,
+                                      username: widget.username,
+                                      lastname: widget.lastname,
+                                      email: widget.email,
+                                      game: widget.game,
                                     ))).then((value) => Navigator.pop(context));
                       },
                       style: ButtonStyle(
@@ -441,11 +493,12 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     SizedBox(width: 8),
                     TextButton(
                       onPressed: () {
-                        setState(() {Navigator.of(context).pop();
-                        _secondsLeft = 120;
-                        startTimer();
-                        _kalanHak = 11;
-                        _dogruSayac=0;
+                        setState(() {
+                          Navigator.of(context).pop();
+                          _secondsLeft = 120;
+                          startTimer();
+                          _kalanHak = 11;
+                          _dogruSayac = 0;
                           _soruYenile();
                         });
                       },
@@ -470,10 +523,12 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       );
     }
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   void _cevapKontrol(String cevap) {
     if (cevap == _resim.dogruCevap) {
       _dogruSayac++;
@@ -535,8 +590,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
           ),
         ),
       );
-    }
-    else {
+    } else {
       yanlisCevapSayisi++;
       showDialog(
         context: context,
@@ -674,7 +728,13 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => OyunSinifi(
-                                      user: widget.user,letter: letter,
+                                      user: widget.user,
+                                      letter: letter,
+                                      name: widget.name,
+                                      username: widget.username,
+                                      lastname: widget.lastname,
+                                      email: widget.email,
+                                      game: widget.game,
                                     ))).then((value) => Navigator.pop(context));
                       },
                       style: ButtonStyle(
@@ -720,10 +780,19 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool exit =await Navigator.pushAndRemoveUntil(
+        bool exit = await Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user,letter: letter,)),
-                (route) => false);
+            MaterialPageRoute(
+                builder: (context) => OyunSinifi(
+                      name: widget.name,
+                      user: widget.user,
+                      letter: letter,
+                      username: widget.username,
+                      lastname: widget.lastname,
+                      email: widget.email,
+                      game: widget.game,
+                    )),
+            (route) => false);
         return exit;
       },
       child: AdvancedDrawer(
@@ -770,11 +839,21 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
-                        OyunSinifi(user: widget.user,letter: letter,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OyunSinifi(
+                                  name: widget.name,
+                                  user: widget.user,
+                                  letter: letter,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Center(
@@ -999,6 +1078,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
     _animationController.dispose();
     super.dispose();
   }
+
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
@@ -1015,6 +1095,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -1031,6 +1112,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       });
     }
   }
+
   void _showDialog() {
     showDialog(
       context: context,
@@ -1081,7 +1163,13 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: widget.user,letter: letter,
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -1135,6 +1223,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       return Icons.alarm;
     }
   }
+
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1190,6 +1279,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   Widget row() {
     return Row(
       children: [
@@ -1198,6 +1288,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ],
     );
   }
+
   void pause() {
     showDialog(
       context: context,
@@ -1248,12 +1339,19 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                  user: widget.user, letter: widget.letter)),
-                              (route) => false);
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Çıkış Yap',
@@ -1289,6 +1387,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   void _cikmakistiyorMusunuzbir() {
     showDialog(
       context: context,
@@ -1351,7 +1450,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -1368,9 +1467,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: widget.letter,
-                              )));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -1457,7 +1561,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -1474,9 +1578,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                user: widget.user,
-                                letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                       togglePause();
                       _timer.cancel();
                     },
@@ -1563,7 +1672,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -1580,9 +1689,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
-                                letter: widget.letter,
-                              )));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -1669,7 +1783,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -1686,9 +1800,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: widget.letter,
-                                user: widget.user,
-                              )));
+                                    letter: widget.letter,
+                                    user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -1712,6 +1831,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -1763,6 +1883,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
           ]),
     );
   }
+
   Widget nextIcon() {
     return GestureDetector(
       onTap: () {
@@ -1790,6 +1911,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 
   @override

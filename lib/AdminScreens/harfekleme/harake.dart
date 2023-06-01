@@ -13,6 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import 'package:flutter/widgets.dart';
 import '../../models/user.dart';
@@ -20,21 +22,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../harfeklememenü.dart';
 import '../listemenü.dart';
+import '../log.dart';
 
 class Harake extends StatefulWidget {
-  const Harake(
-      {Key? key,
-      required this.user,
-      required this.letter,
-      required this.harf,
-      required this.deneme,
-        required this.denemeiki})
-      : super(key: key);
+  Harake({
+    Key? key,
+    required this.user,
+    required this.letter,
+    required this.harf,
+    required this.deneme,
+    required this.log,
+    required this.denemeiki,
+  }) : super(key: key);
   final User user;
   final Letter letter;
   final Harfharake harf;
   final int deneme;
   final int denemeiki;
+  Log log;
 
   @override
   _HarfEkleState createState() => _HarfEkleState();
@@ -50,6 +55,8 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
 
   var txtharfharakename = TextEditingController();
   var txtlharfharakeannotation = TextEditingController();
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   final picker = ImagePicker();
   final dbHelper = DbHelper();
@@ -66,8 +73,14 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => HarfeklemeMenu(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -118,11 +131,18 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: SingleChildScrollView(
@@ -187,7 +207,8 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                             builder: (context) => AdminPage(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -207,10 +228,10 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ListeMenu(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
-                                )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                log: widget.log,
+                                denemeiki: widget.denemeiki)),
                       );
                     },
                     leading: Icon(Icons.list),
@@ -229,15 +250,38 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                         context,
                         MaterialPageRoute(
                             builder: (context) => HarfeklemeMenu(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
-                                )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                log: widget.log,
+                                denemeiki: widget.denemeiki)),
                       );
                     },
                     leading: Icon(Icons.add),
                     title: Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -470,24 +514,33 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UstunListePage(denemeiki: widget.denemeiki,
-                        user: widget.user, deneme: _selectedHarfTur!)));
+                    builder: (context) => UstunListePage(
+                        denemeiki: widget.denemeiki,
+                        log: widget.log,
+                        user: widget.user,
+                        deneme: _selectedHarfTur!)));
             await saveToDatabase();
             _showResendDialog(context);
           } else if (_value2) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EsreListePage(denemeiki: widget.denemeiki,
-                        user: widget.user, deneme: _selectedHarfTur!)));
+                    builder: (context) => EsreListePage(
+                        denemeiki: widget.denemeiki,
+                        log: widget.log,
+                        user: widget.user,
+                        deneme: _selectedHarfTur!)));
             await saveToDatabase();
             _showResendDialog(context);
           } else if (_value3) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => OtreListePage(denemeiki: widget.denemeiki,
-                        user: widget.user, deneme: _selectedHarfTur!)));
+                    builder: (context) => OtreListePage(
+                        denemeiki: widget.denemeiki,
+                        log: widget.log,
+                        user: widget.user,
+                        deneme: _selectedHarfTur!)));
             await saveToDatabase();
             _showResendDialog(context);
           } else {
@@ -820,8 +873,14 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,log: widget.log,
+                                    user: widget.user,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(

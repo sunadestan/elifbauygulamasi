@@ -4,12 +4,22 @@ import 'package:flutter/material.dart';
 import '../data/dbHelper.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import 'harfeklememenü.dart';
 import 'listemenü.dart';
+import 'log.dart';
 
 class AdminPage extends StatefulWidget {
-  AdminPage({Key? key, required this.user,required this.deneme,required this.denemeiki}) : super(key: key);
+  AdminPage(
+      {Key? key,
+      required this.user,
+      required this.deneme,
+      required this.denemeiki,
+      required this.log})
+      : super(key: key);
   final user;
+  Log log;
   final int deneme;
   final int denemeiki;
 
@@ -24,13 +34,15 @@ class _AdminState extends State<AdminPage> {
   final _advancedDrawerController = AdvancedDrawerController();
   //var user= User("", "", "", "", "", "", "", isadmin: 0);
   //var letter =Letter(imagePath: "");
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   /*0xFFA07BC9*/
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool exit =await _showResendDialog();
+        bool exit = await _showResendDialog();
         return exit;
       },
       child: AdvancedDrawer(
@@ -56,8 +68,7 @@ class _AdminState extends State<AdminPage> {
           appBar: AppBar(
             key: _formKey,
             backgroundColor: Color(0xFF975FD0),
-            title:
-            Text(
+            title: Text(
               'Hoş geldin' +
                   "  " +
                   '${widget.user.name} ${widget.user.lastname}',
@@ -143,11 +154,18 @@ class _AdminState extends State<AdminPage> {
                     ),
                   ),
                   ListTile(
-                    onTap: ()  {
+                    onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(user:widget.user,deneme: widget.deneme,denemeiki: widget.denemeiki,)),
-                      );},
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.list),
                     title: Text(
                       'Harfleri Listele',
@@ -162,12 +180,41 @@ class _AdminState extends State<AdminPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki:widget.denemeiki,user: widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
                     },
                     leading: Icon(Icons.add),
-                    title:Text(
+                    title: Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -199,7 +246,7 @@ class _AdminState extends State<AdminPage> {
                       margin: const EdgeInsets.symmetric(
                         vertical: 16.0,
                       ),
-                      child:Text(
+                      child: Text(
                         'Hizmet Şartları | Gizlilik Politikası',
                         style: GoogleFonts.comicNeue(
                           color: Colors.white,
@@ -236,10 +283,11 @@ class _AdminState extends State<AdminPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ListeMenu(
-                      user: widget.user,
-                      deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
-                    )),
+                          user: widget.user,
+                          deneme: widget.deneme,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
+                        )),
               );
             },
             child: Row(
@@ -260,6 +308,7 @@ class _AdminState extends State<AdminPage> {
       ),
     );
   }
+
   Widget ikinciListe() {
     return Container(
       width: 200,
@@ -278,10 +327,10 @@ class _AdminState extends State<AdminPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => HarfeklemeMenu(
-                      user: widget.user,
-                      deneme: widget.deneme,
-                        denemeiki:widget.denemeiki
-                    )),
+                        user: widget.user,
+                        deneme: widget.deneme,
+                        log: widget.log,
+                        denemeiki: widget.denemeiki)),
               );
             },
             child: Row(
@@ -302,6 +351,7 @@ class _AdminState extends State<AdminPage> {
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -325,13 +375,15 @@ class _AdminState extends State<AdminPage> {
               style: GoogleFonts.comicNeue(
                 color: Color(0xffad80ea),
                 fontSize: 40,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',
@@ -351,6 +403,7 @@ class _AdminState extends State<AdminPage> {
           ]),
     );
   }
+
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
@@ -394,7 +447,7 @@ class _AdminState extends State<AdminPage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -407,11 +460,18 @@ class _AdminState extends State<AdminPage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,log: widget.log,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -429,6 +489,7 @@ class _AdminState extends State<AdminPage> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();

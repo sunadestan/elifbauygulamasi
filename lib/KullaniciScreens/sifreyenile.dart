@@ -8,18 +8,35 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import '../models/validation.dart';
 import 'ayarlar.dart';
 import 'dersmenü.dart';
 import 'oyunmenü.dart';
+import 'package:intl/intl.dart';
 
 class SifreYenile extends StatefulWidget {
-  SifreYenile({Key? key, required this.letter, required this.user})
+  SifreYenile(
+      {Key? key,
+      required this.letter,
+      required this.user,
+      required this.game,
+      required this.name,
+      required this.email,
+      required this.username,
+      required this.lastname})
       : super(key: key);
   final Letter letter;
   final User user;
+  final name;
+  final email;
+  final username;
+  final lastname;
+  Game game;
 
   @override
   State<SifreYenile> createState() => _SifreYenileState(user);
@@ -33,9 +50,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   var txtpassWord3 = TextEditingController();
   var dbHelper = DbHelper();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
+  final log = Log();
+  var dbhelper = DbHelper();
+
   User user;
   _SifreYenileState(this.user);
-
 
   Widget customSizedBox() => SizedBox(
         height: 20,
@@ -48,11 +67,29 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        DateTime now = DateTime.now();
+        String formattedDateTime =
+        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbHelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          existingLog.durum = 0;
+          existingLog.cikisTarih = formattedDateTime;
+          existingLog.girisTarih;
+          await dbHelper.updateLog(existingLog);
+        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  AyarlarPage(user: widget.user, letter: widget.letter)),
+              builder: (context) => AyarlarPage(
+                    user: widget.user,
+                    letter: widget.letter,
+                    name: widget.name,
+                    username: widget.username,
+                    lastname: widget.lastname,
+                    email: widget.email,
+                    game: widget.game,
+                  )),
           (route) => false,
         );
         return false;
@@ -163,6 +200,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                               builder: (context) => HomePage(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -183,6 +225,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                               builder: (context) => Dersler(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
@@ -203,6 +250,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                               builder: (context) => OyunSinifi(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                     },
                     leading: Icon(Icons.extension),
@@ -223,6 +275,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                               builder: (context) => AyarlarPage(
                                     letter: widget.letter,
                                     user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    game: widget.game,
+                                    email: widget.email,
                                   )));
                     },
                     leading: Icon(Icons.settings),
@@ -316,6 +373,7 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
       ),
     );
   }
+
   Widget buildForgetPasswordField2() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -348,10 +406,10 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
       ),
     );
   }
+
   Widget buildForgetPasswordField3() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -400,15 +458,29 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
               await dbHelper.update(dbUser);
               print(_newPassword);
               // Şifre güncellendi mesajı göster
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AyarlarPage(letter: widget.letter, user: widget.user)));
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Şifre güncellendi!")));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AyarlarPage(
+                            name: widget.name,
+                            game: widget.game,
+                            letter: widget.letter,
+                            user: widget.user,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                          )));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Şifre güncellendi!")));
             } else {
               // Yeni şifreler eşit değil uyarısı göster
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Girilen şifreler eşit değil!")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Girilen şifreler eşit değil!")));
             }
           } else {
             // Mevcut şifre yanlış uyarısı göster
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Mevcut şifre yanlış")));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Mevcut şifre yanlış")));
           }
         }
       },
@@ -446,7 +518,6 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
       ),
     );
   }
-
 
   void _showResendDialogg() {
     showDialog(
@@ -500,11 +571,27 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbhelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbhelper.updateLog(existingLog);
+                      }
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
                           (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -526,6 +613,7 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
       ),
     );
   }
+
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -595,7 +683,11 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                       dbHelper.delete(user.id!);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(
+                            builder: (context) => LoginPage(
+                                  user: widget.user,
+                                  game: widget.game,log: log,
+                                )),
                       );
                       setState(() {});
                     },
@@ -619,11 +711,20 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(StringProperty('_currentPassword', _currentPassword));
     properties.add(StringProperty('_newPassword', _newPassword));
     properties.add(StringProperty('_confirmPassword', _confirmPassword));
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 }

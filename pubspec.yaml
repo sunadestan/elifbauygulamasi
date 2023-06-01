@@ -76,7 +76,7 @@ dev_dependencies:
   flutter_neumorphic:
   firebase_auth:
   firebase_core:
-
+  shared_preferences:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -241,6 +241,44 @@ flutter:
       - assets/elifba/otre/zı_ötre.png
       - assets/elifba/otre/şin_ötre.png
       - assets/elifba/ses/ses.jpg
+      - assets/elifba/bitisik/alime.png
+      - assets/elifba/bitisik/bedee.png
+      - assets/elifba/bitisik/beude.png
+      - assets/elifba/bitisik/ebede1.png
+      - assets/elifba/bitisik/ecele.png
+      - assets/elifba/bitisik/emera.png
+      - assets/elifba/bitisik/ehade1.png
+      - assets/elifba/bitisik/ekele1.png
+      - assets/elifba/bitisik/emine1.png
+      - assets/elifba/bitisik/erine.png
+      - assets/elifba/bitisik/eseri.png
+      - assets/elifba/bitisik/ezine1.png
+      - assets/elifba/bitisik/feale.png
+      - assets/elifba/bitisik/fehüve.png
+      - assets/elifba/bitisik/hamide.png
+      - assets/elifba/bitisik/kelime1.png
+      - assets/elifba/bitisik/ketebe1.png
+      - assets/elifba/bitisik/kütibe.png
+      - assets/elifba/bitisik/meleke1.png
+      - assets/elifba/bitisik/meliki.png
+      - assets/elifba/bitisik/mesedi.png
+      - assets/elifba/bitisik/mesele1.png
+      - assets/elifba/bitisik/meselü.png
+      - assets/elifba/bitisik/nüfiha.png
+      - assets/elifba/bitisik/rüsülü.png
+      - assets/elifba/bitisik/samedü.png
+      - assets/elifba/bitisik/sekete.png
+      - assets/elifba/bitisik/selime1.png
+      - assets/elifba/bitisik/sülüsü.png
+      - assets/elifba/bitisik/tebia.png
+      - assets/elifba/bitisik/vehüve.png
+      - assets/elifba/bitisik/velede.png
+      - assets/elifba/bitisik/verime.png
+      - assets/elifba/bitisik/verise.png
+      - assets/elifba/bitisik/vücide.png
+      - assets/elifba/bitisik/zükira.png
+      - assets/elifba/bitisik/üzine.png
+      - assets/elifba/bitisik/şeribe.png
       - assets/elifba/ses/ayın.mp3
       - assets/elifba/ses/be.mp3
       - assets/elifba/ses/cim.mp3

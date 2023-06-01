@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:elifbauygulamasi/models/user.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/dbHelper.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import 'login_page.dart';
 
 class CodePage extends StatefulWidget {
@@ -27,7 +30,10 @@ class _CodeState extends State<CodePage> with ValidationMixin {
   int _secondsRemaining = 120;
   late Timer _timer;
   late int zaman = 0;
+  Game? game;
+  final log = Log();
 
+  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
@@ -35,7 +41,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(user: user,game: game!,log: log,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -255,7 +261,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const LoginPage()));
+                              builder: (context) => LoginPage(log: log,game: game!,user: user,)));
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -317,7 +323,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
       onTap: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(user: user,game: game!,log: log,)),
               (route) => false,
         );
         _timer.cancel();
@@ -482,7 +488,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                     TextButton(
                       onPressed: () {
                         _timer.cancel();
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game!,user: user,)),
                                 (route) => false);
                       },
                       style: ButtonStyle(
@@ -552,7 +558,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
                     TextButton(
                       onPressed: () {
                         _timer.cancel();
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game!,user: user,)),
                                 (route) => false);
                       },
                       style: ButtonStyle(
@@ -592,13 +598,16 @@ class _PasswordRecoverState extends State<PasswordRecover> with ValidationMixin 
   var formKey = GlobalKey<FormState>();
   var dbHelper = DbHelper();
   late String _password;
+  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final log = Log();
 
   Widget _backButton() {
     return InkWell(
       onTap: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(game: game,user: user,log: log,)),
               (route) => false,
         );
       },
@@ -638,7 +647,7 @@ class _PasswordRecoverState extends State<PasswordRecover> with ValidationMixin 
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(game: game,user: user,log: log,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -749,7 +758,7 @@ class _PasswordRecoverState extends State<PasswordRecover> with ValidationMixin 
           if(txtpassWord.text==txtpassWord2.text){
             temp!.password=txtpassWord.text;
             await dbHelper.update(temp);
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user,)));
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Şifre güncelendi!"))
             );

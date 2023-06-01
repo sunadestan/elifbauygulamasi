@@ -10,6 +10,10 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/Log.dart';
+import '../models/game.dart';
+import '../models/user.dart';
+
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
   @override
@@ -21,6 +25,10 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   late String _email;
   var dbHelper=DbHelper();
   final _emailController = TextEditingController();
+  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
+  final log = Log();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(log: log,game: game,user: user)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -77,7 +85,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
       onTap: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => LoginPage(log: log,game: game,user: user)),
               (route) => false,
         );
       },
@@ -284,7 +292,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user)));
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -369,7 +377,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user)),
                               (route) => false);
                       },
                       style: ButtonStyle(
@@ -438,7 +446,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()),
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user)),
                                 (route) => false);
                       },
                       style: ButtonStyle(

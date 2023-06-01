@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/dbHelper.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import 'login_page.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,7 +41,10 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
   var txtlastname = TextEditingController();
   var txtphone = TextEditingController();
   var txtadres = TextEditingController();
-
+  final user = User("", "", "", "", "", "", "",
+      isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final log = Log();
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
@@ -404,28 +409,28 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     int isAdmin = txtemail.text.endsWith('@elifba.com') ? 1 : 0;
     if (isAdmin == 1) {
       var result = await dbHelper.insert(
-        User(
-          txtusername.text,
-          txtpassword.text,
-          txtemail.text,
-          txtname.text,
-          txtadres.text,
-          txtlastname.text,
-          txtphone.text,
-          isadmin: isAdmin,
-          isVerified: 1, // yeni kullanıcıların doğrulanmamış olduğunu varsayalım
-        ),
+        User(txtusername.text, txtpassword.text, txtemail.text, txtname.text,
+            txtadres.text, txtlastname.text, txtphone.text,
+            isadmin: isAdmin,
+            isVerified:
+                1, // yeni kullanıcıların doğrulanmamış olduğunu varsayalım
+            isGoogleUser: 0),
       );
       if (result > 0) {
         print("Kullanıcı başarıyla eklendi.");
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                      game: game,
+                      user: user,
+                      log: log,
+                    )));
       } else {
         print("Kullanıcı eklenirken bir hata oluştu.");
       }
     } else if (isAdmin == 0) {
       await sendEmail(txtemail.text);
-
     }
   }
 
@@ -433,8 +438,12 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     return TextButton(
       onPressed: () async {
         if (txtpassword.text == txtpassword2.text) {
-          await kayit(txtusername.text,);}
-        else {_showResendDialogg();}
+          await kayit(
+            txtusername.text,
+          );
+        } else {
+          _showResendDialogg();
+        }
       },
       child: Container(
         margin: EdgeInsets.symmetric(
@@ -470,11 +479,18 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _loginAccountLabel() {
     return InkWell(
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const LoginPage()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                      game: game,
+                      user: user,
+                      log: log,
+                    )));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),
@@ -506,6 +522,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -539,6 +556,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -660,6 +678,7 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
       ),
     );
   }
+
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -676,13 +695,15 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     );
   }
 
-  Future<String> sendEmail(String recipientEmail,) async {
+  Future<String> sendEmail(
+    String recipientEmail,
+  ) async {
     String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
     String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
     final smtpServer = gmail(username, password);
     var deneme = User(txtusername.text, txtpassword.text, txtemail.text,
         txtname.text, txtadres.text, txtlastname.text, txtphone.text,
-        isadmin: 0, isVerified: 0);
+        isadmin: 0, isVerified: 0, isGoogleUser: 0);
     final random = Random();
     final resetCode = random
         .nextInt(1000000)
@@ -743,12 +764,17 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                            MailDogrulama(email: txtemail.text, kod: resetCode, user: deneme)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MailDogrulama(
+                                    email: txtemail.text,
+                                    kod: resetCode,
+                                    user: deneme)));
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       child: Text(
                         'Tamam',
@@ -812,7 +838,15 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage(
+                                      log: log,
+                                      game: game,
+                                      user: user,
+                                    )),
+                            (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -880,7 +914,15 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage(
+                                      log: log,
+                                      game: game,
+                                      user: user,
+                                    )),
+                            (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:

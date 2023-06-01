@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../data/googlesign.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/harfharake.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
@@ -14,14 +17,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../ayarlar.dart';
 import '../dersmenü.dart';
-
+import 'package:intl/intl.dart';
 
 class kullaniciHarflerustun extends StatefulWidget {
-  kullaniciHarflerustun({Key? key, required this.user, required this.letter,})
+  kullaniciHarflerustun(
+      {Key? key,
+      required this.user,
+        required this.game,
+      required this.letter,
+      required this.name,
+      required this.lastname,
+      required this.email,
+      required this.username})
       : super(key: key);
   User user;
   Letter letter;
-
+  Game game;
+  final name;
+  final email;
+  final username;
+  final lastname;
 
   @override
   State<kullaniciHarflerustun> createState() => _kullaniciHarflerustun();
@@ -29,10 +44,13 @@ class kullaniciHarflerustun extends StatefulWidget {
 
 class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
   final _advancedDrawerController = AdvancedDrawerController();
-  //var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  var Harf =Harfharake(harfharakename: "",harfharakeannotation: "",harfharakeimage_path: "",harfharakemusic_path: "",);
-  var user = User("", "", "", "", "", "", "", isadmin: 0,isVerified: 0);
-
+  var Harf = Harfharake(
+    harfharakename: "",
+    harfharakeannotation: "",
+    harfharakeimage_path: "",
+    harfharakemusic_path: "",
+  );
+  final log = Log();
 
   late Future<List<Harfharake>> _lettersFuture;
   var dbHelper = DbHelper();
@@ -64,8 +82,17 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => Dersler(user: widget.user, letter: widget.letter)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => Dersler(
+                    name: widget.name,
+                    user: widget.user,
+                    letter: widget.letter,
+                    username: widget.username,
+                    lastname: widget.lastname,
+                    email: widget.email,game: widget.game,
+
+              )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -113,11 +140,21 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> Dersler(user: widget.user,letter: widget.letter,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Dersler(
+                                  name: widget.name,
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,game: widget.game,
+
+                            )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Center(
@@ -140,7 +177,7 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                             childAspectRatio: 0.8,
                             children: List.generate(
                               letters!.length,
-                                  (index) => kutuu(letters[index]),
+                              (index) => kutuu(letters[index]),
                             ),
                           ),
                         );
@@ -192,8 +229,13 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: widget.letter,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,game: widget.game,
+
                               ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -212,8 +254,12 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                user: widget.user,
-                                letter: widget.letter,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,game: widget.game,
 
                               ))).then((value) => Navigator.pop(context));
                     },
@@ -232,7 +278,16 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                game: widget.game,
+
+                              )));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -250,8 +305,13 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: widget.letter,
-                                user: widget.user,
+                                    letter: widget.letter,
+                                    user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,game: widget.game,
+
                               )));
                     },
                     leading: Icon(Icons.settings),
@@ -333,7 +393,6 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
     }
   }
 
-
   Widget kutuu(Harfharake harf) {
     return Column(
       children: [
@@ -372,9 +431,11 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                         File(harf.harfharakeimage_path ?? ""),
                         fit: BoxFit.cover,
                       ),
-                      Text(harf.harfharakename ?? "",
+                      Text(
+                        harf.harfharakename ?? "",
                         style: GoogleFonts.comicNeue(
-                            fontSize:15,fontWeight: FontWeight.w600),),
+                            fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ),
@@ -409,13 +470,15 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
               style: GoogleFonts.comicNeue(
                 color: Color(0xffad80ea),
                 fontSize: 40,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',
@@ -436,7 +499,6 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
     );
   }
 
-
   void _showResendDialog(Harfharake selectedLetter) {
     showDialog(
       context: context,
@@ -454,19 +516,23 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(selectedLetter.harfharakename ?? "",
+              Text(
+                selectedLetter.harfharakename ?? "",
                 style: GoogleFonts.comicNeue(
                   fontWeight: FontWeight.w600,
                   fontSize: 24,
                   color: Colors.lightBlueAccent,
-                ),),
+                ),
+              ),
               SizedBox(height: 16),
-              Text(selectedLetter.harfharakeannotation ?? "",
+              Text(
+                selectedLetter.harfharakeannotation ?? "",
                 style: GoogleFonts.comicNeue(
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                   fontSize: 18,
-                ),),
+                ),
+              ),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
@@ -482,8 +548,8 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                       _pause();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Tamam',
@@ -542,7 +608,7 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -554,13 +620,29 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage(user: widget.user, log: log,                               game: widget.game,
+                          )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -583,9 +665,17 @@ class _kullaniciHarflerustun extends State<kullaniciHarflerustun> {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
+  }
+
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

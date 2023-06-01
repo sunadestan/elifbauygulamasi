@@ -1,10 +1,9 @@
+import 'package:elifbauygulamasi/KullaniciScreens/dersler/bitisik.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/dersler/harfler.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/dersler/yazilis.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeiki.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirmeuc.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyunmen%C3%BC.dart';
+import 'package:elifbauygulamasi/models/bitisik.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,17 +11,36 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
+import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import 'dersler/esre.dart';
 import 'dersler/otre.dart';
 import 'dersler/ustun.dart';
 import 'home.dart';
+import 'package:intl/intl.dart';
 
 class Dersler extends StatefulWidget {
-  Dersler({Key? key,required this.user,required this.letter}) : super(key: key);
+  Dersler(
+      {Key? key,
+      required this.user,
+      required this.game,
+      required this.letter,
+      required this.name,
+      required this.email,
+      required this.lastname,
+      required this.username})
+      : super(key: key);
   User user;
   Letter letter;
+  Game game;
+  final name;
+  final username;
+  final lastname;
+  final email;
 
   @override
   State<Dersler> createState() => _DerslerState();
@@ -31,16 +49,37 @@ class Dersler extends StatefulWidget {
 class _DerslerState extends State<Dersler> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   final _advancedDrawerController = AdvancedDrawerController();
-  late AudioPlayer _audioPlayer;
+  final log = Log();
+  var dbhelper = DbHelper();
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        DateTime now = DateTime.now();
+        String formattedDateTime =
+        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList = await dbhelper.getLog();
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          existingLog.durum = 0;
+          existingLog.cikisTarih = formattedDateTime;
+          existingLog.girisTarih;
+          await dbhelper.updateLog(existingLog);
+        }
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(user: widget.user, letter: widget.letter)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    user: widget.user,
+                    letter: widget.letter,
+                    name: widget.name,
+                    username: widget.username,
+                    lastname: widget.lastname,
+                    game: widget.game,
+                    email: widget.email,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -91,18 +130,49 @@ class _DerslerState extends State<Dersler> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/home.jpg"),
-                  colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.darken),
+                  colorFilter: ColorFilter.mode(
+                      Colors.white.withOpacity(0.5), BlendMode.darken),
                   fit: BoxFit.cover,
                 ),
               ),
               child: Stack(
                 children: [
-                  Positioned(child: _title(),top: 40,left: 30,right: 30,),
-                  Positioned(child: birinciDers(),top: 200,left: 90,),
-                  Positioned(child: ikinciDers(),top: 270,left: 90,),
-                  Positioned(child: ucuncuDers(),top: 340,left: 90,),
-                  Positioned(child: dorduncuDers(),top: 410,left: 90,),
-                  Positioned(child: besinciDers(),top: 480,left: 90,),
+                  Positioned(
+                    child: _title(),
+                    top: 40,
+                    left: 30,
+                    right: 30,
+                  ),
+                  Positioned(
+                    child: birinciDers(),
+                    top: 200,
+                    left: 90,
+                  ),
+                  Positioned(
+                    child: ikinciDers(),
+                    top: 270,
+                    left: 90,
+                  ),
+                  Positioned(
+                    child: ucuncuDers(),
+                    top: 340,
+                    left: 90,
+                  ),
+                  Positioned(
+                    child: dorduncuDers(),
+                    top: 410,
+                    left: 90,
+                  ),
+                  Positioned(
+                    child: besinciDers(),
+                    top: 480,
+                    left: 90,
+                  ),
+                  Positioned(
+                    child: altinciDers(),
+                    top: 550,
+                    left: 90,
+                  ),
                 ],
               ),
             ),
@@ -140,9 +210,14 @@ class _DerslerState extends State<Dersler> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.user,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -160,10 +235,14 @@ class _DerslerState extends State<Dersler> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                user: widget.user,
-                                letter: widget.letter,
-
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -180,7 +259,15 @@ class _DerslerState extends State<Dersler> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user,letter:widget.letter,)));
+                              builder: (context) => OyunSinifi(
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -198,9 +285,14 @@ class _DerslerState extends State<Dersler> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: widget.letter,
-                                user: widget.user,
-                              )));
+                                    letter: widget.letter,
+                                    user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                     },
                     leading: Icon(Icons.settings),
                     title: Text(
@@ -273,13 +365,17 @@ class _DerslerState extends State<Dersler> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => kullaniciHarfler(
-                        letter: letter,
-                        user: widget.user,
-                      ))).then((value) => Navigator.pop(context));
-
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '1.Ders:',
@@ -289,7 +385,9 @@ class _DerslerState extends State<Dersler> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   ' Harfler',
                   style: GoogleFonts.comicNeue(
@@ -305,10 +403,10 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
   Widget ikinciDers() {
     return Container(
       width: 230,
-
       child: Column(
         children: [
           ElevatedButton(
@@ -324,12 +422,17 @@ class _DerslerState extends State<Dersler> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => kullaniciHarflerustun(
-                        letter: letter,
-                        user: widget.user,
-                      ))).then((value) => Navigator.pop(context));
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '2.Ders:',
@@ -339,7 +442,9 @@ class _DerslerState extends State<Dersler> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   ' Üstün',
                   style: GoogleFonts.comicNeue(
@@ -355,6 +460,7 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
   Widget ucuncuDers() {
     return Container(
       width: 230,
@@ -373,12 +479,17 @@ class _DerslerState extends State<Dersler> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => kullaniciHarfleresre(
-                        letter: letter,
-                        user: widget.user,
-                      ))).then((value) => Navigator.pop(context));
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '3.Ders:',
@@ -388,7 +499,9 @@ class _DerslerState extends State<Dersler> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   ' Esre',
                   style: GoogleFonts.comicNeue(
@@ -404,6 +517,7 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
   Widget dorduncuDers() {
     return Container(
       width: 230,
@@ -422,12 +536,17 @@ class _DerslerState extends State<Dersler> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => kullaniciHarflerotre(
-                        letter: letter,
-                        user: widget.user,
-                      ))).then((value) => Navigator.pop(context));
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '4.Ders:',
@@ -437,7 +556,9 @@ class _DerslerState extends State<Dersler> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   ' Ötre',
                   style: GoogleFonts.comicNeue(
@@ -453,6 +574,7 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
   Widget besinciDers() {
     return Container(
       width: 230,
@@ -471,12 +593,17 @@ class _DerslerState extends State<Dersler> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => kullaniciHarfleryazilis(
-                        letter: letter,
-                        user: widget.user,
-                      ))).then((value) => Navigator.pop(context));
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
             },
             child: Row(
-              mainAxisAlignment:  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '5.Ders:',
@@ -486,7 +613,9 @@ class _DerslerState extends State<Dersler> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   ' Harflerin Yazılışı',
                   style: GoogleFonts.comicNeue(
@@ -502,6 +631,67 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
+  Widget altinciDers() {
+    return Container(
+      width: 230,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BitisikDers(
+                            letter: letter,
+                            user: widget.user,
+                            name: widget.name,
+                            harf: harf,
+                            username: widget.username,
+                            lastname: widget.lastname,
+                            email: widget.email,
+                            game: widget.game,
+                          ))).then((value) => Navigator.pop(context));
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '6.Ders:',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  ' Bitişik Harfler',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  var harf = BitisikHarfler();
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -525,13 +715,15 @@ class _DerslerState extends State<Dersler> {
               style: GoogleFonts.comicNeue(
                 color: Color(0xff935ccf),
                 fontSize: 38,
-                fontWeight: FontWeight.w900,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(3.0, 3.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w900,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(3.0, 3.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'BAŞLAYALIM',
@@ -592,7 +784,7 @@ class _DerslerState extends State<Dersler> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -604,13 +796,32 @@ class _DerslerState extends State<Dersler> {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbhelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbhelper.updateLog(existingLog);
+                      }
 
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -628,11 +839,17 @@ class _DerslerState extends State<Dersler> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
+  }
 }
-
-
-

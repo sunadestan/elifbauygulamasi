@@ -6,18 +6,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../harfeklememenü.dart';
+import '../log.dart';
 
 class ListePage extends StatefulWidget {
   final User user;
   final int deneme;
   final int denemeiki;
-
-  ListePage({Key? key, required this.user,required this.deneme,required this.denemeiki}) : super(key: key);
+  Log log;
+  ListePage({Key? key, required this.user,required this.deneme,required this.denemeiki,required this.log}) : super(key: key);
   @override
   State<ListePage> createState() => _ListePage();
 }
@@ -27,6 +30,8 @@ class _ListePage extends State<ListePage> {
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
   var letter=Letter(imagePath: "");
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
 
   @override
   void initState() {
@@ -45,7 +50,7 @@ class _ListePage extends State<ListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
+          MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -95,7 +100,7 @@ class _ListePage extends State<ListePage> {
               IconButton(
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                        MaterialPageRoute(builder: (context)=> ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -167,7 +172,7 @@ class _ListePage extends State<ListePage> {
                   ),ListTile(
                     onTap: ()  {Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                      MaterialPageRoute(builder: (context) =>AdminPage(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                     );},
                     leading: Icon(Icons.home),
                     title: Text(
@@ -183,7 +188,7 @@ class _ListePage extends State<ListePage> {
                     onTap: ()  {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                       );},
                     leading: Icon(Icons.list),
                     title: Text(
@@ -199,12 +204,35 @@ class _ListePage extends State<ListePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
+                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
                       );
                     },
                     leading: Icon(Icons.add),
                     title:Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,
+                              log: widget.log,
+                            )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -308,7 +336,7 @@ class _ListePage extends State<ListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
 
                     },
                     style: ButtonStyle(
@@ -394,7 +422,7 @@ class _ListePage extends State<ListePage> {
     return InkWell(
       onTap: (){Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => DetayPage(denemeiki: widget.denemeiki,letter: letters,user: widget.user,deneme: widget.deneme,)),);},
+        MaterialPageRoute(builder: (context) => DetayPage(log: widget.log,denemeiki: widget.denemeiki,letter: letters,user: widget.user,deneme: widget.deneme,)),);},
       child: Container(
         alignment: Alignment.center,
         child: Center(

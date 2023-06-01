@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:elifbauygulamasi/models/bitisik.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/harf.dart';
 import '../models/harfharake.dart';
 import '../models/letter.dart';
@@ -8,7 +11,7 @@ import '../models/user.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
-class DbHelper{
+class DbHelper {
   static final DbHelper dbProvider = DbHelper();
   Database? _db;
 
@@ -40,6 +43,106 @@ class DbHelper{
     await db.execute(
         '''CREATE TABLE sureler(id INTEGER PRIMARY KEY AUTOINCREMENT, sureadi TEXT, 
         sureanlami TEXT,sureanlamiarapca TEXT,suremusic_path BLOB,hangisure INT)''');
+    await db.execute(
+        '''CREATE TABLE birlestirme(id INTEGER PRIMARY KEY AUTOINCREMENT, harfinadi TEXT, 
+        harfinaciklamasi TEXT,ses_path BLOB, image_path BLOB)''');
+    await db.execute(
+        '''CREATE TABLE game(id INTEGER PRIMARY KEY AUTOINCREMENT,kullaniciId INTEGER ,level TEXT, 
+       durum INTEGER,seviyeKilit INTEGER)''');
+    await db.execute(
+        '''CREATE TABLE log (id INTEGER PRIMARY KEY AUTOINCREMENT, kullaniciId INTEGER,
+        girisTarih TEXT,cikisTarih TEXT,kayitTarih TEXT,
+        name TEXT,lastname TEXT,username TEXT,durum INTEGER,yapilanIslem TEXT,FOREIGN KEY (kullaniciId) 
+        REFERENCES users(id) ON DELETE CASCADE)''');
+  }
+  Future<List<Log>> getLog() async {
+    Database? db = await this.db;
+    var result = await db.query("log");
+    return List.generate(result.length, (i) {
+      return Log.fromObject(result[i]);
+    });
+  }
+  Future<int> insertLog(
+    Log log,
+  ) async {
+    Database? db = await this.db;
+    var result = await db.insert("log", log.toMap());
+    return result;
+  }
+
+  Future<int> deleteLog(int id) async {
+    Database? db = await this.db;
+    var result = await db.rawDelete("delete from log where id= $id");
+    return result;
+  }
+
+  Future<int> updateLog(Log log) async {
+    Database? db = await this.db;
+    var result = await db
+        .update(" log ", log.toMap(), where: "id=?", whereArgs: [log.id]);
+    return result;
+  }
+
+  Future<List<Game>> getGame() async {
+    Database? db = await this.db;
+    var result = await db.query("game");
+    return List.generate(result.length, (i) {
+      return Game.fromObject(result[i]);
+    });
+  }
+
+  Future<int> insertGame(
+    Game game,
+  ) async {
+    Database? db = await this.db;
+    var result = await db.insert("game", game.toMap());
+    return result;
+  }
+
+  Future<int> deleteGame(int id) async {
+    Database? db = await this.db;
+    var result = await db.rawDelete("delete from game where id= $id");
+    return result;
+  }
+
+  Future<int> updateGame1(Game game, String level) async {
+    Database? db = await this.db;
+    var result = await db.update(
+      "game",
+      game.toMap(),
+      where: "kullaniciId = ? AND level = ?",
+      whereArgs: [game.kullaniciId, level],
+    );
+    return result;
+  }
+
+  Future<List<BitisikHarfler>> getBitisikHarf() async {
+    Database? db = await this.db;
+    var result = await db.query("birlestirme");
+    return List.generate(result.length, (i) {
+      return BitisikHarfler.fromObject(result[i]);
+    });
+  }
+
+  Future<int> insertBitisikHarf(
+    BitisikHarfler harf,
+  ) async {
+    Database? db = await this.db;
+    var result = await db.insert("birlestirme", harf.toMap());
+    return result;
+  }
+
+  Future<int> deleteBitisikHarf(int id) async {
+    Database? db = await this.db;
+    var result = await db.rawDelete("delete from birlestirme where id= $id");
+    return result;
+  }
+
+  Future<int> updateBitisikHarf(BitisikHarfler harf) async {
+    Database? db = await this.db;
+    var result = await db.update(" birlestirme ", harf.toMap(),
+        where: "id=?", whereArgs: [harf.id]);
+    return result;
   }
 
   Future<List<Harfharake>> getHarfharake() async {
@@ -136,6 +239,7 @@ class DbHelper{
       return User.fromObject(result[i]);
     });
   }
+
   String hashPassword(String password) {
     var bytes = utf8.encode(password);
     var digest = sha256.convert(bytes);
@@ -144,7 +248,9 @@ class DbHelper{
 
   Future<int> insert(User user) async {
     int isAdmin = user.email.endsWith('@elifba.com') ? 1 : 0;
-    int isVerified = user.email.endsWith('@elifba.com') ? 1 : (user.isVerified != null ? 1 : 0);
+    int isVerified = user.email.endsWith('@elifba.com')
+        ? 1
+        : (user.isVerified != null ? 1 : 0);
     String hashedPassword = hashPassword(user.password);
     Database? db = await this.db;
     var result = await db.insert("users", {
@@ -156,7 +262,7 @@ class DbHelper{
       "lastname": user.lastname,
       "phone": user.phone,
       "isadmin": isAdmin,
-      "isVerified": isVerified,  // true için 1, false   için 0 olarak kaydet
+      "isVerified": isVerified, // true için 1, false   için 0 olarak kaydet
     });
     return result;
   }
@@ -170,8 +276,9 @@ class DbHelper{
   Future<int> update(User user) async {
     Database? db = await this.db;
     String hashedPassword = hashPassword(user.password);
-    var result = await db
-        .update(" users ", {...user.toMap(), 'password': hashedPassword},where: "id=?", whereArgs: [user.id]);
+    var result = await db.update(
+        " users ", {...user.toMap(), 'password': hashedPassword},
+        where: "id=?", whereArgs: [user.id]);
     return result;
   }
 
@@ -195,7 +302,6 @@ class DbHelper{
     return result;
   }
 
-
   Future<User?> checkUser(String username, String password) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -212,27 +318,48 @@ class DbHelper{
       return null;
     }
   }
+
   Future<User?> getUserByEmail(String mail) async {
     final db = await dbProvider.db;
     final result =
-    await db.query('users', where: 'email = ?', whereArgs: [mail]);
+        await db.query('users', where: 'email = ?', whereArgs: [mail]);
     if (result.isNotEmpty) {
       return User.fromObject(result.first);
     } else {
       return null;
     }
   }
-  Future<User?> getUserByPassword(String password,int id) async {
+
+  Future<User?> getUserByPassword(String password, int id) async {
     final db = await dbProvider.db;
-    final result =
-    await db.query('users', where: 'password = ?', whereArgs: [hashPassword(password)]);
+    final result = await db.query('users',
+        where: 'password = ?', whereArgs: [hashPassword(password)]);
     if (result.isNotEmpty) {
       return User.fromObject(result.first);
     } else {
       return null;
     }
   }
-  Future<User?> getUserById(int id,) async {
+
+  Future<Game?> getGameById(
+    int id,
+  ) async {
+    final db = await dbProvider.db;
+    final gameMap = await db.query(
+      'game',
+      where: 'kullaniciId = ?',
+      whereArgs: [id],
+    );
+    if (gameMap.isNotEmpty) {
+      return Game.fromObject(gameMap.first);
+    } else {
+      return null;
+    }
+  }
+
+  Future<User?> getUserById(
+    int id,
+  ) async {
     final db = await dbProvider.db;
     final userMap = await db.query(
       'users',
@@ -273,30 +400,6 @@ class DbHelper{
     );
   }
 
-  Future<User?> checkEmail(String email) async {
-    final db = await dbProvider.db;
-    if (db == null) {
-      throw Exception('Veritabanı bağlantısı kurulamadı');
-    }
-    final result = await db.query(
-      'users',
-      where: 'email = ? ',
-      whereArgs: [email],
-    );
-    if (result != null && result.isNotEmpty) {
-      return User.fromObject(result.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<User?> checkDeneme() async {
-    final db = await dbProvider.db;
-    if (db == null) {
-      throw Exception('Veritabanı bağlantısı kurulamadı');
-    }
-  }
-
   Future<bool> mailkontrolet(String mail) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -309,6 +412,7 @@ class DbHelper{
     );
     return result.isNotEmpty;
   }
+
   Future<bool> kullaniciAdiKontrolEt(String kullaniciAdi) async {
     final db = await dbProvider.db;
     if (db == null) {
@@ -333,6 +437,41 @@ class DbHelper{
     );
   }
 
+  Future<int?> getGameStatusByUserIdAndLevel(
+      int kullaniciId, String level) async {
+    Database? db = await this.db;
+    var result = await db.query(
+      'game',
+      where: 'kullaniciId = ? AND level = ?',
+      whereArgs: [kullaniciId, level],
+    );
+
+    if (result.isEmpty) {
+      return null; // No matching record found
+    }
+
+    final Map<String, dynamic> row = result.first;
+    return row['durum'] as int?;
+  }
+
+  Future<int?> getGameStatusByUserIdAndLevelkilit(int kullaniciId, int level) async {
+    Database? db = await this.db;
+    var result = await db.query(
+      'game',
+      where: 'kullaniciId = ? AND level = ?',
+      whereArgs: [kullaniciId.toString(), level.toString()],
+    );
+
+    if (result.isEmpty) {
+      return null; // No matching record found
+    }
+
+    final Map<String, dynamic> row = result.first;
+    int seviyeKilit = row['seviyeKilit'] as int;
+    return seviyeKilit;
+  }
+
+
   Future<List<Harfharake>> getharfesre() async {
     Database? db = await this.db;
     var result = await db!.query("harflerharake", where: "harfTur = '2'");
@@ -355,4 +494,37 @@ class DbHelper{
     );
   }
 
+  Future<Game?> queryGame(int userId) async {
+    Database? db = await this.db;
+    var games = await db.query('game',
+        where: 'kullaniciId = ?', whereArgs: [userId], limit: 1);
+
+    if (games.isNotEmpty) {
+      return Game.fromMap(games.first);
+    }
+
+    return null;
+  }
+
+  Future<bool> checkGameExists(int? userId) async {
+    var result = await queryGame(userId!);
+    return result != null;
+  }
+
+  Future<Log?> Loggiris(int userId) async {
+    Database? db = await this.db;
+    var log = await db.query('log',
+        where: 'kullaniciId = ?', whereArgs: [userId], limit: 1);
+
+    if (log.isNotEmpty) {
+      return Log.fromMap(log.first);
+    }
+
+    return null;
+  }
+
+  Future<bool> checklog(int? userId) async {
+    var result = await Loggiris(userId!);
+    return result != null;
+  }
 }

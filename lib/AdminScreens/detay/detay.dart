@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,19 +21,21 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../listemenü.dart';
+import '../log.dart';
 
 class DetayPage extends StatefulWidget {
   DetayPage(
       {Key? key,
       required this.letter,
       required this.user,
-        required this.denemeiki,
+        required this.denemeiki,required this.log,
       required this.deneme})
       : super(key: key);
   final Letter letter;
   final User user;
   final int deneme;
   final int denemeiki;
+  Log log;
   @override
   State<DetayPage> createState() => _DetayPageState(letter);
 }
@@ -51,6 +55,8 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   String? _aciklama;
   String? _ses;
   bool _isPlaying = false;
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+
   Letter letter;
   _DetayPageState(this.letter);
   var txtlettername = TextEditingController();
@@ -264,7 +270,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => AdminPage(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,log: widget.log,
                                 )),
                       );
                     },
@@ -286,7 +292,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => ListeMenu(
                                   user: widget.user,
                                   deneme: deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,log: widget.log,
                                 )),
                       );
                     },
@@ -308,13 +314,35 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => HarfeklemeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,log: widget.log,
                                 )),
                       );
                     },
                     leading: Icon(Icons.add),
                     title: Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,log: widget.log,
+                            )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -632,7 +660,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
           builder: (context) => ListePage(
                 user: widget.user,
                 deneme: widget.deneme,
-            denemeiki: widget.denemeiki,
+            denemeiki: widget.denemeiki,log: widget.log,
               )),
     );
     setState(() {});
@@ -691,7 +719,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   TextButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (context)=> LoginPage()),
+                          MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,user: widget.user,game: game,)),
                               (route) => false);
                     },
                     style: ButtonStyle(
@@ -784,7 +812,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                             builder: (context) => ListePage(
                               user: widget.user,
                               deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                              denemeiki: widget.denemeiki,log: widget.log,
                             )),
                       );
                     },

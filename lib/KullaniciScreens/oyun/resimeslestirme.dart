@@ -7,16 +7,35 @@ import 'dart:math';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../data/googlesign.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
 import '../ayarlar.dart';
 import '../dersmenü.dart';
+import 'package:intl/intl.dart';
 
 class ResimEslestirme extends StatefulWidget {
-  ResimEslestirme({Key? key, required this.user, required this.letter})
+  ResimEslestirme(
+      {Key? key,
+      required this.user,
+      required this.letter,
+      required this.name,
+      required this.email,
+      required this.lastname,
+      required this.game,
+      required this.username})
       : super(key: key);
   User user;
   Letter letter;
+  Game game;
+  final name;
+  final username;
+  final lastname;
+  final email;
+
   @override
   _ResimEslestirmeState createState() => _ResimEslestirmeState();
 }
@@ -30,9 +49,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
+  var dbHelper = DbHelper();
   late Timer _timer;
   late AnimationController _animationController;
   final _advancedDrawerController = AdvancedDrawerController();
+  final log = Log();
 
   List<String> resimler = [
     'assets/elifba/elif.png',
@@ -191,7 +212,7 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                 SizedBox(height: 8),
                 Text(
                   "Bu oyunda harflerin hepsini göreceğiz ve onları eşleştirmeye çalışacağız. "
-                      "Oyunun en zor seviyesi budur. İyi eğlenceler!",
+                  "Oyunun en zor seviyesi budur. İyi eğlenceler!",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.comicNeue(
                     fontSize: 18,
@@ -215,6 +236,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                                 builder: (context) => OyunSinifi(
                                       user: widget.user,
                                       letter: widget.letter,
+                                      name: widget.name,
+                                      username: widget.username,
+                                      lastname: widget.lastname,
+                                      email: widget.email,
+                                      game: widget.game,
                                     ))).then((value) => Navigator.pop(context));
                       },
                       style: ButtonStyle(
@@ -264,12 +290,17 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
         _timer.cancel();
         togglePause();
         pause();
-        bool exit = await Navigator.push(
+        bool exit = await Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => OyunSinifi(
                       user: widget.user,
                       letter: widget.letter,
+                      name: widget.name,
+                      username: widget.username,
+                      lastname: widget.lastname,
+                      email: widget.email,
+                      game: widget.game,
                     )));
         return exit;
       },
@@ -323,6 +354,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                             builder: (context) => OyunSinifi(
                                   user: widget.user,
                                   letter: widget.letter,
+                                  name: widget.name,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
                                 )),
                         (route) => false);
                   },
@@ -731,7 +767,14 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                  user: widget.user, letter: widget.letter)),
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )),
                           (route) => false);
                     },
                     style: ButtonStyle(
@@ -826,11 +869,28 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
                           (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -905,6 +965,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                               builder: (context) => OyunSinifi(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -995,12 +1060,25 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                 children: [
                   TextButton(
                     onPressed: () {
+                      Game updatedGame = Game(
+                        seviyeKilit: 1,
+                        durum: 2,
+                        kullaniciId: widget.user.id,
+                        level:
+                            "3", // Provide the appropriate value for the level field
+                      );
+                      dbHelper.updateGame1(updatedGame, "3");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -1126,6 +1204,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                               builder: (context) => HomePage(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                       togglePause();
                       _timer.cancel();
@@ -1232,6 +1315,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                               builder: (context) => Dersler(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                       togglePause();
                       _timer.cancel();
@@ -1332,12 +1420,17 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
                                     user: widget.user,
                                     letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                       togglePause();
                       _timer.cancel();
@@ -1444,6 +1537,11 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
                               builder: (context) => AyarlarPage(
                                     letter: widget.letter,
                                     user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                       togglePause();
                       _timer.cancel();
@@ -1539,6 +1637,14 @@ class _ResimEslestirmeState extends State<ResimEslestirme>
     } else {
       return Icons.alarm;
     }
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 
   @override

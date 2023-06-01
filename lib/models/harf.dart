@@ -1,5 +1,3 @@
-import 'package:elifbauygulamasi/KullaniciScreens/dersler/harfler.dart';
-
 class Harf {
   int? id;
   String? harfname;

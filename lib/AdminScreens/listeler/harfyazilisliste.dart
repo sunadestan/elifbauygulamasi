@@ -2,24 +2,27 @@ import 'dart:io';
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
 import 'package:elifbauygulamasi/models/harf.dart';
-import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../detay/yazilisdetay.dart';
 import '../harfeklememenü.dart';
+import '../log.dart';
 
 class HarfYazilisListePage extends StatefulWidget {
   final User user;
   final int deneme;
   final int denemeiki;
-  HarfYazilisListePage({Key? key, required this.user,required this.denemeiki,required this.deneme}) : super(key: key);
+  Log log;
+  HarfYazilisListePage({Key? key, required this.user,required this.denemeiki,required this.deneme, required this.log}) : super(key: key);
   @override
   State<HarfYazilisListePage> createState() => _HarfYazilisListePage();
 }
@@ -31,6 +34,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
   final _advancedDrawerController = AdvancedDrawerController();
   var letter=Letter(imagePath: "");
   var harf=Harf(harfimagePath: "");
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
 
   @override
   void initState() {
@@ -50,7 +54,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
+          MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
               (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -100,7 +104,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
               IconButton(
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                        MaterialPageRoute(builder: (context)=> ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app)
               )
@@ -172,7 +176,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                   ),ListTile(
                     onTap: ()  {Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                      MaterialPageRoute(builder: (context) =>AdminPage(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                     );},
                     leading: Icon(Icons.home),
                     title: Text(
@@ -188,7 +192,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                     onTap: ()  {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
                       );},
                     leading: Icon(Icons.list),
                     title: Text(
@@ -204,12 +208,34 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
+                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
                       );
                     },
                     leading: Icon(Icons.add),
                     title:Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                              user: widget.user,
+                              deneme: widget.deneme,
+                              denemeiki: widget.denemeiki,   log: widget.log,
+                            )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -313,7 +339,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -440,7 +466,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
     return InkWell(
       onTap: (){
         //_showResendDialog(harf);
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>YazilisPage(deneme: widget.deneme,denemeiki: widget.denemeiki,user: widget.user,
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>YazilisPage(log: widget.log,deneme: widget.deneme,denemeiki: widget.denemeiki,user: widget.user,
           letter:letter,harf: harf,)));
       },
       child: Container(

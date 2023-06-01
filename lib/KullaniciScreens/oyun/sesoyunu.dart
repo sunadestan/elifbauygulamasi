@@ -5,13 +5,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../data/googlesign.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
 import '../ayarlar.dart';
 import '../dersmenü.dart';
 import '../home.dart';
 import '../oyunmenü.dart';
-
+import 'package:intl/intl.dart';
 
 class Ses {
   final String harf;
@@ -29,10 +33,23 @@ class Soru {
 }
 
 class SesOyunu extends StatefulWidget {
-  SesOyunu({Key? key, required this.user, required this.letter})
+  SesOyunu(
+      {Key? key,
+      required this.user,
+      required this.game,
+      required this.letter,
+      required this.name,
+      required this.lastname,
+      required this.email,
+      required this.username})
       : super(key: key);
   User user;
   Letter letter;
+  Game game;
+  final name;
+  final email;
+  final username;
+  final lastname;
 
   @override
   State<SesOyunu> createState() => _SesOyunuState();
@@ -45,6 +62,8 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
+  final log = Log();
+
   late Soru _resim;
   late Ses _ses;
   late Timer _timer;
@@ -54,6 +73,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   //var userr = User("", "", "", "", "", "", "", isadmin: 0);
   bool _isPlaying = false;
   AudioPlayer audioPlayer = AudioPlayer();
+  var dbHelper = DbHelper();
 
   static List<Ses> _sesler = [
     Ses("elif", "ses/elif.mp3", "ustun"),
@@ -230,7 +250,15 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
         bool exit = await Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)),
+                builder: (context) => OyunSinifi(
+                      name: widget.name,
+                      user: widget.user,
+                      letter: widget.letter,
+                      username: widget.username,
+                      lastname: widget.lastname,
+                      email: widget.email,
+                      game: widget.game,
+                    )),
             (route) => false);
         return exit;
       },
@@ -278,11 +306,21 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
-                        OyunSinifi(user: widget.user,letter: widget.letter,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OyunSinifi(
+                                  name: widget.name,
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Container(
@@ -352,6 +390,11 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                               builder: (context) => HomePage(
                                     user: widget.user,
                                     letter: letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.home),
@@ -371,9 +414,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           MaterialPageRoute(
                               builder: (context) => Dersler(
                                     user: widget.user,
-                                letter: widget.letter,
-
-                              ))).then((value) => Navigator.pop(context));
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -390,8 +437,15 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  OyunSinifi(user: widget.user,letter: widget.letter,)));
+                              builder: (context) => OyunSinifi(
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -411,6 +465,11 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                               builder: (context) => AyarlarPage(
                                     letter: letter,
                                     user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   )));
                     },
                     leading: Icon(Icons.settings),
@@ -465,6 +524,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
       ),
     );
   }
+
   void _checkAnswer(String cevap) {
     if (_ses.dogruCevap == cevap) {
       // Doğru harf resmi bulundu, tebrik mesajı gösterilebilir.
@@ -486,7 +546,6 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
     }
   }
 
-
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
@@ -507,6 +566,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
       });
     }
   }
+
   Future<void> _pause() async {
     if (mounted) {
       int result = await audioPlayer.pause();
@@ -515,6 +575,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
       }
     }
   }
+
   late String musicPath;
   Future<void> _loadAudio() async {
     try {
@@ -523,6 +584,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
       print('Error loading audio: $e');
     }
   }
+
   Widget ses(Ses ses) {
     return InkWell(
       onTap: () async {
@@ -570,7 +632,6 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                       _checkAnswer(_ses.dogruCevap);
                     },
                   ),
-
                 ],
               ),
             ),
@@ -768,11 +829,28 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
                           (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -845,7 +923,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: widget.user,letter: widget.letter,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -939,7 +1023,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                    user: widget.user,letter: widget.letter,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
@@ -991,7 +1081,7 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _ses=_sesler.first;
+    _ses = _sesler.first;
     _sesler.shuffle();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -1045,7 +1135,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => OyunSinifi(
-                                      user: widget.user,letter: widget.letter,
+                                      user: widget.user,
+                                      letter: widget.letter,
+                                      name: widget.name,
+                                      username: widget.username,
+                                      lastname: widget.lastname,
+                                      email: widget.email,
+                                      game: widget.game,
                                     ))).then((value) => Navigator.pop(context));
                       },
                       style: ButtonStyle(
@@ -1138,5 +1234,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
     } else {
       return Icons.alarm;
     }
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 }

@@ -6,23 +6,43 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../data/dbHelper.dart';
+import '../../data/googlesign.dart';
+import '../../models/Log.dart';
+import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
 import '../ayarlar.dart';
 import '../dersmenü.dart';
 import '../home.dart';
 import '../oyunmenü.dart';
+import 'package:intl/intl.dart';
 
 class ResimEslestirmeuc extends StatefulWidget {
-  ResimEslestirmeuc({Key? key, required this.user, required this.letter}) : super(key: key);
+  ResimEslestirmeuc({
+    Key? key,
+    required this.user,
+    required this.letter,
+    required this.game,
+    required this.name,
+    required this.lastname,
+    required this.email,
+    required this.username,
+  }) : super(key: key);
   User user;
   Letter letter;
+  Game game;
+  final name;
+  final email;
+  final username;
+  final lastname;
 
   @override
   State<ResimEslestirmeuc> createState() => _ResimEslestirmeucState();
 }
 
-class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProviderStateMixin  {
+class _ResimEslestirmeucState extends State<ResimEslestirmeuc>
+    with TickerProviderStateMixin {
   int seciliIndex = -1;
   int skor = 0;
   bool tappingDisabled = false;
@@ -30,11 +50,13 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
   int _secondsLeft = 120;
   int _pausedTime = 0;
   bool _isPaused = false;
+  var dbHelper = DbHelper();
   late Timer _timer;
   late AnimationController _animationController;
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
   //var userr = User("", "", "", "", "", "", "", isadmin: 0);
+  final log = Log();
 
   List<String> resimler = [
     'assets/elifba/ta.png',
@@ -135,7 +157,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                   textAlign: TextAlign.center,
                   "Bu oyunda harflerin son yarısını göreceğiz ve onları eşleştirmeye çalışacağız. İyi eğlenceler!",
                   style: GoogleFonts.comicNeue(
-                    fontSize:18,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -147,27 +169,34 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                 SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OyunSinifi(
-                                user: widget.user,letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.lightBlueAccent,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OyunSinifi(
+                                      user: widget.user,
+                                      letter: widget.letter,
+                                      name: widget.name,
+                                      username: widget.username,
+                                      lastname: widget.lastname,
+                                      email: widget.email,
+                                      game: widget.game,
+                                    ))).then((value) => Navigator.pop(context));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: Text(
+                        'Çıkış Yap',
+                        style: GoogleFonts.comicNeue(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.lightBlueAccent,
+                        ),
                       ),
                     ),
-                  ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -200,10 +229,19 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
     return WillPopScope(
       onWillPop: () async {
         _timer.cancel();
-        bool exit =await Navigator.pushAndRemoveUntil(
+        bool exit = await Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,)),
-                (route) => false);
+            MaterialPageRoute(
+                builder: (context) => OyunSinifi(
+                      name: widget.name,
+                      user: widget.user,
+                      letter: widget.letter,
+                      username: widget.username,
+                      lastname: widget.lastname,
+                      email: widget.email,
+                      game: widget.game,
+                    )),
+            (route) => false);
         return exit;
       },
       child: AdvancedDrawer(
@@ -250,11 +288,21 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
-                        OyunSinifi(user: widget.user,letter: widget.letter,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OyunSinifi(
+                                  name: widget.name,
+                                  user: widget.user,
+                                  letter: widget.letter,
+                                  username: widget.username,
+                                  lastname: widget.lastname,
+                                  email: widget.email,
+                                  game: widget.game,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Column(
@@ -285,21 +333,26 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                                   seciliIndex = -1;
                                   skor += 1; // Skoru artır
                                   if (gizliResimler.every((resim) =>
-                                  resim != 'assets/resim/Elif.png')) {
+                                      resim != 'assets/resim/Elif.png')) {
                                     eslesmeTamamlandi = true;
                                     _timer.cancel();
                                     _showDialogg();
                                   }
                                 } else {
-                                  tappingDisabled = true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
+                                  tappingDisabled =
+                                      true; // birinci kutuya tıklandı, ikinci kutuya tıklanmadan önce bekle
                                   gizliResimler[index] = resimler[index];
                                   Timer(Duration(milliseconds: 500), () {
-                                    if (seciliIndex != -1 && seciliIndex != -2) {
+                                    if (seciliIndex != -1 &&
+                                        seciliIndex != -2) {
                                       if (index != seciliIndex) {
-                                        gizliResimler[index] = 'assets/resim/Elif.png';
-                                        gizliResimler[seciliIndex] = 'assets/resim/Elif.png';
+                                        gizliResimler[index] =
+                                            'assets/resim/Elif.png';
+                                        gizliResimler[seciliIndex] =
+                                            'assets/resim/Elif.png';
                                         seciliIndex = -1;
-                                        tappingDisabled = false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
+                                        tappingDisabled =
+                                            false; // 500 milisaniye bekledik, ikinci kutuya tıklamaya izin ver
                                         setState(() {});
                                       }
                                     }
@@ -316,8 +369,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                             width: 150,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border:
-                              Border.all(color: Color(0xffbea1ea), width: 2),
+                              border: Border.all(
+                                  color: Color(0xffbea1ea), width: 2),
                             ),
                             child: Image.asset(
                               gizliResimler[index],
@@ -335,7 +388,6 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                 style: GoogleFonts.comicNeue(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-
                 ),
               ),
             ],
@@ -471,15 +523,15 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
     );
   }
 
-  Widget row(){
+  Widget row() {
     return Row(
       children: [
         timer(),
         _title(),
-
       ],
     );
   }
+
   Widget timer() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -559,13 +611,15 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
               style: GoogleFonts.comicNeue(
                 color: Colors.lightBlueAccent,
                 fontSize: 38,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Harfler ',
@@ -602,8 +656,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
   }
 
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   void _cikmakistiyorMusunuzbir() {
     showDialog(
       context: context,
@@ -666,7 +720,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -683,9 +737,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: widget.letter,
-                              )));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -772,7 +831,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -789,9 +848,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => Dersler(
-                                user: widget.user,
-                                letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                       togglePause();
                       _timer.cancel();
                     },
@@ -878,7 +942,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -895,9 +959,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,
-                                letter: widget.letter,
-                              )));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -984,7 +1053,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'İptal',
@@ -1001,9 +1070,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => AyarlarPage(
-                                letter: widget.letter,
-                                user: widget.user,
-                              )));
+                                    letter: widget.letter,
+                                    user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )));
                       togglePause();
                       _timer.cancel();
                     },
@@ -1078,12 +1152,19 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                  user: widget.user, letter: widget.letter)),
-                              (route) => false);
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Çıkış Yap',
@@ -1160,7 +1241,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -1172,12 +1253,32 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbHelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbHelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,log: log,
+                                  )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -1195,6 +1296,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
       ),
     );
   }
+
   void _showDialog() {
     showDialog(
       context: context,
@@ -1219,7 +1321,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
-              ), SizedBox(height: 16),
+              ),
+              SizedBox(height: 16),
               Text(
                 textAlign: TextAlign.center,
                 "Oyunu yeniden başlatmak ister misiniz?",
@@ -1244,12 +1347,18 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -1266,8 +1375,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                       _secondsLeft = 120;
                       startTimer();
                       reset();
-                      skor=0;
-
+                      skor = 0;
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -1289,6 +1397,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
       ),
     );
   }
+
   void _showDialogg() {
     showDialog(
       context: context,
@@ -1313,7 +1422,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
-              ), SizedBox(height: 16),
+              ),
+              SizedBox(height: 16),
               Text(
                 textAlign: TextAlign.center,
                 'Tüm harfleri eşleştirdiniz!',
@@ -1334,16 +1444,30 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                 children: [
                   TextButton(
                     onPressed: () {
+                      Game updatedGame = Game(
+                        seviyeKilit: 1,
+                        durum: 2,
+                        kullaniciId: widget.user.id,
+                        level:
+                            "2", // Provide the appropriate value for the level field
+                      );
+                      dbHelper.updateGame1(updatedGame, "2");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OyunSinifi(
-                                user: widget.user,letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Çıkış Yap',
@@ -1360,7 +1484,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
                       _secondsLeft = 120;
                       startTimer();
                       reset();
-                      skor=0;
+                      skor = 0;
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -1399,8 +1523,8 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-          (Timer timer) => setState(
-            () {
+      (Timer timer) => setState(
+        () {
           if (_secondsLeft < 1) {
             timer.cancel();
             _showDialog();
@@ -1411,6 +1535,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
       ),
     );
   }
+
   void togglePause() {
     if (_isPaused) {
       startTimer();
@@ -1438,7 +1563,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
     setState(() {
       resimler.shuffle();
       gizliResimler =
-      List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
+          List<String>.filled(gizliResimler.length, 'assets/resim/Elif.png');
       eslesmeTamamlandi = false;
     });
   }
@@ -1452,6 +1577,14 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc> with TickerProvid
     } else {
       return Icons.alarm;
     }
+  }
+
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
   }
 
   @override

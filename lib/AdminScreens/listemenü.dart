@@ -10,18 +10,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
+import 'listeler/bitisikliste.dart';
 import 'listeler/elifbaliste.dart';
 import 'listeler/üstünliste.dart';
+import 'log.dart';
 
 class ListeMenu extends StatefulWidget {
-  ListeMenu({Key? key, required this.user, required this.deneme, required this.denemeiki})
+  ListeMenu(
+      {Key? key,
+      required this.user,
+      required this.deneme,
+      required this.denemeiki,
+      required this.log})
       : super(key: key);
   User user;
   final int deneme;
   final int denemeiki;
-
+  Log log;
 
   @override
   State<ListeMenu> createState() => _ListeMenuState();
@@ -29,6 +38,7 @@ class ListeMenu extends StatefulWidget {
 
 class _ListeMenuState extends State<ListeMenu> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
+  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
 
   var harf = Harfharake(
       harfharakename: "",
@@ -45,10 +55,10 @@ class _ListeMenuState extends State<ListeMenu> {
           context,
           MaterialPageRoute(
               builder: (context) => AdminPage(
-                    user: widget.user,
-                    deneme: widget.deneme,
-                  denemeiki:widget.denemeiki
-                  )),
+                  user: widget.user,
+                  deneme: widget.deneme,
+                  log: widget.log,
+                  denemeiki: widget.denemeiki)),
           (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -138,7 +148,11 @@ class _ListeMenuState extends State<ListeMenu> {
                     top: 480,
                     left: 100,
                   ),
-
+                  Positioned(
+                    child: altinciListe(),
+                    top: 550,
+                    left: 100,
+                  ),
                 ],
               ),
             ),
@@ -178,7 +192,8 @@ class _ListeMenuState extends State<ListeMenu> {
                             builder: (context) => AdminPage(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                                denemeiki:widget.denemeiki
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -200,7 +215,8 @@ class _ListeMenuState extends State<ListeMenu> {
                             builder: (context) => ListeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -222,13 +238,37 @@ class _ListeMenuState extends State<ListeMenu> {
                             builder: (context) => HarfeklemeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
                                 )),
                       );
                     },
                     leading: Icon(Icons.add),
                     title: Text(
                       'Harf Ekle',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogGiris(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
+                    },
+                    leading: Icon(Icons.verified_user_outlined),
+                    title: Text(
+                      'Giriş Bilgileri',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
                         fontSize: 18,
@@ -299,7 +339,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => ListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
+                          denemeiki: widget.denemeiki,log: widget.log,
                         )),
               );
             },
@@ -342,7 +382,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => UstunListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
+                          denemeiki: widget.denemeiki,log: widget.log,
                         )),
               );
             },
@@ -385,7 +425,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => EsreListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
+                          denemeiki: widget.denemeiki,log: widget.log,
                         )),
               );
             },
@@ -428,7 +468,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => OtreListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
+                          denemeiki: widget.denemeiki,log: widget.log,
                         )),
               );
             },
@@ -471,7 +511,7 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => HarfYazilisListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                      denemeiki: widget.denemeiki,
+                          denemeiki: widget.denemeiki,log: widget.log,
                         )),
               );
             },
@@ -493,6 +533,50 @@ class _ListeMenuState extends State<ListeMenu> {
       ),
     );
   }
+
+  Widget altinciListe() {
+    return Container(
+      width: 200,
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xffbea1ea),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BitisikListe(
+                          user: widget.user,
+                          deneme: widget.deneme,
+                          denemeiki: widget.denemeiki,log: widget.log,
+                        )),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Bitişik Harfler',
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -585,7 +669,11 @@ class _ListeMenuState extends State<ListeMenu> {
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,log: widget.log,
+                                  )),
                           (route) => false);
                     },
                     style: ButtonStyle(

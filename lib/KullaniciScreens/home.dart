@@ -1,20 +1,37 @@
 import 'package:elifbauygulamasi/KullaniciScreens/ayarlar.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/dersmenü.dart';
 import 'package:elifbauygulamasi/KullaniciScreens/oyunmenü.dart';
-import 'package:elifbauygulamasi/KullaniciScreens/oyun/resimeslestirme.dart';
+import 'package:elifbauygulamasi/data/googlesign.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../LoginScreens/login_page.dart';
+import '../data/dbHelper.dart';
+import '../models/Log.dart';
+import '../models/game.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.user, required this.letter}) : super(key: key);
+  HomePage(
+      {Key? key,
+      required this.user,
+      required this.letter,
+      required this.game,
+      required this.name,
+      required this.email,
+      required this.lastname,
+      required this.username})
+      : super(key: key);
   User user;
   Letter letter;
-
+  Game game;
+  final name;
+  final username;
+  final lastname;
+  final email;
   @override
   State<HomePage> createState() => _HomeState();
 }
@@ -24,13 +41,14 @@ class _HomeState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _advancedDrawerController = AdvancedDrawerController();
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  //var userr = User("", "", "", "", "", "", "", isadmin: 0);
+  var dbhelper = DbHelper();
+  final log = Log();
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool exit =await _showResendDialog();
+        bool exit = await _showResendDialog();
         return exit;
       },
       child: AdvancedDrawer(
@@ -114,7 +132,6 @@ class _HomeState extends State<HomePage> {
                     top: 430,
                     left: 100,
                   ),
-
                   Positioned(
                     child: dorduncuListe(),
                     top: 500,
@@ -156,31 +173,15 @@ class _HomeState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => HomePage(
-                                user: widget.user,
-                                letter: widget.letter,
-                              ))).then((value) => Navigator.pop(context));
-                    },
-                    leading: Icon(Icons.home),
-                    title: Text(
-                      'Ana Sayfa',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
                               builder: (context) => Dersler(
                                     user: widget.user,
-                                letter: widget.letter,
-
-                              ))).then((value) => Navigator.pop(context));
+                                    letter: widget.letter,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.play_lesson),
                     title: Text(
@@ -197,7 +198,15 @@ class _HomeState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OyunSinifi(user: widget.user,letter: widget.letter,))).then((value) => Navigator.pop(context));
+                              builder: (context) => OyunSinifi(
+                                    name: widget.name,
+                                    user: widget.user,
+                                    letter: widget.letter,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
+                                  ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.extension),
                     title: Text(
@@ -217,6 +226,11 @@ class _HomeState extends State<HomePage> {
                               builder: (context) => AyarlarPage(
                                     letter: widget.letter,
                                     user: widget.user,
+                                    name: widget.name,
+                                    username: widget.username,
+                                    lastname: widget.lastname,
+                                    email: widget.email,
+                                    game: widget.game,
                                   ))).then((value) => Navigator.pop(context));
                     },
                     leading: Icon(Icons.settings),
@@ -271,6 +285,13 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
+
+  @override
+  void initState() {
+    print(widget.user.id);
+    super.initState();
+  }
+
   Widget not() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
@@ -291,14 +312,13 @@ class _HomeState extends State<HomePage> {
           end: Alignment.bottomCenter,
         ),
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: Text(
               textAlign: TextAlign.center,
-              'Hoş Geldin'+" "+'${widget.user.name}',
+              'Hoş Geldin ' + (widget.name) + (widget.user.name),
               style: GoogleFonts.comicNeue(
                 color: Colors.white,
                 fontSize: 30,
@@ -311,7 +331,7 @@ class _HomeState extends State<HomePage> {
             child: Text(
               textAlign: TextAlign.center,
               'Bu uygulama ile Kuran harflerini öğrenirken çok eğleneceksin! '
-                  'Harfleri öğrenmek için derslere girebilir, oyunlar oynayabilir, eşleştirme yapabilir veya sorular çözebilirsin.',
+              'Harfleri öğrenmek için derslere girebilir, oyunlar oynayabilir, eşleştirme yapabilir veya sorular çözebilirsin.',
               style: GoogleFonts.comicNeue(
                 color: Colors.white,
                 fontSize: 16,
@@ -323,7 +343,7 @@ class _HomeState extends State<HomePage> {
           Center(
             child: Text(
               textAlign: TextAlign.center,
-             'Hadi Başlayalım...',
+              'Hadi Başlayalım...',
               style: GoogleFonts.comicNeue(
                 color: Colors.white,
                 fontSize: 16,
@@ -354,9 +374,14 @@ class _HomeState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Dersler(
-                      user: widget.user,
-                      letter: widget.letter,
-                    )),
+                          user: widget.user,
+                          letter: widget.letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        )),
               );
             },
             child: Row(
@@ -377,6 +402,7 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
+
   Widget ikinciListe() {
     return Container(
       width: 200,
@@ -390,14 +416,47 @@ class _HomeState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              bool gameExists = await dbhelper.checkGameExists(widget.user.id!);
+              if (!gameExists) {
+                await dbhelper.insertGame(Game(
+                    seviyeKilit: 1,
+                    durum: 0,
+                    level: "1",
+                    kullaniciId: widget.user.id));
+                await dbhelper.insertGame(Game(
+                    seviyeKilit: 0,
+                    durum: 0,
+                    level: "2",
+                    kullaniciId: widget.user.id));
+                await dbhelper.insertGame(Game(
+                    seviyeKilit: 0,
+                    durum: 0,
+                    level: "3",
+                    kullaniciId: widget.user.id));
+                await dbhelper.insertGame(Game(
+                    seviyeKilit: 0,
+                    durum: 0,
+                    level: "4",
+                    kullaniciId: widget.user.id));
+                await dbhelper.insertGame(Game(
+                    seviyeKilit: 0,
+                    durum: 0,
+                    level: "5",
+                    kullaniciId: widget.user.id));
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => OyunSinifi(
-                      user: widget.user,
-                      letter: widget.letter,
-                    )),
+                          user: widget.user,
+                          letter: widget.letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        )),
               );
             },
             child: Row(
@@ -418,6 +477,7 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
+
   Widget ucuncuListe() {
     return Container(
       width: 200,
@@ -431,9 +491,7 @@ class _HomeState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
-
-            },
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -452,6 +510,7 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
+
   Widget dorduncuListe() {
     return Container(
       width: 200,
@@ -470,9 +529,14 @@ class _HomeState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => AyarlarPage(
-                      user: widget.user,
-                      letter: widget.letter,
-                    )),
+                          user: widget.user,
+                          letter: widget.letter,
+                          name: widget.name,
+                          username: widget.username,
+                          lastname: widget.lastname,
+                          email: widget.email,
+                          game: widget.game,
+                        )),
               );
             },
             child: Row(
@@ -493,7 +557,6 @@ class _HomeState extends State<HomePage> {
       ),
     );
   }
-
 
   Widget kutu(Widget child) {
     return InkWell(
@@ -636,7 +699,7 @@ class _HomeState extends State<HomePage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -648,13 +711,33 @@ class _HomeState extends State<HomePage> {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage()), (route) => false);
-
+                    onPressed: () async {
+                      DateTime now = DateTime.now();
+                      String formattedDateTime =
+                          DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList = await dbhelper.getLog();
+                      if (logList.isNotEmpty) {
+                        Log existingLog = logList.first;
+                        existingLog.durum = 0;
+                        existingLog.cikisTarih = formattedDateTime;
+                        existingLog.girisTarih;
+                        await dbhelper.updateLog(existingLog);
+                        print(existingLog);
+                      }
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    user: widget.user,
+                                    game: widget.game,
+                                    log: log,
+                                  )),
+                          (route) => false);
+                      logOut();
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -673,4 +756,11 @@ class _HomeState extends State<HomePage> {
     );
   }
 
+  void logOut() {
+    setState(() {
+      if (GoogleSignInApi != null) {
+        GoogleSignInApi.logout();
+      }
+    });
+  }
 }
