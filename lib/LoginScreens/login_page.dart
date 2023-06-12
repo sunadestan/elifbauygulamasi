@@ -17,10 +17,12 @@ import 'package:intl/intl.dart';
 import 'googleregister.dart';
 
 class LoginPage extends StatefulWidget {
- LoginPage({Key? key,required this.user,required this.game,required this.log}) : super(key: key);
- User user;
- Game game;
- Log log;
+  LoginPage(
+      {Key? key, required this.user, required this.game, required this.log,})
+      : super(key: key);
+  User user;
+  Game game;
+  Log log;
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -38,10 +40,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
   late String _errorMessage;
   GoogleSignInAccount? user;
   int deneme = 1;
-  @override
-  void initState() {
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +70,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                       left: 0,
                       child: logo(),
                     ),
-                    /*Positioned(
-                      top: 40,
-                      left: 15,
-                      child: _title(),
-                    ),*/
                   ],
                 ),
                 Padding(
@@ -499,7 +493,6 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     );
   }
 
-
   Future<void> signIn() async {
     final user = await GoogleSignInApi.login();
     email = user!.email ?? "";
@@ -522,7 +515,7 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
                 lastname: formattedLastName,
                 email: email,
               )));
-      GoogleSignInApi.logout();
+      //GoogleSignInApi.logout();
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
@@ -532,43 +525,46 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
         ));
       }
     } else {
-        final name = user.displayName?.split(" ").first ?? "";
-        final formattedName = name[0].toUpperCase() + name.substring(1);
-        final lastname = user.displayName?.split(" ").last ?? "";
-        final formattedLastName =
-            lastname[0].toUpperCase() + lastname.substring(1);
-        User? convertedUser = await dbHelper.getUserByEmail(user.email);
-        DateTime now = DateTime.now();
-        String formattedDateTime = DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-        List<Log> logList = await dbHelper.getLog();
-        if (logList.isNotEmpty) {
-          Log existingLog = logList.first;
-          Log updatedLog = Log(
-            id: existingLog.id,
-            girisTarih: formattedDateTime,
-            cikisTarih: existingLog.cikisTarih,
-            kayitTarih: existingLog.kayitTarih,
-            yapilanIslem: "Google ile giriş",
-            name: existingLog.name,
-            lastname: existingLog.lastname,
-            username: existingLog.username,
-            durum: 1, // Set the durum field to 1 for login
-            kullaniciId: existingLog.kullaniciId,
-          );
-          await dbHelper.updateLog(updatedLog);
-        }
+      final name = user.displayName?.split(" ").first ?? "";
+      final formattedName = name[0].toUpperCase() + name.substring(1);
+      final lastname = user.displayName?.split(" ").last ?? "";
+      final formattedLastName =
+          lastname[0].toUpperCase() + lastname.substring(1);
+      User? convertedUser = await dbHelper.getUserByEmail(user.email);
 
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => HomePage(
-              user: convertedUser!,
+      DateTime now = DateTime.now();
+      String formattedDateTime = DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+      List<Log> logList = await dbHelper.getLogusername(convertedUser!.username!);
+      if (logList.isNotEmpty) {
+        Log existingLog = logList.first;
+        Log updatedLog = Log(
+          id: existingLog.id,
+          girisTarih: formattedDateTime,
+          cikisTarih: existingLog.cikisTarih,
+          kayitTarih: existingLog.kayitTarih,
+          yapilanIslem: "Google ile giriş",
+          name: existingLog.name,
+          lastname: existingLog.lastname,
+          username: existingLog.username,
+          durum: 1,
+          kullaniciId: existingLog.kullaniciId,
+        );
+        await dbHelper.updateLog(updatedLog);
+      }
+
+      result.hesapAcik = 1;
+      await dbHelper.updateUserhesap(result);
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => HomePage(
+                user: convertedUser,
                 letter: letter,
-              name: formattedName,
-              username: formattedName,
-              email: email,
-              lastname: formattedLastName,
-              game:widget.game,
-
-            )));
+                name: formattedName,
+                username: formattedName,
+                email: email,
+                lastname: formattedLastName,
+                game: widget.game,
+              )));
     }
   }
 
@@ -579,11 +575,13 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
       var result = await dbHelper.checkUser(x, y);
       bool isAdmin = result?.isadmin == 1;
       bool isVerified = result?.isVerified == 1;
+
       if (result != null && isAdmin) {
+        result.hesapAcik = 1;
+        await dbHelper.updateUserhesap(result);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -596,6 +594,9 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
           ),
         );
       } else if (result != null && isVerified) {
+        result.hesapAcik = 1;
+        await dbHelper.updateUserhesap(result);
+
         DateTime now = DateTime.now();
         String formattedDateTime = DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
         List<Log> logList = await dbHelper.getLog();
@@ -679,4 +680,5 @@ class _LoginPageState extends State<LoginPage> with ValidationMixin {
     properties.add(StringProperty('_userName', _userName));
     properties.add(StringProperty('_errorMessage', _errorMessage));
   }
+
 }

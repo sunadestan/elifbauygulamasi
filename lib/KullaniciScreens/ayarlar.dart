@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
 import '../data/googlesign.dart';
+import '../hakkimizdaiki.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -63,29 +64,11 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
   User user;
   _AyarlarPageState(this.user);
 
-  @override
-  void initState() {
-    txtname.text = user.name;
-    txtlastname.text = user.lastname;
-    txtpassword.text = user.password;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DateTime now = DateTime.now();
-        String formattedDateTime =
-        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-        List<Log> logList = await dbHelper.getLog();
-        if (logList.isNotEmpty) {
-          Log existingLog = logList.first;
-          existingLog.durum = 0;
-          existingLog.cikisTarih = formattedDateTime;
-          existingLog.girisTarih;
-          await dbHelper.updateLog(existingLog);
-        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -144,6 +127,17 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                 },
               ),
             ),
+            actions: <Widget>[
+              PopupMenuButton<Options>(
+                  onSelected: selectProcess,
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<Options>>[
+                        PopupMenuItem<Options>(
+                          value: Options.delete,
+                          child: Text("Sil"),
+                        ),
+                      ])
+            ],
           ),
           body: SingleChildScrollView(
             child: Form(
@@ -321,16 +315,27 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -368,7 +373,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
               filled: true,
-              hintText: (widget.name) + (widget.user.name),
             ),
             validator: validateName, //
             onSaved: (String? value) {
@@ -404,7 +408,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
               filled: true,
-              hintText: (widget.lastname) + (widget.user.lastname),
             ),
             validator: validateLastName, //
             onSaved: (String? value) {
@@ -440,7 +443,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none,
               filled: true,
-              hintText: (widget.user.username),
             ),
             validator: validateUserName, //
             onSaved: (String? value) {
@@ -475,7 +477,6 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
             decoration: InputDecoration(
               border: InputBorder.none, //kenarlıkları yok eder
               filled: true,
-              hintText: (widget.email),
             ),
             validator: validateForgetPassword,
             onSaved: (String? value) {
@@ -533,35 +534,87 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      User user = widget.user;
-      //User? dbUser = await dbHelper.getUserById(user.id!);
-
       try {
-        await dbHelper.updateUser(User.withId(
-          user.id,
-          txtusername.text,
-          "",
-          txtemail.text,
-          txtname.text,
-          "${widget.user.address}",
-          txtlastname.text,
-          "${widget.user.phone}",
+        User updatedUser = widget.user.copyWith(
+          username: txtusername.text,
+          name: txtname.text,
+          lastname: txtlastname.text,
+          phone: "${widget.user.phone}",
+          address: "${widget.user.address}",
+          password: "",
+          email: txtemail.text,
           isadmin: 0,
           isVerified: 1,
-        ));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Kullanıcı güncellendi"),
-          duration: const Duration(seconds: 3),
-        ));
+          hesapAcik: 0,
+        );
+        await dbHelper.updateUser(updatedUser);
+
+        DateTime now = DateTime.now();
+        String formattedDateTime =
+        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+        List<Log> logList =
+        await dbHelper.getLogusername(widget.user.username!);
+        if (logList.isNotEmpty) {
+          Log existingLog = logList.first;
+          Log updatedLog = Log(
+            id: existingLog.id,
+            girisTarih: formattedDateTime,
+            cikisTarih: existingLog.cikisTarih,
+            kayitTarih: existingLog.kayitTarih,
+            yapilanIslem: "Google ile giriş",
+            name: existingLog.name,
+            lastname: existingLog.lastname,
+            username: existingLog.username,
+            durum: 1,
+            kullaniciId: existingLog.kullaniciId,
+          );
+
+          await dbHelper.updateLog(updatedLog);
+        }
+
+        // Sayfayı yeniden çizdirmek için Navigator kullanımı
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              user: updatedUser, // Güncellenmiş kullanıcı verisini gönder
+              letter: widget.letter,
+              name: widget.name,
+              username: widget.username,
+              lastname: widget.lastname,
+              game: widget.game,
+              email: widget.email,
+            ),
+          ),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Kayıt güncellendi"),
+            duration: const Duration(seconds: 3),
+          ),
+        );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Hata: Kullanıcı güncellenemedi"),
-          duration: const Duration(seconds: 3),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Hata: Kayıt güncellenemedi"),
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
     }
   }
+
+  @override
+  void initState() {
+    txtname.text = widget.user.name!;
+    txtlastname.text = widget.user.lastname!;
+    txtpassword.text = widget.user.password!;
+    txtusername.text = widget.user.username!;
+    txtemail.text = widget.user.email!;
+    super.initState();
+  }
+
 
   Widget buildSaveButton() {
     return TextButton(
@@ -668,12 +721,14 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                           DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbhelper.getLog();
+                      List<Log> logList =
+                          await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem = "Çıkış";
                         await dbhelper.updateLog(existingLog);
                       }
                       Navigator.pushAndRemoveUntil(
@@ -713,6 +768,15 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
       if (GoogleSignInApi != null) {
         GoogleSignInApi.logout();
       }
+      dbhelper.getCurrentUser().then((currentUser) {
+        if (currentUser != null) {
+          dbhelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+            setState(() {});
+          });
+        } else {
+          setState(() {});
+        }
+      });
     });
   }
 
@@ -769,7 +833,7 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -781,18 +845,26 @@ class _AyarlarPageState extends State<AyarlarPage> with ValidationMixin {
                   ),
                   SizedBox(width: 8),
                   TextButton(
-                    onPressed: () {
-                      dbHelper.delete(user.id!);
+                    onPressed: () async {
+                      await dbHelper.deleteUserLog(user.id!);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LoginPage(
-                                  user: widget.user,
-                                  game: widget.game,
-                                  log: log,
-                                )),
+                          builder: (context) => LoginPage(
+                            user: widget.user,
+                            game: widget.game,
+                            log: log,
+                          ),
+                        ),
                       );
+                      logOut();
                       setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Hesap silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(

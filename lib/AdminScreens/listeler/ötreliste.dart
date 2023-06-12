@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -21,7 +22,13 @@ class OtreListePage extends StatefulWidget {
   Log log;
   final int deneme;
   final int denemeiki;
-  OtreListePage({Key? key, required this.user,required this.deneme,required this.denemeiki,required this.log}) : super(key: key);
+  OtreListePage(
+      {Key? key,
+      required this.user,
+      required this.deneme,
+      required this.denemeiki,
+      required this.log})
+      : super(key: key);
   @override
   State<OtreListePage> createState() => _OtreListePage();
 }
@@ -39,15 +46,13 @@ class _OtreListePage extends State<OtreListePage> {
     harfTur: 0,
   );
 
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   @override
   void initState() {
     super.initState();
     _lettersFuture = liste();
   }
-
 
   Future<List<Harfharake>> liste() async {
     final result = await dbHelper.getharfotre();
@@ -60,8 +65,14 @@ class _OtreListePage extends State<OtreListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => ListeMenu(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -109,11 +120,18 @@ class _OtreListePage extends State<OtreListePage> {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Column(
@@ -134,7 +152,7 @@ class _OtreListePage extends State<OtreListePage> {
                           childAspectRatio: 0.8,
                           children: List.generate(
                             letters!.length,
-                                (index) => kutuu(letters[index]),
+                            (index) => kutuu(letters[index]),
                           ),
                         ),
                       );
@@ -179,11 +197,20 @@ class _OtreListePage extends State<OtreListePage> {
                       //color: Colors.black26,
                       shape: BoxShape.circle,
                     ),
-                  ),ListTile(
-                    onTap: ()  {Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
-                    );},
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdminPage(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.home),
                     title: Text(
                       'Ana Sayfa',
@@ -195,12 +222,18 @@ class _OtreListePage extends State<OtreListePage> {
                     ),
                   ),
                   ListTile(
-                    onTap: ()  {
-                     Navigator.push(
+                    onTap: () {
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
-                      },
+                    },
                     leading: Icon(Icons.list),
                     title: Text(
                       'Harfleri Listele',
@@ -215,11 +248,17 @@ class _OtreListePage extends State<OtreListePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
                     },
                     leading: Icon(Icons.add),
-                    title:Text(
+                    title: Text(
                       'Harf Ekle',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -234,11 +273,11 @@ class _OtreListePage extends State<OtreListePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
-                              log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -271,16 +310,24 @@ class _OtreListePage extends State<OtreListePage> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child:Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -290,10 +337,10 @@ class _OtreListePage extends State<OtreListePage> {
             ),
           ),
         ),
-
       ),
     );
   }
+
   void _showResendDialogg(context) {
     showDialog(
       context: context,
@@ -334,7 +381,7 @@ class _OtreListePage extends State<OtreListePage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -347,13 +394,30 @@ class _OtreListePage extends State<OtreListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(
-                        game:game,user: widget.user,log: widget.log,)), (route) => false);
-
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,
+                                    log: widget.log,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -371,13 +435,15 @@ class _OtreListePage extends State<OtreListePage> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -394,8 +460,7 @@ class _OtreListePage extends State<OtreListePage> {
               ],
               fontSize: 30,
               fontWeight: FontWeight.w700,
-              color: Color(0xff935ccf)
-          ),
+              color: Color(0xff935ccf)),
           children: [
             TextSpan(
               text: '-',
@@ -408,12 +473,21 @@ class _OtreListePage extends State<OtreListePage> {
           ]),
     );
   }
+
   Widget kutuu(Harfharake harf) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OtrePage(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,harf: harf,letter: letter,)),
+          MaterialPageRoute(
+              builder: (context) => OtrePage(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                    harf: harf,
+                    letter: letter,
+                  )),
         );
       },
       child: Container(
@@ -443,4 +517,3 @@ class _OtreListePage extends State<OtreListePage> {
     );
   }
 }
-

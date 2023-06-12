@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -389,16 +390,27 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                     fontSize: 12,
                     color: Colors.white54,
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Hakkimizda(
+
+                            )),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -464,6 +476,15 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -562,14 +583,18 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
                     onPressed: () {
                       dbHelper.deleteHarfharake(harf.id!);
                       setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Harf silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EsrePage(
+                            builder: (context) => EsreListePage(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                                  harf: widget.harf,
-                                  letter: widget.letter,
                                   denemeiki: widget.denemeiki,
                                   log: widget.log,
                                 )),
@@ -760,6 +785,12 @@ class _EsrePageState extends State<EsrePage> with ValidationMixin {
       harfharakeannotation: txtletterannotation.text,
     );
     await dbHelper.updateHarfharake(updateHarfharake);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Harf Güncellendi"),
+        duration: const Duration(seconds: 3),
+      ),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(

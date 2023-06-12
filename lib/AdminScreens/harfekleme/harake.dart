@@ -4,6 +4,7 @@ import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%BCst%C3%BCnliste.dart
 import 'package:elifbauygulamasi/AdminScreens/admin.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/esreliste.dart';
 import 'package:elifbauygulamasi/data/dbHelper.dart';
+import 'package:elifbauygulamasi/hakkimizda.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:elifbauygulamasi/models/validation.dart';
 import 'package:flutter/foundation.dart';
@@ -55,8 +56,7 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
 
   var txtharfharakename = TextEditingController();
   var txtlharfharakeannotation = TextEditingController();
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   final picker = ImagePicker();
   final dbHelper = DbHelper();
@@ -167,6 +167,9 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                           style: TextStyle(fontSize: 10),
                           textAlign: TextAlign.right,
                         ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   _ekleButton(context),
                 ],
               ),
@@ -309,16 +312,24 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -510,7 +521,7 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
-          if (_value1) {
+          if (_selectedHarfTur == 1) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -521,7 +532,7 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                         deneme: _selectedHarfTur!)));
             await saveToDatabase();
             _showResendDialog(context);
-          } else if (_value2) {
+          } else if (_selectedHarfTur == 2) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -532,7 +543,7 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                         deneme: _selectedHarfTur!)));
             await saveToDatabase();
             _showResendDialog(context);
-          } else if (_value3) {
+          } else if (_selectedHarfTur == 3) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -565,41 +576,44 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                   spreadRadius: 2)
             ],
             gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  Color(0xff823ac6),
-                  Color(0xff703dd0),
+                  Color(0xff9a6ed3),
+                  Color(0xffbea1ea),
+                  Color(0xff9a6ed3),
                 ])),
-        child: Text(
-          "Ekle",
-          style: GoogleFonts.comicNeue(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Ekle",
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget checBox(context) {
+  /* Widget checBox(context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         CheckboxListTile(
-          value: _value1,
+          value: _selectedHarfTur == 1,
           onChanged: (bool? value) {
             setState(() {
-              _value1 = value!;
-              if (_value1) {
-                _selectedHarfTur = 1;
-              }
+              _selectedHarfTur = value! ? 1 : null;
             });
           },
           title: Text(
             'Üstün',
-            style: GoogleFonts.comicNeue(
+            style: TextStyle(
               color: Color(0xff935ccf),
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -607,18 +621,16 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
           ),
         ),
         CheckboxListTile(
-          value: _value2,
+          value: _selectedHarfTur == 2,
           onChanged: (bool? value) {
             setState(() {
-              _value2 = value!;
-              if (_value2) {
-                _selectedHarfTur = 2;
-              }
+              _selectedHarfTur = value! ? 2 : null;
             });
+
           },
           title: Text(
             'Esre',
-            style: GoogleFonts.comicNeue(
+            style: TextStyle(
               color: Color(0xff935ccf),
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -626,21 +638,83 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
           ),
         ),
         CheckboxListTile(
-          value: _value3,
+          value: _selectedHarfTur == 3,
           onChanged: (bool? value) {
             setState(() {
-              _value3 = value!;
-              if (_value3) {
-                _selectedHarfTur = 3;
-              }
+              _selectedHarfTur = value! ? 3 : null;
             });
+
           },
           title: Text(
             'Ötre',
-            style: GoogleFonts.comicNeue(
+            style: TextStyle(
               color: Color(0xff935ccf),
               fontSize: 17,
               fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }*/
+  Widget checBox(context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: RadioListTile(
+            value: 1,
+            groupValue: _selectedHarfTur,
+            onChanged: (int? value) {
+              setState(() {
+                _selectedHarfTur = value!;
+              });
+            },
+            title: Text(
+              'Üstün',
+              style: GoogleFonts.comicNeue(
+                color: Color(0xff935ccf),
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: RadioListTile(
+            value: 2,
+            groupValue: _selectedHarfTur,
+            onChanged: (int? value) {
+              setState(() {
+                _selectedHarfTur = value!;
+              });
+            },
+            title: Text(
+              'Esre',
+              style: GoogleFonts.comicNeue(
+                color: Color(0xff935ccf),
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: RadioListTile(
+            value: 3,
+            groupValue: _selectedHarfTur,
+            onChanged: (int? value) {
+              setState(() {
+                _selectedHarfTur = value!;
+              });
+            },
+            title: Text(
+              'Ötre',
+              style: GoogleFonts.comicNeue(
+                color: Color(0xff935ccf),
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
@@ -873,11 +947,23 @@ class _HarfEkleState extends State<Harake> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
-                                    game: game,log: widget.log,
+                                    game: game,
+                                    log: widget.log,
                                     user: widget.user,
                                   )),
                           (route) => false);

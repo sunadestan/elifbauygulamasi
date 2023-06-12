@@ -25,7 +25,7 @@ class _ForgetPasswordState extends State<ForgetPasswordPage> with ValidationMixi
   late String _email;
   var dbHelper=DbHelper();
   final _emailController = TextEditingController();
-  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final user =User(isadmin: 0, isVerified: 0,hesapAcik: 0);
   final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
 
   final log = Log();

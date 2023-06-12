@@ -244,31 +244,31 @@ flutter:
       - assets/elifba/bitisik/alime.png
       - assets/elifba/bitisik/bedee.png
       - assets/elifba/bitisik/beude.png
-      - assets/elifba/bitisik/ebede1.png
+      - assets/elifba/bitisik/ebede.png
       - assets/elifba/bitisik/ecele.png
       - assets/elifba/bitisik/emera.png
-      - assets/elifba/bitisik/ehade1.png
-      - assets/elifba/bitisik/ekele1.png
-      - assets/elifba/bitisik/emine1.png
+      - assets/elifba/bitisik/ehade.png
+      - assets/elifba/bitisik/ekele.png
+      - assets/elifba/bitisik/emine.png
       - assets/elifba/bitisik/erine.png
       - assets/elifba/bitisik/eseri.png
-      - assets/elifba/bitisik/ezine1.png
+      - assets/elifba/bitisik/ezine.png
       - assets/elifba/bitisik/feale.png
       - assets/elifba/bitisik/fehüve.png
       - assets/elifba/bitisik/hamide.png
-      - assets/elifba/bitisik/kelime1.png
-      - assets/elifba/bitisik/ketebe1.png
+      - assets/elifba/bitisik/kelime.png
+      - assets/elifba/bitisik/ketebe.png
       - assets/elifba/bitisik/kütibe.png
-      - assets/elifba/bitisik/meleke1.png
+      - assets/elifba/bitisik/meleke.png
       - assets/elifba/bitisik/meliki.png
       - assets/elifba/bitisik/mesedi.png
-      - assets/elifba/bitisik/mesele1.png
+      - assets/elifba/bitisik/mesele.png
       - assets/elifba/bitisik/meselü.png
       - assets/elifba/bitisik/nüfiha.png
       - assets/elifba/bitisik/rüsülü.png
       - assets/elifba/bitisik/samedü.png
       - assets/elifba/bitisik/sekete.png
-      - assets/elifba/bitisik/selime1.png
+      - assets/elifba/bitisik/selime.png
       - assets/elifba/bitisik/sülüsü.png
       - assets/elifba/bitisik/tebia.png
       - assets/elifba/bitisik/vehüve.png
@@ -279,6 +279,7 @@ flutter:
       - assets/elifba/bitisik/zükira.png
       - assets/elifba/bitisik/üzine.png
       - assets/elifba/bitisik/şeribe.png
+      - assets/elifba/bitisik/şehide.png
       - assets/elifba/ses/ayın.mp3
       - assets/elifba/ses/be.mp3
       - assets/elifba/ses/cim.mp3

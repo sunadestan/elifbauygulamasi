@@ -11,6 +11,7 @@ import '../../data/dbHelper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/user.dart';
@@ -383,16 +384,27 @@ class _BitisikDetayState extends State<BitisikDetay> {
                     fontSize: 12,
                     color: Colors.white54,
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Hakkimizda(
+
+                            )),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -458,6 +470,15 @@ class _BitisikDetayState extends State<BitisikDetay> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage(log: widget.log,user: widget.user,game:game,)),
@@ -537,7 +558,7 @@ class _BitisikDetayState extends State<BitisikDetay> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -552,14 +573,28 @@ class _BitisikDetayState extends State<BitisikDetay> {
                     onPressed: () {
                       dbHelper.deleteBitisikHarf(harf.id!);
                       setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Harf silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BitisikListe(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                                  denemeiki: widget.denemeiki,log: widget.log,
-                                )),
+                          builder: (context) => BitisikListe(
+                            user: widget.user,
+                            deneme: widget.deneme,
+                            denemeiki: widget.denemeiki,
+                            log: widget.log,
+                          ),
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Harf silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
                       );
                     },
                     style: ButtonStyle(
@@ -582,6 +617,7 @@ class _BitisikDetayState extends State<BitisikDetay> {
       ),
     );
   }
+
 
   @override
   void dispose() {
@@ -747,6 +783,12 @@ class _BitisikDetayState extends State<BitisikDetay> {
       harfaciklamasi: txtletterannotation.text,
     );
     await dbHelper.updateBitisikHarf(updateBitisikHarf);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Harf Güncellendi"),
+        duration: const Duration(seconds: 3),
+      ),
+    );
      Navigator.push(
       context,
       MaterialPageRoute(

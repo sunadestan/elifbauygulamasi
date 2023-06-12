@@ -41,9 +41,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
   var txtlastname = TextEditingController();
   var txtphone = TextEditingController();
   var txtadres = TextEditingController();
-  final user = User("", "", "", "", "", "", "",
-      isadmin: 0, isVerified: 0, isGoogleUser: 0);
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final user = User(isadmin: 0, isVerified: 0, hesapAcik: 0);
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
   final log = Log();
   @override
   Widget build(BuildContext context) {
@@ -409,12 +408,19 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     int isAdmin = txtemail.text.endsWith('@elifba.com') ? 1 : 0;
     if (isAdmin == 1) {
       var result = await dbHelper.insert(
-        User(txtusername.text, txtpassword.text, txtemail.text, txtname.text,
-            txtadres.text, txtlastname.text, txtphone.text,
+        User(
+            username: txtusername.text,
+            name: txtname.text,
+            lastname: txtlastname.text,
+            phone: txtphone.text,
+            address: txtadres.text,
+            password: txtpassword.text,
+            email: txtemail.text,
             isadmin: isAdmin,
             isVerified:
                 1, // yeni kullanıcıların doğrulanmamış olduğunu varsayalım
-            isGoogleUser: 0),
+
+            hesapAcik: 0),
       );
       if (result > 0) {
         print("Kullanıcı başarıyla eklendi.");
@@ -425,7 +431,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                       game: game,
                       user: user,
                       log: log,
-                    )));
+
+                )));
       } else {
         print("Kullanıcı eklenirken bir hata oluştu.");
       }
@@ -490,7 +497,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                       game: game,
                       user: user,
                       log: log,
-                    )));
+
+                )));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),
@@ -701,9 +709,18 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
     String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
     String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
     final smtpServer = gmail(username, password);
-    var deneme = User(txtusername.text, txtpassword.text, txtemail.text,
-        txtname.text, txtadres.text, txtlastname.text, txtphone.text,
-        isadmin: 0, isVerified: 0, isGoogleUser: 0);
+    var deneme = User(
+        username: txtusername.text,
+        name: txtname.text,
+        lastname: txtlastname.text,
+        phone: txtphone.text,
+        address: txtadres.text,
+        password: txtpassword.text,
+        email: txtemail.text,
+        isadmin: 0,
+        isVerified: 0,
+
+        hesapAcik: 0);
     final random = Random();
     final resetCode = random
         .nextInt(1000000)
@@ -845,7 +862,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                                       log: log,
                                       game: game,
                                       user: user,
-                                    )),
+
+                                )),
                             (route) => false);
                       },
                       style: ButtonStyle(
@@ -921,7 +939,8 @@ class _RegisterState extends State<RegisterPage> with ValidationMixin {
                                       log: log,
                                       game: game,
                                       user: user,
-                                    )),
+
+                                )),
                             (route) => false);
                       },
                       style: ButtonStyle(

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import 'login_page.dart';
@@ -33,7 +34,7 @@ class _CodeState extends State<CodePage> with ValidationMixin {
   Game? game;
   final log = Log();
 
-  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final user =User(isadmin: 0, isVerified: 0, hesapAcik: 0);
   @override
   Widget build(BuildContext context) {
     var f = MediaQuery.of(context).size.height;
@@ -598,13 +599,16 @@ class _PasswordRecoverState extends State<PasswordRecover> with ValidationMixin 
   var formKey = GlobalKey<FormState>();
   var dbHelper = DbHelper();
   late String _password;
-  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
+  final user =User(isadmin: 0, isVerified: 0, hesapAcik: 0);
   final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
   final log = Log();
 
   Widget _backButton() {
     return InkWell(
       onTap: () {
+        if (GoogleSignInApi != null) {
+          GoogleSignInApi.logout();
+        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => LoginPage(game: game,user: user,log: log,)),

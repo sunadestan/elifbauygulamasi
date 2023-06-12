@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -28,7 +29,8 @@ class DetayPage extends StatefulWidget {
       {Key? key,
       required this.letter,
       required this.user,
-        required this.denemeiki,required this.log,
+      required this.denemeiki,
+      required this.log,
       required this.deneme})
       : super(key: key);
   final Letter letter;
@@ -55,7 +57,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   String? _aciklama;
   String? _ses;
   bool _isPlaying = false;
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   Letter letter;
   _DetayPageState(this.letter);
@@ -63,313 +65,302 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
   var txtletterannotation = TextEditingController();
   var txtses;
 
-  @override Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return AdvancedDrawer(
-        backdropColor: Color(0xffad80ea),
-        controller: _advancedDrawerController,
-        animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 300),
-        animateChildDecoration: true,
-        rtlOpening: false,
-        openScale: 1.0,
-        disabledGestures: false,
-        childDecoration: const BoxDecoration(
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 0.0,
-            ),
-          ],
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Harf Detayı",
-              style: GoogleFonts.comicNeue(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            leading: IconButton(
-              onPressed: _handleMenuButtonPressed,
-              icon: ValueListenableBuilder<AdvancedDrawerValue>(
-                valueListenable: _advancedDrawerController,
-                builder: (_, value, __) {
-                  return AnimatedSwitcher(
-                    duration: Duration(milliseconds: 250),
-                    child: Icon(
-                      value.visible ? Icons.clear : Icons.menu,
-                      key: ValueKey<bool>(value.visible),
-                    ),
-                  );
-                },
-              ),
-            ),
-            /*actions: <Widget>[
-              PopupMenuButton<Options>(
-                  onSelected: selectProcess,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<Options>>[
-                        PopupMenuItem<Options>(
-                          value: Options.delete,
-                          child: Text(
-                            "Harfi sil",
-                            style: GoogleFonts.comicNeue(
-                              fontWeight: FontWeight.w700,
-                              //color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem<Options>(
-                          value: Options.update,
-                          child: Text(
-                            "Güncelle",
-                            style: GoogleFonts.comicNeue(
-                              fontWeight: FontWeight.w700,
-                              //color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ])
-            ],*/
-            backgroundColor: Color(0xFF975FD0),
+      backdropColor: Color(0xffad80ea),
+      controller: _advancedDrawerController,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      animateChildDecoration: true,
+      rtlOpening: false,
+      openScale: 1.0,
+      disabledGestures: false,
+      childDecoration: const BoxDecoration(
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 0.0,
           ),
-          body: ListView(
-            children: [
-              Column(
-                children: [
-                  InkWell(
-                    onTap: getImage,
-                    child: Container(
-                      width: 150.0,
-                      height: 150.0,
-                      margin: const EdgeInsets.only(
-                        top: 24.0,
-                        bottom: 64.0,
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(File(widget.letter.imagePath ?? "")),
-                          fit: BoxFit.cover,
-                        ),
-                        color: Colors.black26,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+        ],
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Harf Detayı",
+            style: GoogleFonts.comicNeue(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          leading: IconButton(
+            onPressed: _handleMenuButtonPressed,
+            icon: ValueListenableBuilder<AdvancedDrawerValue>(
+              valueListenable: _advancedDrawerController,
+              builder: (_, value, __) {
+                return AnimatedSwitcher(
+                  duration: Duration(milliseconds: 250),
+                  child: Icon(
+                    value.visible ? Icons.clear : Icons.menu,
+                    key: ValueKey<bool>(value.visible),
                   ),
-                ],
-              ),
-              Column(
-                children: [
-                  musicPath == null
-                      ? Container()
-                      : Text(
-                          path.basename(musicPath!),
-                          style: TextStyle(fontSize: 10),
-                          textAlign: TextAlign.right,
-                        ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Color(0xffbea1ea),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.only(
-                            bottom: 0,
-                          ),
-                          icon: Icon(
-                            _isPlaying ? Icons.pause : Icons.play_arrow,
-                            size: 40.0,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            _isPlaying ? _pause() : _play();
-                          },
-                        ),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              getMusic();
-                            },
-                            icon: Icon(Icons.music_note, color: Colors.white),
-                            label: Text(
-                              musicPath == null
-                                  ? path
-                                      .basename(widget.letter.musicPath ?? "Ses:")
-                                  : path.basename(musicPath!),
-                              style: GoogleFonts.comicNeue(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(0xffbea1ea),
-                              onPrimary: Colors.white,
-                              elevation: 0,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              customSizedBox(),
-              buildLetterName(),
-              buildLetterAnnotation(),
-              customSizedBox(),
-              _updateButton(),
-              _deleteButton(),
-            ],
-          ),),
-        drawer: SafeArea(
-          child: Container(
-            child: ListTileTheme(
-              textColor: Colors.white,
-              iconColor: Colors.white,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    width: 300.0,
-                    height: 200.0,
+                );
+              },
+            ),
+          ),
+          backgroundColor: Color(0xFF975FD0),
+        ),
+        body: ListView(
+          children: [
+            Column(
+              children: [
+                InkWell(
+                  onTap: getImage,
+                  child: Container(
+                    width: 150.0,
+                    height: 150.0,
                     margin: const EdgeInsets.only(
                       top: 24.0,
                       bottom: 64.0,
-                      right: 10,
                     ),
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/resim/Elif-Baa.png'),
+                        image: FileImage(File(widget.letter.imagePath ?? "")),
                         fit: BoxFit.cover,
                       ),
-                      //color: Colors.black26,
+                      color: Colors.black26,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AdminPage(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                                )),
-                      );
-                    },
-                    leading: Icon(Icons.home),
-                    title: Text(
-                      'Ana Sayfa',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                musicPath == null
+                    ? Container()
+                    : Text(
+                        path.basename(musicPath!),
+                        style: TextStyle(fontSize: 10),
+                        textAlign: TextAlign.right,
                       ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffbea1ea),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.only(
+                          bottom: 0,
+                        ),
+                        icon: Icon(
+                          _isPlaying ? Icons.pause : Icons.play_arrow,
+                          size: 40.0,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          _isPlaying ? _pause() : _play();
+                        },
+                      ),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            getMusic();
+                          },
+                          icon: Icon(Icons.music_note, color: Colors.white),
+                          label: Text(
+                            musicPath == null
+                                ? path
+                                    .basename(widget.letter.musicPath ?? "Ses:")
+                                : path.basename(musicPath!),
+                            style: GoogleFonts.comicNeue(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xffbea1ea),
+                            onPrimary: Colors.white,
+                            elevation: 0,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+            customSizedBox(),
+            buildLetterName(),
+            buildLetterAnnotation(),
+            customSizedBox(),
+            _updateButton(),
+            _deleteButton(),
+          ],
+        ),
+      ),
+      drawer: SafeArea(
+        child: Container(
+          child: ListTileTheme(
+            textColor: Colors.white,
+            iconColor: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 300.0,
+                  height: 200.0,
+                  margin: const EdgeInsets.only(
+                    top: 24.0,
+                    bottom: 64.0,
+                    right: 10,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/resim/Elif-Baa.png'),
+                      fit: BoxFit.cover,
+                    ),
+                    //color: Colors.black26,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminPage(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
+                    );
+                  },
+                  leading: Icon(Icons.home),
+                  title: Text(
+                    'Ana Sayfa',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ListeMenu(
-                                  user: widget.user,
-                                  deneme: deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                                )),
-                      );
-                    },
-                    leading: Icon(Icons.list),
-                    title: Text(
-                      'Harfleri Listele',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ListeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
+                    );
+                  },
+                  leading: Icon(Icons.list),
+                  title: Text(
+                    'Harfleri Listele',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HarfeklemeMenu(
-                                  user: widget.user,
-                                  deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                                )),
-                      );
-                    },
-                    leading: Icon(Icons.add),
-                    title: Text(
-                      'Harf Ekle',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HarfeklemeMenu(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
+                    );
+                  },
+                  leading: Icon(Icons.add),
+                  title: Text(
+                    'Harf Ekle',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  ListTile(
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LogGiris(
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
+                    );
+                  },
+                  leading: Icon(Icons.verified_user_outlined),
+                  title: Text(
+                    'Giriş Bilgileri',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  onTap: () {
+                    _showResendDialogg();
+                  },
+                  leading: Icon(Icons.power_settings_new),
+                  title: Text(
+                    'Çıkış Yap',
+                    style: GoogleFonts.comicNeue(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                DefaultTextStyle(
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white54,
+                  ),
+                  child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
+                            builder: (context) => Hakkimizda(
+
                             )),
                       );
                     },
-                    leading: Icon(Icons.verified_user_outlined),
-                    title: Text(
-                      'Giriş Bilgileri',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {
-                      _showResendDialogg();
-                    },
-                    leading: Icon(Icons.power_settings_new),
-                    title: Text(
-                      'Çıkış Yap',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  DefaultTextStyle(
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white54,
-                    ),
                     child: Container(
                       margin: const EdgeInsets.symmetric(
                         vertical: 16.0,
@@ -384,26 +375,31 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 
-  @override void initState() {
+  @override
+  void initState() {
     txtlettername.text = letter.name!;
     txtletterannotation.text = letter.annotation!;
     super.initState();
     audioPlayer = AudioPlayer();
     _loadAudio();
   }
-  @override void dispose() {
+
+  @override
+  void dispose() {
     _pause();
     audioPlayer.stop();
     super.dispose();
   }
+
   Future<void> _loadAudio() async {
     try {
       await audioPlayer.setUrl(musicPath ?? widget.letter.musicPath!);
@@ -411,6 +407,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       print('Error loading audio: $e');
     }
   }
+
   Future<void> _play() async {
     int result = await audioPlayer.play(musicPath ?? widget.letter.musicPath!);
     if (result == 1) {
@@ -419,6 +416,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       });
     }
   }
+
   Future<void> _pause() async {
     if (mounted) {
       int result = await audioPlayer.pause();
@@ -427,9 +425,12 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       }
     }
   }
+
   Widget _updateButton() {
     return TextButton(
-      onPressed: () async {selectProcess(Options.update);},
+      onPressed: () async {
+        selectProcess(Options.update);
+      },
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 75,
@@ -477,9 +478,12 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       ),
     );
   }
+
   Widget _deleteButton() {
     return TextButton(
-      onPressed: () async {selectProcess(Options.delete);},
+      onPressed: () async {
+        selectProcess(Options.delete);
+      },
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 75,
@@ -567,6 +571,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       ),
     );
   }
+
   Widget buildLetterAnnotation() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -612,6 +617,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       });
     }
   }
+
   void getMusicc() async {
     final pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -621,6 +627,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       musicPath = pickedFile.files.first.path!;
     }
   }
+
   void getMusic() async {
     final pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -647,6 +654,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       default:
     }
   }
+
   void updateLetter() async {
     Letter updatedLetter = widget.letter.copyWith(
         imagePath: imagePath,
@@ -654,17 +662,25 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
         name: txtlettername.text,
         annotation: txtletterannotation.text);
     await dbHelper.updateLetter(updatedLetter);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Harf Güncellendi"),
+        duration: const Duration(seconds: 3),
+      ),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => ListePage(
                 user: widget.user,
                 deneme: widget.deneme,
-            denemeiki: widget.denemeiki,log: widget.log,
+                denemeiki: widget.denemeiki,
+                log: widget.log,
               )),
     );
     setState(() {});
   }
+
   void _showResendDialogg() {
     showDialog(
       context: context,
@@ -705,7 +721,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -718,9 +734,26 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,user: widget.user,game: game,)),
-                              (route) => false);
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    log: widget.log,
+                                    user: widget.user,
+                                    game: game,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -742,6 +775,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       ),
     );
   }
+
   void _showResendDialog() {
     showDialog(
       context: context,
@@ -767,7 +801,10 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
-              ),SizedBox(height: 16,),
+              ),
+              SizedBox(
+                height: 16,
+              ),
               Text(
                 textAlign: TextAlign.center,
                 "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
@@ -775,7 +812,8 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                ),),
+                ),
+              ),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
@@ -791,7 +829,7 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -806,14 +844,21 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
                     onPressed: () {
                       dbHelper.deleteLetter(letter.id!);
                       setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Harf silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => ListePage(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     style: ButtonStyle(
@@ -836,10 +881,12 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   Widget customSizedBox() => SizedBox(
         height: 20,
       );
@@ -851,5 +898,4 @@ class _DetayPageState extends State<DetayPage> with ValidationMixin {
     properties.add(StringProperty('_ses', _ses));
     properties.add(DiagnosticsProperty<bool>('_isPlaying', _isPlaying));
   }
-
 }

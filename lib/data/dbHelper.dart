@@ -32,7 +32,7 @@ class DbHelper {
   void createDb(Database db, int version) async {
     await db.execute(
         '''CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,lastname TEXT,phone TEXT,
-        address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER,isVerified INTEGER)''');
+        address TEXT,username TEXT,password TEXT,email TEXT,isadmin INTEGER,isVerified INTEGER,hesapAcik INTEGER)''');
     await db.execute(
         '''CREATE TABLE letters(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, annotation TEXT, image_path BLOB, music_path BLOB)''');
     await db.execute(
@@ -52,9 +52,12 @@ class DbHelper {
     await db.execute(
         '''CREATE TABLE log (id INTEGER PRIMARY KEY AUTOINCREMENT, kullaniciId INTEGER,
         girisTarih TEXT,cikisTarih TEXT,kayitTarih TEXT,
-        name TEXT,lastname TEXT,username TEXT,durum INTEGER,yapilanIslem TEXT,FOREIGN KEY (kullaniciId) 
+        name TEXT,lastname TEXT,username TEXT,durum INTEGER,yapilanIslem TEXT,
+        yapilanIslemders TEXT,yapilanIslemoyun TEXT,
+        FOREIGN KEY (kullaniciId) 
         REFERENCES users(id) ON DELETE CASCADE)''');
   }
+
   Future<List<Log>> getLog() async {
     Database? db = await this.db;
     var result = await db.query("log");
@@ -62,6 +65,16 @@ class DbHelper {
       return Log.fromObject(result[i]);
     });
   }
+
+  Future<List<Log>> getLogusername(String kullaniciAdi) async {
+    Database? db = await this.db;
+    var result =
+        await db.query("log", where: 'username = ?', whereArgs: [kullaniciAdi]);
+    return List.generate(result.length, (i) {
+      return Log.fromObject(result[i]);
+    });
+  }
+
   Future<int> insertLog(
     Log log,
   ) async {
@@ -247,11 +260,11 @@ class DbHelper {
   }
 
   Future<int> insert(User user) async {
-    int isAdmin = user.email.endsWith('@elifba.com') ? 1 : 0;
-    int isVerified = user.email.endsWith('@elifba.com')
+    int isAdmin = user.email!.endsWith('@elifba.com') ? 1 : 0;
+    int isVerified = user.email!.endsWith('@elifba.com')
         ? 1
         : (user.isVerified != null ? 1 : 0);
-    String hashedPassword = hashPassword(user.password);
+    String hashedPassword = hashPassword(user.password!);
     Database? db = await this.db;
     var result = await db.insert("users", {
       "username": user.username,
@@ -275,11 +288,24 @@ class DbHelper {
 
   Future<int> update(User user) async {
     Database? db = await this.db;
-    String hashedPassword = hashPassword(user.password);
+    String hashedPassword = hashPassword(user.password!);
     var result = await db.update(
         " users ", {...user.toMap(), 'password': hashedPassword},
         where: "id=?", whereArgs: [user.id]);
     return result;
+  }
+
+  Future<int> updateUserhesap(User user) async {
+    Database? db = await this.db;
+    var result = await db?.update(
+      "users",
+      {
+        "hesapAcik": 1,
+      },
+      where: "id = ?",
+      whereArgs: [user.id],
+    );
+    return result ?? 0;
   }
 
   Future<int> updateUser(User user) async {
@@ -295,11 +321,40 @@ class DbHelper {
         "phone": user.phone,
         "isadmin": 0,
         "isVerified": 1,
+        "hesapAcik": 0,
       },
       where: "id = ?",
       whereArgs: [user.id],
     );
     return result;
+  }
+  Future<User?> getUserByUsername(String username) async {
+    final db = await this.db;
+    final maps = await db.query('users', where: 'username = ?', whereArgs: [username]);
+
+    if (maps.isNotEmpty) {
+      return User.fromMap(maps.first);
+    }
+
+    return null;
+  }
+
+  Future<User?> autoLoginCompany() async {
+    Database? db = await this.db;
+
+    var compRes = await db!.query('users',
+        where: 'hesapAcik = ?',
+        whereArgs: [1],
+        limit: 1);
+
+    if (compRes.isNotEmpty) {
+      var user = User.fromObject(compRes.first);
+      user.hesapAcik = 1;
+      await db.update('users', user.toMap(),
+          where: 'id = ?', whereArgs: [user.id]);
+      return user;
+    }
+    return null;
   }
 
   Future<User?> checkUser(String username, String password) async {
@@ -318,11 +373,65 @@ class DbHelper {
       return null;
     }
   }
+  Future<int> updateUserhesapById(int userId, int newValue) async {
+    Database? db = await this.db;
+    var result = await db.update(
+      "users",
+      {"hesapAcik": newValue},
+      where: "id = ?",
+      whereArgs: [userId],
+    );
+    return result;
+  }
+  Future<User?> getUserWithHesapDurum(int hesapDurum) async {
+    final db = await this.db;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'users',
+      where: 'hesapDurum = ?',
+      whereArgs: [hesapDurum],
+    );
+
+    if (maps.isNotEmpty) {
+      return User.fromMap(maps.first);
+    }
+
+    return null;
+  }
+
+  Future<User?> getCurrentUser() async {
+    Database? db = await this.db;
+    if (db == null) {
+      throw Exception('Veritabanı bağlantısı kurulamadı');
+    }
+    final result = await db.query(
+      'users',
+      where: 'hesapAcik = ?',
+      whereArgs: [1],
+      limit: 1,
+    );
+
+    if (result != null && result.isNotEmpty) {
+      return User.fromObject(result.first);
+    } else {
+      return null;
+    }
+  }
 
   Future<User?> getUserByEmail(String mail) async {
     final db = await dbProvider.db;
     final result =
         await db.query('users', where: 'email = ?', whereArgs: [mail]);
+    if (result.isNotEmpty) {
+      return User.fromObject(result.first);
+    } else {
+      return null;
+    }
+  }
+
+  Future<User?> getUserByLogEmail(String kullaniciAdi) async {
+    final db = await dbProvider.db;
+    final result = await db
+        .query('users', where: 'username = ?', whereArgs: [kullaniciAdi]);
     if (result.isNotEmpty) {
       return User.fromObject(result.first);
     } else {
@@ -454,7 +563,8 @@ class DbHelper {
     return row['durum'] as int?;
   }
 
-  Future<int?> getGameStatusByUserIdAndLevelkilit(int kullaniciId, int level) async {
+  Future<int?> getGameStatusByUserIdAndLevelkilit(
+      int kullaniciId, int level) async {
     Database? db = await this.db;
     var result = await db.query(
       'game',
@@ -470,7 +580,6 @@ class DbHelper {
     int seviyeKilit = row['seviyeKilit'] as int;
     return seviyeKilit;
   }
-
 
   Future<List<Harfharake>> getharfesre() async {
     Database? db = await this.db;
@@ -526,5 +635,13 @@ class DbHelper {
   Future<bool> checklog(int? userId) async {
     var result = await Loggiris(userId!);
     return result != null;
+  }
+
+  Future<int> deleteUserLog(int id) async {
+    Database? db = await this.db;
+    await db!.execute("DELETE FROM users WHERE id = $id;");
+    await db.execute("DELETE FROM log WHERE kullaniciId = $id;");
+    int result = await db.rawUpdate("VACUUM");
+    return result;
   }
 }

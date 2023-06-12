@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../data/dbHelper.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../hakkimizda.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import 'harfeklememenü.dart';
@@ -32,10 +33,7 @@ class _AdminState extends State<AdminPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _advancedDrawerController = AdvancedDrawerController();
-  //var user= User("", "", "", "", "", "", "", isadmin: 0);
-  //var letter =Letter(imagePath: "");
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   /*0xFFA07BC9*/
   @override
@@ -242,16 +240,24 @@ class _AdminState extends State<AdminPage> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -460,12 +466,24 @@ class _AdminState extends State<AdminPage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
                                     game: game,
-                                    user: widget.user,log: widget.log,
+                                    user: widget.user,
+                                    log: widget.log,
                                   )),
                           (route) => false);
                     },

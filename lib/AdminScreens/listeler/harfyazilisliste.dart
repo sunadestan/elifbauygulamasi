@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -22,7 +23,13 @@ class HarfYazilisListePage extends StatefulWidget {
   final int deneme;
   final int denemeiki;
   Log log;
-  HarfYazilisListePage({Key? key, required this.user,required this.denemeiki,required this.deneme, required this.log}) : super(key: key);
+  HarfYazilisListePage(
+      {Key? key,
+      required this.user,
+      required this.denemeiki,
+      required this.deneme,
+      required this.log})
+      : super(key: key);
   @override
   State<HarfYazilisListePage> createState() => _HarfYazilisListePage();
 }
@@ -32,15 +39,14 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
   late int deneme;
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
-  var letter=Letter(imagePath: "");
-  var harf=Harf(harfimagePath: "");
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  var letter = Letter(imagePath: "");
+  var harf = Harf(harfimagePath: "");
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   @override
   void initState() {
     super.initState();
     _lettersFuture = liste();
-
   }
 
   Future<List<Harf>> liste() async {
@@ -54,12 +60,18 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => ListeMenu(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
-        child: AdvancedDrawer(
+      child: AdvancedDrawer(
         backdropColor: Color(0xffad80ea),
         controller: _advancedDrawerController,
         animationCurve: Curves.easeInOut,
@@ -103,11 +115,18 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Column(
@@ -128,7 +147,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                           childAspectRatio: 0.8,
                           children: List.generate(
                             letters!.length,
-                                (index) => kutuu(letters[index]),
+                            (index) => kutuu(letters[index]),
                           ),
                         ),
                       );
@@ -173,11 +192,20 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                       //color: Colors.black26,
                       shape: BoxShape.circle,
                     ),
-                  ),ListTile(
-                    onTap: ()  {Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
-                    );},
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdminPage(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.home),
                     title: Text(
                       'Ana Sayfa',
@@ -189,11 +217,18 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                     ),
                   ),
                   ListTile(
-                    onTap: ()  {
+                    onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(   log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
-                      );},
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.list),
                     title: Text(
                       'Harfleri Listele',
@@ -208,11 +243,17 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(   log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme ,)),
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
                     },
                     leading: Icon(Icons.add),
-                    title:Text(
+                    title: Text(
                       'Harf Ekle',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -227,10 +268,11 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,   log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -263,16 +305,24 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child:Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -282,10 +332,10 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
             ),
           ),
         ),
-
       ),
     );
   }
+
   void _showResendDialogg(context) {
     showDialog(
       context: context,
@@ -326,7 +376,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -339,11 +389,30 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    log: widget.log,
+                                    game: game,
+                                    user: widget.user,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -361,13 +430,15 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -384,8 +455,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
               ],
               fontSize: 30,
               fontWeight: FontWeight.w700,
-              color: Color(0xff935ccf)
-          ),
+              color: Color(0xff935ccf)),
           children: [
             TextSpan(
               text: '-',
@@ -398,6 +468,7 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
           ]),
     );
   }
+
   void _showResendDialog(Harf selectedLetter) {
     showDialog(
       context: context,
@@ -415,19 +486,23 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(selectedLetter.harfname ?? "",
+              Text(
+                selectedLetter.harfname ?? "",
                 style: GoogleFonts.comicNeue(
                   fontWeight: FontWeight.w600,
                   fontSize: 24,
                   color: Colors.lightBlueAccent,
-                ),),
+                ),
+              ),
               SizedBox(height: 16),
-              Text(selectedLetter.harfannotation ?? "",
+              Text(
+                selectedLetter.harfannotation ?? "",
                 style: GoogleFonts.comicNeue(
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                   fontSize: 18,
-                ),),
+                ),
+              ),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
@@ -442,8 +517,8 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
                       Navigator.pop(context);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Tamam',
@@ -464,10 +539,19 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
 
   Widget kutuu(Harf harf) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         //_showResendDialog(harf);
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>YazilisPage(log: widget.log,deneme: widget.deneme,denemeiki: widget.denemeiki,user: widget.user,
-          letter:letter,harf: harf,)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => YazilisPage(
+                      log: widget.log,
+                      deneme: widget.deneme,
+                      denemeiki: widget.denemeiki,
+                      user: widget.user,
+                      letter: letter,
+                      harf: harf,
+                    )));
       },
       child: Container(
         alignment: Alignment.center,
@@ -495,6 +579,4 @@ class _HarfYazilisListePage extends State<HarfYazilisListePage> {
       ),
     );
   }
-
 }
-

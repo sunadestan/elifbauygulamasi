@@ -13,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
 import '../data/googlesign.dart';
+import '../hakkimizdaiki.dart';
 import '../models/Log.dart';
 import '../models/letter.dart';
 import '../models/user.dart';
@@ -55,17 +56,6 @@ class _OyunSinifiState extends State<OyunSinifi> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DateTime now = DateTime.now();
-        String formattedDateTime =
-            DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-        List<Log> logList = await dbHelper.getLog();
-        if (logList.isNotEmpty) {
-          Log existingLog = logList.first;
-          existingLog.durum = 0;
-          existingLog.cikisTarih = formattedDateTime;
-          existingLog.girisTarih;
-          await dbHelper.updateLog(existingLog);
-        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -337,16 +327,27 @@ class _OyunSinifiState extends State<OyunSinifi> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -436,13 +437,13 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     DateTime now = DateTime.now();
                     String formattedDateTime =
                         DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                    List<Log> logList = await dbHelper.getLog();
+                    List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                     if (logList.isNotEmpty) {
                       Log existingLog = logList.first;
                       existingLog.durum = 1;
                       existingLog.cikisTarih;
                       existingLog.girisTarih;
-                      existingLog.yapilanIslem = "1.seviye oyun";
+                      existingLog.yapilanIslemoyun = "1.Seviye oyun";
                       await dbHelper.updateLog(existingLog);
                     }
                     updateButtonColors();
@@ -516,13 +517,13 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     DateTime now = DateTime.now();
                     String formattedDateTime =
                         DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                    List<Log> logList = await dbHelper.getLog();
+                    List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                     if (logList.isNotEmpty) {
                       Log existingLog = logList.first;
                       existingLog.durum = 1;
                       existingLog.cikisTarih;
                       existingLog.girisTarih;
-                      existingLog.yapilanIslem = "2.seviye oyun";
+                      existingLog.yapilanIslemoyun = "2.Seviye oyun";
                       await dbHelper.updateLog(existingLog);
                     }
                     updateButtonColors();
@@ -595,13 +596,13 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     DateTime now = DateTime.now();
                     String formattedDateTime =
                         DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                    List<Log> logList = await dbHelper.getLog();
+                    List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                     if (logList.isNotEmpty) {
                       Log existingLog = logList.first;
                       existingLog.durum = 1;
                       existingLog.cikisTarih;
                       existingLog.girisTarih;
-                      existingLog.yapilanIslem = "3.seviye oyun";
+                      existingLog.yapilanIslemoyun = "3.Seviye oyun";
                       await dbHelper.updateLog(existingLog);
                     }
                     Game updatedGame = Game(
@@ -673,13 +674,13 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     DateTime now = DateTime.now();
                     String formattedDateTime =
                         DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                    List<Log> logList = await dbHelper.getLog();
+                    List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                     if (logList.isNotEmpty) {
                       Log existingLog = logList.first;
                       existingLog.durum = 1;
                       existingLog.cikisTarih;
                       existingLog.girisTarih;
-                      existingLog.yapilanIslem = "4.seviye oyun";
+                      existingLog.yapilanIslemoyun = "4.Seviye oyun";
                       await dbHelper.updateLog(existingLog);
                     }
                     Game updatedGame = Game(
@@ -750,13 +751,13 @@ class _OyunSinifiState extends State<OyunSinifi> {
                     DateTime now = DateTime.now();
                     String formattedDateTime =
                         DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                    List<Log> logList = await dbHelper.getLog();
+                    List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                     if (logList.isNotEmpty) {
                       Log existingLog = logList.first;
                       existingLog.durum = 1;
                       existingLog.cikisTarih;
                       existingLog.girisTarih;
-                      existingLog.yapilanIslem = "5.seviye oyun";
+                      existingLog.yapilanIslemoyun = "5.Seviye oyun";
                       await dbHelper.updateLog(existingLog);
                     }
                     Game updatedGame = Game(
@@ -1033,15 +1034,15 @@ class _OyunSinifiState extends State<OyunSinifi> {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                           DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                       }
-
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -1137,11 +1138,17 @@ class _OyunSinifiState extends State<OyunSinifi> {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
-
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

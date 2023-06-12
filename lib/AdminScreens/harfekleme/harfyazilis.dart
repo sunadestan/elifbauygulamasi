@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -22,9 +23,15 @@ import '../harfeklememenü.dart';
 import '../listeler/harfyazilisliste.dart';
 import '../log.dart';
 
-
 class HarfYazilisEkle extends StatefulWidget {
-   HarfYazilisEkle({Key? key,required this.user,required this.letter,required this.deneme,required this.denemeiki,required this.log}) : super(key: key);
+  HarfYazilisEkle(
+      {Key? key,
+      required this.user,
+      required this.letter,
+      required this.deneme,
+      required this.denemeiki,
+      required this.log})
+      : super(key: key);
   final User user;
   final Letter letter;
   final int deneme;
@@ -35,7 +42,8 @@ class HarfYazilisEkle extends StatefulWidget {
   _HarfYazilisEkleState createState() => _HarfYazilisEkleState();
 }
 
-class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin {
+class _HarfYazilisEkleState extends State<HarfYazilisEkle>
+    with ValidationMixin {
   final _advancedDrawerController = AdvancedDrawerController();
   String? imagePath;
   String? musicPath;
@@ -48,8 +56,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
   final picker = ImagePicker();
   final dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +64,14 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HarfeklemeMenu(log: widget.log,user: widget.user, deneme: widget.deneme,denemeiki: widget.denemeiki,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => HarfeklemeMenu(
+                    log: widget.log,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                    denemeiki: widget.denemeiki,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -109,11 +122,18 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> HarfeklemeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: SingleChildScrollView(
@@ -133,9 +153,12 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                   musicPath == null
                       ? Container()
                       : Text(
-                    basename(musicPath!),
-                    style: TextStyle(fontSize: 10),
-                    textAlign: TextAlign.right,
+                          basename(musicPath!),
+                          style: TextStyle(fontSize: 10),
+                          textAlign: TextAlign.right,
+                        ),
+                  SizedBox(
+                    height: 20,
                   ),
                   _ekleButton(context),
                 ],
@@ -168,11 +191,20 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                       //color: Colors.black26,
                       shape: BoxShape.circle,
                     ),
-                  ),ListTile(
-                    onTap: ()  {Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>AdminPage(log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
-                    );},
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdminPage(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.home),
                     title: Text(
                       'Ana Sayfa',
@@ -184,11 +216,18 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                     ),
                   ),
                   ListTile(
-                    onTap: ()  {
+                    onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ListeMenu(log: widget.log,denemeiki: widget.denemeiki,user:widget.user,deneme: widget.deneme,)),
-                      );},
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                      );
+                    },
                     leading: Icon(Icons.list),
                     title: Text(
                       'Harfleri Listele',
@@ -203,11 +242,17 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HarfeklemeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
                       );
                     },
                     leading: Icon(Icons.add),
-                    title:Text(
+                    title: Text(
                       'Harf Ekle',
                       style: GoogleFonts.comicNeue(
                         color: Colors.white,
@@ -222,11 +267,11 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
-                              log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -259,16 +304,24 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child:Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -281,16 +334,19 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ),
     );
   }
+
   void _handleMenuButtonPressed() {
     _advancedDrawerController.showDrawer();
   }
+
   Future getImage() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       imagePath = pickedFile!.path;
     });
   }
+
   Future getMusic() async {
     final pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -335,6 +391,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ),
     );
   }
+
   Widget buildLetterAnnotation() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -368,6 +425,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ),
     );
   }
+
   Widget _ekleButton(context) {
     return TextButton(
       onPressed: () async {
@@ -376,12 +434,21 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
           saveToDatabase();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HarfYazilisListePage(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)),);
+            MaterialPageRoute(
+                builder: (context) => HarfYazilisListePage(
+                      log: widget.log,
+                      denemeiki: widget.denemeiki,
+                      user: widget.user,
+                      deneme: widget.deneme,
+                    )),
+          );
           _showResendDialog(context);
         }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 75,),
+        margin: EdgeInsets.symmetric(
+          horizontal: 75,
+        ),
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 15),
         alignment: Alignment.center,
@@ -395,23 +462,30 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                   spreadRadius: 2)
             ],
             gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  Color(0xff823ac6),
-                  Color(0xff703dd0),
+                  Color(0xff9a6ed3),
+                  Color(0xffbea1ea),
+                  Color(0xff9a6ed3),
                 ])),
-        child:Text(
-          "Ekle",
-          style: GoogleFonts.comicNeue(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Ekle",
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
   Widget buildTopField() {
     return Row(
       children: <Widget>[
@@ -441,17 +515,17 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                       border: Border.all(color: Color(0xff935ccf)),
                       image: imagePath != null
                           ? DecorationImage(
-                        image: FileImage(File(imagePath!)),
-                        fit: BoxFit.cover,
-                      )
+                              image: FileImage(File(imagePath!)),
+                              fit: BoxFit.cover,
+                            )
                           : null,
                     ),
                     child: imagePath == null
                         ? Icon(
-                      Icons.camera_alt,
-                      size: 32.0,
-                      color: Color(0xff935ccf),
-                    )
+                            Icons.camera_alt,
+                            size: 32.0,
+                            color: Color(0xff935ccf),
+                          )
                         : null,
                   ),
                 ],
@@ -497,6 +571,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ],
     );
   }
+
   Future<void> saveToDatabase() async {
     var result = await dbHelper.insertHarf(
       Harf(
@@ -512,6 +587,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       print("Data could not be saved.");
     }
   }
+
   void _showResendDialog(context) {
     showDialog(
       context: context,
@@ -551,6 +627,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ),
     );
   }
+
   void _showResendDialogg(context) {
     showDialog(
       context: context,
@@ -591,7 +668,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -604,12 +681,30 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
-
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    log: widget.log,
+                                    game: game,
+                                    user: widget.user,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlueAccent),
                     ),
                     child: Text(
                       'Evet',
@@ -627,6 +722,7 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -650,13 +746,15 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
               style: GoogleFonts.comicNeue(
                 color: Color(0xffad80ea),
                 fontSize: 40,
-                fontWeight: FontWeight.w700,shadows: [
-                Shadow(
-                  blurRadius: 5.0,
-                  color: Colors.grey,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],),
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.grey,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
             TextSpan(
               text: 'Ba',
@@ -678,8 +776,8 @@ class _HarfYazilisEkleState extends State<HarfYazilisEkle> with ValidationMixin 
   }
 
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);

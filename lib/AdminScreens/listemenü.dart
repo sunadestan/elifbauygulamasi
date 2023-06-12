@@ -3,6 +3,7 @@ import 'package:elifbauygulamasi/AdminScreens/harfeklememen%C3%BC.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/%C3%B6treliste.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/esreliste.dart';
 import 'package:elifbauygulamasi/AdminScreens/listeler/harfyazilisliste.dart';
+import 'package:elifbauygulamasi/data/dbHelper.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
+import '../hakkimizda.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -38,8 +40,8 @@ class ListeMenu extends StatefulWidget {
 
 class _ListeMenuState extends State<ListeMenu> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
+  var dbHelper = DbHelper();
   var harf = Harfharake(
       harfharakename: "",
       harfharakeannotation: "",
@@ -296,16 +298,24 @@ class _ListeMenuState extends State<ListeMenu> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -339,7 +349,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => ListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -382,7 +393,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => UstunListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -425,7 +437,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => EsreListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -468,7 +481,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => OtreListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -511,7 +525,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => HarfYazilisListePage(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -554,7 +569,8 @@ class _ListeMenuState extends State<ListeMenu> {
                     builder: (context) => BitisikListe(
                           user: widget.user,
                           deneme: widget.deneme,
-                          denemeiki: widget.denemeiki,log: widget.log,
+                          denemeiki: widget.denemeiki,
+                          log: widget.log,
                         )),
               );
             },
@@ -667,12 +683,24 @@ class _ListeMenuState extends State<ListeMenu> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
                                     game: game,
-                                    user: widget.user,log: widget.log,
+                                    user: widget.user,
+                                    log: widget.log,
                                   )),
                           (route) => false);
                     },

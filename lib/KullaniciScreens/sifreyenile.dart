@@ -9,6 +9,7 @@ import 'package:crypto/crypto.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
 import '../data/googlesign.dart';
+import '../hakkimizdaiki.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -67,17 +68,6 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DateTime now = DateTime.now();
-        String formattedDateTime =
-        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-        List<Log> logList = await dbHelper.getLog();
-        if (logList.isNotEmpty) {
-          Log existingLog = logList.first;
-          existingLog.durum = 0;
-          existingLog.cikisTarih = formattedDateTime;
-          existingLog.girisTarih;
-          await dbHelper.updateLog(existingLog);
-        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -312,16 +302,27 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -451,36 +452,43 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
           _formKey.currentState!.save();
           User user = widget.user;
           User? dbUser = await dbHelper.getUserById(user.id!);
-          if (dbUser != null && _currentPassword == dbUser.password) {
-            if (_newPassword == _confirmPassword) {
-              // Yeni şifreyi güncelle
-              dbUser.password = _newPassword!;
-              await dbHelper.update(dbUser);
-              print(_newPassword);
-              // Şifre güncellendi mesajı göster
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AyarlarPage(
-                            name: widget.name,
-                            game: widget.game,
-                            letter: widget.letter,
-                            user: widget.user,
-                            username: widget.username,
-                            lastname: widget.lastname,
-                            email: widget.email,
-                          )));
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text("Şifre güncellendi!")));
-            } else {
-              // Yeni şifreler eşit değil uyarısı göster
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Girilen şifreler eşit değil!")));
-            }
+          if (_currentPassword == hashPassword(_newPassword!)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text("Mevcut şifre ile yeni şifre aynı olamaz!")),
+            );
+            return;
           } else {
-            // Mevcut şifre yanlış uyarısı göster
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Mevcut şifre yanlış")));
+            if (dbUser != null && _currentPassword == dbUser.password) {
+              if (_newPassword == _confirmPassword) {
+                dbUser.password = _newPassword!;
+                await dbHelper.update(dbUser);
+                print(_newPassword);
+                // Şifre güncellendi mesajı göster
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AyarlarPage(
+                              name: widget.name,
+                              game: widget.game,
+                              letter: widget.letter,
+                              user: widget.user,
+                              username: widget.username,
+                              lastname: widget.lastname,
+                              email: widget.email,
+                            )));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Şifre güncellendi!")));
+              } else {
+                // Yeni şifreler eşit değil uyarısı göster
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Girilen şifreler eşit değil!")));
+              }
+            } else {
+              // Mevcut şifre yanlış uyarısı göster
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Mevcut şifre yanlış")));
+            }
           }
         }
       },
@@ -574,13 +582,15 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                     onPressed: () async {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
-                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbhelper.getLog();
+                          DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList =
+                          await dbhelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem = "Çıkış";
                         await dbhelper.updateLog(existingLog);
                       }
                       Navigator.pushAndRemoveUntil(
@@ -588,7 +598,8 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
                                     user: widget.user,
-                                    game: widget.game,log: log,
+                                    game: widget.game,
+                                    log: log,
                                   )),
                           (route) => false);
                       logOut();
@@ -686,7 +697,8 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
                         MaterialPageRoute(
                             builder: (context) => LoginPage(
                                   user: widget.user,
-                                  game: widget.game,log: log,
+                                  game: widget.game,
+                                  log: log,
                                 )),
                       );
                       setState(() {});
@@ -721,9 +733,16 @@ class _SifreYenileState extends State<SifreYenile> with ValidationMixin {
   }
 
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbhelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbhelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

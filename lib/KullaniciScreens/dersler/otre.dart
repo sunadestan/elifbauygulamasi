@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
 import '../../data/googlesign.dart';
+import '../../hakkimizdaiki.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/harfharake.dart';
@@ -345,16 +346,27 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -625,12 +637,13 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -667,9 +680,16 @@ class _kullaniciHarflerotre extends State<kullaniciHarflerotre> {
     _advancedDrawerController.showDrawer();
   }
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 import '../../LoginScreens/login_page.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/bitisik.dart';
 import '../../models/game.dart';
@@ -19,11 +20,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
 import '../../models/user.dart';
+import '../admin.dart';
 import '../harfeklememenü.dart';
+import '../listemenü.dart';
 import '../log.dart';
 
 class BitisikHarf extends StatefulWidget {
-  BitisikHarf({Key? key, required this.user, required this.letter, required this.denemeiki, required this.deneme,required this.log}) : super(key: key);
+  BitisikHarf(
+      {Key? key,
+      required this.user,
+      required this.letter,
+      required this.denemeiki,
+      required this.deneme,
+      required this.log})
+      : super(key: key);
   final User user;
   final Letter letter;
   final int deneme;
@@ -41,8 +51,7 @@ class _BitisikHarfState extends State<BitisikHarf> {
   String? musicPath;
   String? _name;
   String? _aciklama;
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   var txtlettername = TextEditingController();
   var txtletterannotation = TextEditingController();
@@ -57,8 +66,14 @@ class _BitisikHarfState extends State<BitisikHarf> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HarfeklemeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => HarfeklemeMenu(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -109,8 +124,16 @@ class _BitisikHarfState extends State<BitisikHarf> {
             actions: [
               IconButton(
                   onPressed: () {
-                    /*Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> HarfeklemeMenu(denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);*/
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HarfeklemeMenu(
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  log: widget.log,
+                                )),
+                        (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app))
             ],
@@ -136,6 +159,9 @@ class _BitisikHarfState extends State<BitisikHarf> {
                           style: TextStyle(fontSize: 10),
                           textAlign: TextAlign.right,
                         ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   _ekleButton(context),
                 ],
               ),
@@ -170,15 +196,16 @@ class _BitisikHarfState extends State<BitisikHarf> {
                   ),
                   ListTile(
                     onTap: () {
-                      /*Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => AdminPage(
-                                user: widget.user,
-                                deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
-                            )),
-                      );*/
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
                     },
                     leading: Icon(Icons.home),
                     title: Text(
@@ -192,15 +219,16 @@ class _BitisikHarfState extends State<BitisikHarf> {
                   ),
                   ListTile(
                     onTap: () {
-                      /*Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => ListeMenu(
-                                user: widget.user,
-                                deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
-                            )),
-                      );*/
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
                     },
                     leading: Icon(Icons.list),
                     title: Text(
@@ -214,15 +242,16 @@ class _BitisikHarfState extends State<BitisikHarf> {
                   ),
                   ListTile(
                     onTap: () {
-                      /* Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => HarfeklemeMenu(
-                                user: widget.user,
-                                deneme: widget.deneme,
-                                denemeiki: widget.denemeiki
-                            )),
-                      );*/
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
+                      );
                     },
                     leading: Icon(Icons.add),
                     title: Text(
@@ -240,10 +269,11 @@ class _BitisikHarfState extends State<BitisikHarf> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -276,16 +306,24 @@ class _BitisikHarfState extends State<BitisikHarf> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -402,7 +440,8 @@ class _BitisikHarfState extends State<BitisikHarf> {
                 builder: (context) => BitisikListe(
                       user: widget.user,
                       denemeiki: widget.denemeiki,
-                      deneme: widget.deneme,log: widget.log,
+                      deneme: widget.deneme,
+                      log: widget.log,
                     )),
           );
           _showResendDialog(context);
@@ -425,19 +464,25 @@ class _BitisikHarfState extends State<BitisikHarf> {
                   spreadRadius: 2)
             ],
             gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  Color(0xff823ac6),
-                  Color(0xff703dd0),
+                  Color(0xff9a6ed3),
+                  Color(0xffbea1ea),
+                  Color(0xff9a6ed3),
                 ])),
-        child: Text(
-          "Ekle",
-          style: GoogleFonts.comicNeue(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Ekle",
+              style: GoogleFonts.comicNeue(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -636,9 +681,25 @@ class _BitisikHarfState extends State<BitisikHarf> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage(log: widget.log,game: game,user: widget.user,)),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    log: widget.log,
+                                    game: game,
+                                    user: widget.user,
+                                  )),
                           (route) => false);
                     },
                     style: ButtonStyle(

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
+import '../hakkimizdaiki.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -13,6 +14,8 @@ import '../models/user.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class HomePage extends StatefulWidget {
   HomePage(
@@ -263,16 +266,27 @@ class _HomeState extends State<HomePage> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -288,7 +302,6 @@ class _HomeState extends State<HomePage> {
 
   @override
   void initState() {
-    print(widget.user.id);
     super.initState();
   }
 
@@ -318,7 +331,7 @@ class _HomeState extends State<HomePage> {
           Center(
             child: Text(
               textAlign: TextAlign.center,
-              'Hoş Geldin ' + (widget.name) + (widget.user.name),
+              'Hoş Geldin ' + (widget.user.name!),
               style: GoogleFonts.comicNeue(
                 color: Colors.white,
                 fontSize: 30,
@@ -331,7 +344,8 @@ class _HomeState extends State<HomePage> {
             child: Text(
               textAlign: TextAlign.center,
               'Bu uygulama ile Kuran harflerini öğrenirken çok eğleneceksin! '
-              'Harfleri öğrenmek için derslere girebilir, oyunlar oynayabilir, eşleştirme yapabilir veya sorular çözebilirsin.',
+              'Harfleri öğrenmek için derslere girebilir, oyunlar oynayabilir, '
+              'eşleştirme yapabilir veya sorular çözebilirsin.',
               style: GoogleFonts.comicNeue(
                 color: Colors.white,
                 fontSize: 16,
@@ -712,27 +726,31 @@ class _HomeState extends State<HomePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () async {
+                      print("${widget.user.username}" + "d");
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                           DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbhelper.getLog();
+                      List<Log> logList =
+                          await dbhelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem = "Çıkış";
                         await dbhelper.updateLog(existingLog);
                         print(existingLog);
                       }
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginPage(
-                                    user: widget.user,
-                                    game: widget.game,
-                                    log: log,
-                                  )),
-                          (route) => false);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(
+                            user: widget.user,
+                            game: widget.game,
+                            log: log,
+                          ),
+                        ),
+                      );
                       logOut();
                     },
                     style: ButtonStyle(
@@ -756,10 +774,17 @@ class _HomeState extends State<HomePage> {
     );
   }
 
-  void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+  Future<void> logOut() async {
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbhelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbhelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

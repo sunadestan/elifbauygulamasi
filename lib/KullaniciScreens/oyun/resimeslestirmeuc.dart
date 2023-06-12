@@ -8,6 +8,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
 import '../../data/googlesign.dart';
+import '../../hakkimizdaiki.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -288,19 +289,7 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc>
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OyunSinifi(
-                                  name: widget.name,
-                                  user: widget.user,
-                                  letter: widget.letter,
-                                  username: widget.username,
-                                  lastname: widget.lastname,
-                                  email: widget.email,
-                                  game: widget.game,
-                                )),
-                        (route) => false);
+                    _cikmakistiyorMusunuzuc();
                   },
                   icon: Icon(Icons.exit_to_app))
             ],
@@ -500,16 +489,27 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc>
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -1257,12 +1257,13 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc>
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -1578,11 +1579,17 @@ class _ResimEslestirmeucState extends State<ResimEslestirmeuc>
       return Icons.alarm;
     }
   }
-
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

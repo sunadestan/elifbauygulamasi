@@ -59,12 +59,26 @@ String? validatePhoneNumber(String? value) {
   return null;
 }
 
+
+
 String? validatePassword(String? value) {
   if (value == null || value.isEmpty) {
     return 'Lütfen bir şifre girin';
   }
   if (value.length < 5 || value.length > 10) {
     return 'Şifreniz en az 5 en fazla 10 karakter olmalıdır';
+  }
+  if (!value.contains(RegExp(r'[A-Z]'))) {
+    return 'Şifreniz en az bir büyük harf içermelidir';
+  }
+  if (!value.contains(RegExp(r'[a-z]'))) {
+    return 'Şifreniz en az bir küçük harf içermelidir';
+  }
+  if (!value.contains(RegExp(r'[0-9]'))) {
+    return 'Şifreniz en az bir rakam içermelidir';
+  }
+  if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+    return 'Şifreniz en az bir noktalama işareti içermelidir';
   }
   return null;
 }
@@ -88,9 +102,9 @@ String? validateLetterName(String? value) {
   }
   return null;
 }
-  String? validateLetterAciklama(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Bu alan boş geçilemez';
-    }
-  }
 
+String? validateLetterAciklama(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Bu alan boş geçilemez';
+  }
+}

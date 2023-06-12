@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -28,11 +29,12 @@ import '../log.dart';
 class YazilisPage extends StatefulWidget {
   YazilisPage(
       {Key? key,
-        required this.letter,
-        required this.user,
-        required this.deneme,
-        required this.denemeiki,required this.log,
-        required this.harf})
+      required this.letter,
+      required this.user,
+      required this.deneme,
+      required this.denemeiki,
+      required this.log,
+      required this.harf})
       : super(key: key);
   final Letter letter;
   final User user;
@@ -50,8 +52,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
   late final Harf harfler = widget.harf;
   final _advancedDrawerController = AdvancedDrawerController();
   late int deneme;
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   var dbHelper = DbHelper();
 
@@ -129,28 +130,28 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
             PopupMenuButton<Options>(
                 onSelected: selectProcess,
                 itemBuilder: (BuildContext context) =>
-                <PopupMenuEntry<Options>>[
-                  PopupMenuItem<Options>(
-                    value: Options.delete,
-                    child: Text(
-                      "Harfi sil",
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w700,
-                        //color: Colors.black,
+                    <PopupMenuEntry<Options>>[
+                      PopupMenuItem<Options>(
+                        value: Options.delete,
+                        child: Text(
+                          "Harfi sil",
+                          style: GoogleFonts.comicNeue(
+                            fontWeight: FontWeight.w700,
+                            //color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  PopupMenuItem<Options>(
-                    value: Options.update,
-                    child: Text(
-                      "Güncelle",
-                      style: GoogleFonts.comicNeue(
-                        fontWeight: FontWeight.w700,
-                        //color: Colors.black,
+                      PopupMenuItem<Options>(
+                        value: Options.update,
+                        child: Text(
+                          "Güncelle",
+                          style: GoogleFonts.comicNeue(
+                            fontWeight: FontWeight.w700,
+                            //color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ])
+                    ])
           ],
           backgroundColor: Color(0xFF975FD0),
         ),
@@ -170,8 +171,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: FileImage(
-                            File(widget.harf.harfimagePath ?? "")),
+                        image: FileImage(File(widget.harf.harfimagePath ?? "")),
                         fit: BoxFit.cover,
                       ),
                       color: Colors.black26,
@@ -186,10 +186,10 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                 musicPath == null
                     ? Container()
                     : Text(
-                  path.basename(musicPath!),
-                  style: TextStyle(fontSize: 10),
-                  textAlign: TextAlign.right,
-                ),
+                        path.basename(musicPath!),
+                        style: TextStyle(fontSize: 10),
+                        textAlign: TextAlign.right,
+                      ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
@@ -227,7 +227,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                           label: Text(
                             musicPath == null
                                 ? path.basename(
-                                widget.harf.harfmusicPath ?? "Ses:")
+                                    widget.harf.harfmusicPath ?? "Ses:")
                                 : path.basename(musicPath!),
                             style: GoogleFonts.comicNeue(
                               color: Colors.white,
@@ -286,10 +286,11 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AdminPage(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,log: widget.log,
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.home),
@@ -308,11 +309,11 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ListeMenu(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,log: widget.log,
-
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.list),
@@ -331,11 +332,11 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => HarfeklemeMenu(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,log: widget.log,
-
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.add),
@@ -354,10 +355,11 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                       context,
                       MaterialPageRoute(
                           builder: (context) => LogGiris(
-                            user: widget.user,
-                            deneme: widget.deneme,
-                            denemeiki: widget.denemeiki,log: widget.log,
-                          )),
+                                user: widget.user,
+                                deneme: widget.deneme,
+                                denemeiki: widget.denemeiki,
+                                log: widget.log,
+                              )),
                     );
                   },
                   leading: Icon(Icons.verified_user_outlined),
@@ -390,16 +392,27 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                     fontSize: 12,
                     color: Colors.white54,
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text(
-                      'Hizmet Şartları | Gizlilik Politikası',
-                      style: GoogleFonts.comicNeue(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Hakkimizda(
+
+                            )),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                      ),
+                      child: Text(
+                        'Hizmet Şartları | Gizlilik Politikası',
+                        style: GoogleFonts.comicNeue(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -452,7 +465,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -465,7 +478,26 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(log: widget.log,game: game,user: widget.user,)), (route) => false);
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    log: widget.log,
+                                    game: game,
+                                    user: widget.user,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -513,7 +545,10 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
-              ),SizedBox(height: 16,),
+              ),
+              SizedBox(
+                height: 16,
+              ),
               Text(
                 textAlign: TextAlign.center,
                 "Harfi kalıcı olarak silmek istediğinize emin misiniz?",
@@ -521,7 +556,8 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                ),),
+                ),
+              ),
               SizedBox(height: 24),
               Divider(
                 color: Colors.white,
@@ -537,7 +573,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'Hayır',
@@ -550,16 +586,23 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      dbHelper.deleteHarfharake(harf.id!);
+                      dbHelper.deleteHarf(harf.id!);
                       setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Harf silindi"),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => UstunListePage(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
-                            )),
+                            builder: (context) => HarfYazilisListePage(
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     style: ButtonStyle(
@@ -600,7 +643,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
 
   Future<void> _play() async {
     int result =
-    await audioPlayer.play(musicPath ?? widget.harf.harfmusicPath!);
+        await audioPlayer.play(musicPath ?? widget.harf.harfmusicPath!);
     if (result == 1) {
       setState(() {
         _isPlaying = true;
@@ -693,7 +736,7 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
 
   Future getImage() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       // Resim seçilmiş mi diye kontrol ediyoruz
       setState(() {
@@ -741,28 +784,35 @@ class _YazilisPageState extends State<YazilisPage> with ValidationMixin {
   }
 
   void updateHareke() async {
-    Harf updateHarf= widget.harf.copyWith(
-      harfimagePath:imagePath,
-      harfmusicPath:musicPath,
-      harfname:txtlettername.text,
+    Harf updateHarf = widget.harf.copyWith(
+      harfimagePath: imagePath,
+      harfmusicPath: musicPath,
+      harfname: txtlettername.text,
       harfannotation: txtletterannotation.text,
     );
     await dbHelper.updateHarf(updateHarf);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Harf Güncellendi"),
+        duration: const Duration(seconds: 3),
+      ),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => HarfYazilisListePage(
-            user: widget.user,
-            deneme: widget.deneme,
-            denemeiki: widget.denemeiki,log: widget.log,
-          )),
+                user: widget.user,
+                deneme: widget.deneme,
+                denemeiki: widget.denemeiki,
+                log: widget.log,
+              )),
     );
     setState(() {});
   }
 
   Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
+        height: 20,
+      );
 
   void _handleMenuButtonPressed() {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();

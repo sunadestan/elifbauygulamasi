@@ -3,6 +3,7 @@ import 'package:elifbauygulamasi/AdminScreens/harfekleme/bitisikharf.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekleme/harake.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekleme/harfekle.dart';
 import 'package:elifbauygulamasi/AdminScreens/harfekleme/harfyazilis.dart';
+import 'package:elifbauygulamasi/data/dbHelper.dart';
 import 'package:elifbauygulamasi/models/harfharake.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
+import '../hakkimizda.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -43,8 +45,8 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
       harfharakemusic_path: "");
   final _advancedDrawerController = AdvancedDrawerController();
   int temp = 1;
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
+  var dbHelper = DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +208,7 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                                   log: widget.log,
                                   denemeiki: widget.denemeiki,
                                   user: widget.user,
-                                  deneme: temp,
+                                  deneme: widget.deneme,
                                 )),
                       );
                     },
@@ -286,16 +288,24 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -330,7 +340,8 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                           denemeiki: widget.denemeiki,
                           user: widget.user,
                           letter: letter,
-                          deneme: widget.deneme,log: widget.log,
+                          deneme: widget.deneme,
+                          log: widget.log,
                         )),
               );
             },
@@ -375,7 +386,8 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                           user: widget.user,
                           letter: letter,
                           harf: harf,
-                          deneme: widget.deneme,log: widget.log,
+                          deneme: widget.deneme,
+                          log: widget.log,
                         )),
               );
             },
@@ -419,7 +431,8 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                           denemeiki: widget.denemeiki,
                           user: widget.user,
                           letter: letter,
-                          deneme: widget.deneme,log: widget.log,
+                          deneme: widget.deneme,
+                          log: widget.log,
                         )),
               );
             },
@@ -463,7 +476,8 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                           denemeiki: widget.denemeiki,
                           user: widget.user,
                           letter: letter,
-                          deneme: widget.deneme,log: widget.log,
+                          deneme: widget.deneme,
+                          log: widget.log,
                         )),
               );
             },
@@ -576,13 +590,24 @@ class _HarfeklemeMenuState extends State<HarfeklemeMenu> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
                                     game: game,
                                     user: widget.user,
-                                log: widget.log,
+                                    log: widget.log,
                                   )),
                           (route) => false);
                     },

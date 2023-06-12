@@ -833,12 +833,13 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -1237,9 +1238,16 @@ class _SesOyunuState extends State<SesOyunu> with TickerProviderStateMixin {
   }
 
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

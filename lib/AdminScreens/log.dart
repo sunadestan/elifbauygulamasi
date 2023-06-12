@@ -6,6 +6,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
+import '../hakkimizda.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -31,7 +32,7 @@ class LogGiris extends StatefulWidget {
 
 class _LogState extends State<LogGiris> {
   var letter = Letter(name: "", annotation: "", imagePath: "", musicPath: "");
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
   final _advancedDrawerController = AdvancedDrawerController();
   var dbHelper = DbHelper();
   late Future<List<Log>> _logFuture;
@@ -133,7 +134,7 @@ class _LogState extends State<LogGiris> {
                             //width: double.infinity,
                             child: GridView.count(
                               crossAxisCount: 1,
-                              childAspectRatio: 2.3,
+                              childAspectRatio: 2,
                               shrinkWrap: true,
                               children: List.generate(
                                 log!.length,
@@ -295,16 +296,24 @@ class _LogState extends State<LogGiris> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -408,6 +417,17 @@ class _LogState extends State<LogGiris> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -442,8 +462,7 @@ class _LogState extends State<LogGiris> {
   Widget card(Log log) {
     return Container(
       decoration: BoxDecoration(
-        //border: Border.all(color: Colors.green),
-        color: Colors.green,
+        color: Color(0xffbea1ea),
       ),
       child: Card(
         child: ListTile(
@@ -453,17 +472,76 @@ class _LogState extends State<LogGiris> {
             log.durum != 0 ? Icons.check_circle : Icons.remove_circle,
             color: log.durum != 0 ? Colors.green : Colors.red,
           ),
-          title: Text('ID: ${log.id}'),
+          title: Text('ID: ${log.id}',style: GoogleFonts.comicNeue(
+            color: Colors.black,
+            fontWeight: FontWeight.w700,
+          ),),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Ad: ${log.name}'),
-              Text('Soyad: ${log.lastname}'),
-              Text('Kullanıcı Adı: ${log.username}'),
-              Text('Giriş Tarihi: ${log.girisTarih}'),
-              Text('Çıkış Tarihi: ${log.cikisTarih}'),
-              Text('Kayıt Tarihi: ${log.kayitTarih}'),
-              Text('Yapılan İşlem: ${log.yapilanIslem}'),
+              Text(
+                'Ad: ${log.name}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Soyad: ${log.lastname}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Kullanıcı Adı: ${log.username}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Giriş Tarihi: ${log.girisTarih}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Çıkış Tarihi: ${log.cikisTarih}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Kayıt Tarihi: ${log.kayitTarih}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Yapılan İşlem: ${log.yapilanIslem}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Yapılan İşlem: ${log.yapilanIslemders}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Yapılan İşlem: ${log.yapilanIslemoyun}',
+                style: GoogleFonts.comicNeue(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
         ),

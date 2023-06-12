@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import '../data/googlesign.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/user.dart';
@@ -34,11 +35,11 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
   var codeController = TextEditingController();
   var dbhelper = DbHelper();
   bool _isLoading = false;
-  final int _initialSeconds = 120; // başlangıç süresini 2 dakikaya ayarla
+  final int _initialSeconds = 120;
   int _secondsRemaining = 120;
   late Timer _timer;
   late int zaman = 0;
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
   final log = Log();
 
   @override
@@ -50,7 +51,8 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
           context,
           MaterialPageRoute(
               builder: (context) => LoginPage(
-                    game: game,log: log,
+                    game: game,
+                    log: log,
                     user: widget.user,
                   )),
           (route) => false,
@@ -278,8 +280,8 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  LoginPage(log: log,game: game, user: widget.user)));
+                              builder: (context) => LoginPage(
+                                  log: log, game: game, user: widget.user)));
                     },
                     style: ButtonStyle(
                       backgroundColor:
@@ -324,11 +326,17 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
   Widget _backButton() {
     return InkWell(
       onTap: () {
+        if (GoogleSignInApi != null) {
+          GoogleSignInApi.logout();
+        }
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    LoginPage(game: game, user: widget.user,log: log,)));
+                builder: (context) => LoginPage(
+                      game: game,
+                      user: widget.user,
+                      log: log,
+                    )));
         _timer.cancel();
       },
       child: Container(
@@ -422,6 +430,15 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+                            SizedBox(height: 16),
+                            Text(
+                              widget.user.username.toString(),
+                              style: GoogleFonts.comicNeue(
+                                color: Colors.black,
+                                //fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             SizedBox(height: 24),
                             Divider(
                               color: Colors.white,
@@ -438,8 +455,10 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => LoginPage(
-                                                game: game,log: log,
-                                                user: widget.user)));
+                                                  game: game,
+                                                  log: log,
+                                                  user: widget.user,
+                                                )));
                                   },
                                   style: ButtonStyle(
                                     backgroundColor:
@@ -778,8 +797,11 @@ class _MailDogrulamaState extends State<MailDogrulama> with ValidationMixin {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    LoginPage(game: game, user: widget.user,log: log,)));
+                                builder: (context) => LoginPage(
+                                      game: game,
+                                      user: widget.user,
+                                      log: log,
+                                    )));
                       },
                       style: ButtonStyle(
                         backgroundColor:

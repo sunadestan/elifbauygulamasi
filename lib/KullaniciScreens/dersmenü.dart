@@ -8,11 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../LoginScreens/login_page.dart';
 import '../data/dbHelper.dart';
 import '../data/googlesign.dart';
+import '../hakkimizdaiki.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/letter.dart';
@@ -56,17 +56,6 @@ class _DerslerState extends State<Dersler> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DateTime now = DateTime.now();
-        String formattedDateTime =
-        DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-        List<Log> logList = await dbhelper.getLog();
-        if (logList.isNotEmpty) {
-          Log existingLog = logList.first;
-          existingLog.durum = 0;
-          existingLog.cikisTarih = formattedDateTime;
-          existingLog.girisTarih;
-          await dbhelper.updateLog(existingLog);
-        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -324,16 +313,27 @@ class _DerslerState extends State<Dersler> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -360,7 +360,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "1.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -417,7 +429,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "2.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -474,7 +498,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "3.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -531,7 +567,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "4.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -588,7 +636,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "5.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -645,7 +705,19 @@ class _DerslerState extends State<Dersler> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+              DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+              List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
+              if (logList.isNotEmpty) {
+                Log existingLog = logList.first;
+                existingLog.durum = 1;
+                existingLog.cikisTarih;
+                existingLog.girisTarih;
+                existingLog.yapilanIslemders = "6.Ders";
+                await dbhelper.updateLog(existingLog);
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -800,15 +872,15 @@ class _DerslerState extends State<Dersler> {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbhelper.getLog();
+                      List<Log> logList = await dbhelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbhelper.updateLog(existingLog);
                       }
-
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -846,9 +918,16 @@ class _DerslerState extends State<Dersler> {
   }
 
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbhelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbhelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

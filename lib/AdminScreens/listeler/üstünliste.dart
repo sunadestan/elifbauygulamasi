@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
@@ -43,8 +44,7 @@ class _UstunListePage extends State<UstunListePage> {
     harfharakename: "",
     harfTur: 0,
   );
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
@@ -67,8 +67,14 @@ class _UstunListePage extends State<UstunListePage> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ListeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user, deneme: widget.deneme,)),
-              (route) => false,
+          MaterialPageRoute(
+              builder: (context) => ListeMenu(
+                    log: widget.log,
+                    denemeiki: widget.denemeiki,
+                    user: widget.user,
+                    deneme: widget.deneme,
+                  )),
+          (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
       },
@@ -116,11 +122,18 @@ class _UstunListePage extends State<UstunListePage> {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> ListeMenu(log: widget.log,denemeiki: widget.denemeiki,user: widget.user,deneme: widget.deneme,)), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListeMenu(
+                                  log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                )),
+                        (route) => false);
                   },
-                  icon: Icon(Icons.exit_to_app)
-              )
+                  icon: Icon(Icons.exit_to_app))
             ],
           ),
           body: Column(
@@ -194,8 +207,9 @@ class _UstunListePage extends State<UstunListePage> {
                         MaterialPageRoute(
                             builder: (context) => AdminPage(
                                   user: widget.user,
-                              denemeiki: widget.denemeiki,
-                                  deneme: widget.deneme,log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  deneme: widget.deneme,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -217,7 +231,8 @@ class _UstunListePage extends State<UstunListePage> {
                             builder: (context) => ListeMenu(
                                   user: widget.user,
                                   deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,log: widget.log,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -238,7 +253,9 @@ class _UstunListePage extends State<UstunListePage> {
                         MaterialPageRoute(
                             builder: (context) => HarfeklemeMenu(
                                   user: widget.user,
-                                  deneme: widget.deneme,denemeiki: widget.denemeiki,log: widget.log,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
                                 )),
                       );
                     },
@@ -258,11 +275,11 @@ class _UstunListePage extends State<UstunListePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
-                              log: widget.log,
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -295,16 +312,24 @@ class _UstunListePage extends State<UstunListePage> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -371,12 +396,26 @@ class _UstunListePage extends State<UstunListePage> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> LoginPage(
-                        game: game,
-                        user: widget.user,
-                        log: widget.log,
-                      )), (route) => false);
-
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,
+                                    log: widget.log,
+                                  )),
+                          (route) => false);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -446,8 +485,10 @@ class _UstunListePage extends State<UstunListePage> {
               builder: (context) => UstunPage(
                     letter: letter,
                     user: widget.user,
-                    deneme: widget.deneme,denemeiki: widget.denemeiki,
-                    harf: harf,log: widget.log,
+                    deneme: widget.deneme,
+                    denemeiki: widget.denemeiki,
+                    harf: harf,
+                    log: widget.log,
                   )),
         );
       },

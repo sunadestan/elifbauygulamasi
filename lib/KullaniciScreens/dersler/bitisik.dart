@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
 import '../../data/googlesign.dart';
+import '../../hakkimizdaiki.dart';
 import '../../models/game.dart';
 import '../../models/letter.dart';
 import '../../models/user.dart';
@@ -51,11 +52,6 @@ class _BitisikDersState extends State<BitisikDers> {
   AudioPlayer audioPlayer = AudioPlayer();
   late String musicPath;
   bool _isPlaying = false;
-  bool oyunTamamlandimi = false;
-  bool oyunTamamlandimi1 = false;
-  bool oyunTamamlandimi2 = false;
-  bool oyunTamamlandimi3 = false;
-  bool oyunTamamlandimi4 = false;
   final log = Log();
 
   @override
@@ -343,16 +339,27 @@ class _BitisikDersState extends State<BitisikDers> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -640,12 +647,13 @@ class _BitisikDersState extends State<BitisikDers> {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -687,9 +695,16 @@ class _BitisikDersState extends State<BitisikDers> {
   }
 
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

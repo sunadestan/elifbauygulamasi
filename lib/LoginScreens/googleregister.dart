@@ -7,6 +7,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import '../data/dbHelper.dart';
+import '../data/googlesign.dart';
 import '../models/Log.dart';
 import '../models/game.dart';
 import '../models/user.dart';
@@ -14,10 +15,14 @@ import '../models/validation.dart';
 import 'emaildogrulama.dart';
 
 class Googleregister extends StatefulWidget {
-  Googleregister({Key? key,required this.name,required this.lastname, required this.email,
+  Googleregister({
+    Key? key,
+    required this.name,
+    required this.lastname,
+    required this.email,
     //required this.user
   }) : super(key: key);
-  var  name;
+  var name;
   var lastname;
   var email;
   //User user;
@@ -26,7 +31,7 @@ class Googleregister extends StatefulWidget {
   State<Googleregister> createState() => _GoogleregisterState();
 }
 
-class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
+class _GoogleregisterState extends State<Googleregister> with ValidationMixin {
   var dbHelper = DbHelper();
   final _formKey = GlobalKey<FormState>();
   late String _email;
@@ -44,15 +49,15 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
   var txtadres = TextEditingController();
   var txtname = TextEditingController();
   var txtlastname = TextEditingController();
-  final user =User("", "", "", "", "", "", "", isadmin: 0, isVerified: 0, isGoogleUser: 0);
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
+  final user = User(isadmin: 0, isVerified: 0,  hesapAcik: 0);
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
   final log = Log();
 
   @override
   void initState() {
-    txtemail.text=widget.email;
-    txtname.text=widget.name;
-    txtlastname.text=widget.lastname;
+    txtemail.text = widget.email;
+    txtname.text = widget.name;
+    txtlastname.text = widget.lastname;
     super.initState();
   }
 
@@ -86,12 +91,18 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                 ),
                 _title(),
                 customSizedBox(),
-                Text("Merhaba"+" "+(widget.lastname)+" "+ "Google ile kayıt ol.",
+                Text(
+                  "Merhaba" +
+                      " " +
+                      (widget.lastname) +
+                      " " +
+                      "Google ile kayıt ol.",
                   style: GoogleFonts.comicNeue(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),),
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 customSizedBox(),
                 customSizedBox(),
                 buildUserNameField(),
@@ -140,11 +151,11 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
             selectorTextStyle:
-            TextStyle(color: Colors.black, fontFamily: 'Comic Neue'),
+                TextStyle(color: Colors.black, fontFamily: 'Comic Neue'),
             //initialValue: PhoneNumber(isoCode: ''), // başlangıç ülke kodu
             formatInput: true,
             keyboardType:
-            TextInputType.numberWithOptions(signed: true, decimal: true),
+                TextInputType.numberWithOptions(signed: true, decimal: true),
             inputDecoration: InputDecoration(
               border: InputBorder.none,
               filled: true,
@@ -251,7 +262,7 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                 border: InputBorder.none, //kenarlıkları yok eder
                 filled: true),
             validator:
-            validatePassword, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
+                validatePassword, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
             onSaved: (String? value) {
               _password = value!;
             },
@@ -287,7 +298,7 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                 border: InputBorder.none, //kenarlıkları yok eder
                 filled: true),
             validator:
-            validatePassword, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
+                validatePassword, // form alanına ait formatın uygunluğu mesela isim için 2 karekter lazım gibi
             onSaved: (String? value) {
               _password = value!;
             },
@@ -302,8 +313,12 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       onPressed: () async {
         print(widget.email);
         if (txtpassword.text == txtpassword2.text) {
-          await kayit(txtusername.text,);}
-        else {_showResendDialogg();}
+          await kayit(
+            txtusername.text,
+          );
+        } else {
+          _showResendDialogg();
+        }
       },
       child: Container(
         margin: EdgeInsets.symmetric(
@@ -339,27 +354,33 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       ),
     );
   }
+
   Future<void> addUser() async {
     int isAdmin = widget.email.endsWith('@elifba.com') ? 1 : 0;
     if (isAdmin == 1) {
       var result = await dbHelper.insert(
         User(
-            txtusername.text,
-            txtpassword.text,
-            txtemail.text,
-            txtname.text,
-            txtadres.text,
-            txtlastname.text,
-            txtphone.text,
+            username: txtusername.text,
+            name: txtname.text,
+            lastname: txtlastname.text,
+            phone: txtphone.text,
+            address: txtadres.text,
+            password: txtpassword.text,
+            email: txtemail.text,
             isadmin: isAdmin,
             isVerified: 1,
-            isGoogleUser: 0
-        ),
+            hesapAcik: 0),
       );
       if (result > 0) {
         print("Kullanıcı başarıyla eklendi.");
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage(log: log,game: game,user: user,)));
+            context,
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                      log: log,
+                      game: game,
+                      user: user,
+                    )));
       } else {
         print("Kullanıcı eklenirken bir hata oluştu.");
       }
@@ -368,6 +389,7 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       print(widget.email);
     }
   }
+
   Future<void> kayit(String kullaniciAdi) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -379,6 +401,7 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       }
     }
   }
+
   void _showResendDialogg() {
     showDialog(
       context: context,
@@ -461,13 +484,25 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       ),
     );
   }
-  Future<String> sendEmail(String recipientEmail,) async {
+
+  Future<String> sendEmail(
+    String recipientEmail,
+  ) async {
     String username = 'sunasumeyyedestan@gmail.com'; // gönderen e-posta adresi
     String password = 'ptuetlymfkuqklyu'; // gönderen e-posta adresi şifresi
     final smtpServer = gmail(username, password);
-    var deneme = User(txtusername.text, txtpassword.text, txtemail.text,
-        txtname.text, txtadres.text, txtlastname.text, txtphone.text,
-        isadmin: 0, isVerified: 0,isGoogleUser: 0);
+    var deneme = User(
+        username: txtusername.text,
+        name: txtname.text,
+        lastname: txtlastname.text,
+        phone: txtphone.text,
+        address: txtadres.text,
+        password: txtpassword.text,
+        email: txtemail.text,
+        isadmin: 0,
+        isVerified: 0,
+
+        hesapAcik: 0);
     final random = Random();
     final resetCode = random
         .nextInt(1000000)
@@ -528,12 +563,17 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                            MailDogrulama(email: txtemail.text, kod: resetCode, user: deneme)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MailDogrulama(
+                                    email: txtemail.text,
+                                    kod: resetCode,
+                                    user: deneme)));
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       child: Text(
                         'Tamam',
@@ -597,11 +637,19 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user,)), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage(
+                                      log: log,
+                                      game: game,
+                                      user: user,
+                                    )),
+                            (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       child: Text(
                         'Tamam',
@@ -665,11 +713,19 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user,)), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage(
+                                      log: log,
+                                      game: game,
+                                      user: user,
+                                    )),
+                            (route) => false);
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       child: Text(
                         'Tamam',
@@ -693,7 +749,17 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
   Widget _backButton() {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(log: log,game: game,user: user,)));
+        if (GoogleSignInApi != null) {
+          GoogleSignInApi.logout();
+        }
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                      log: log,
+                      game: game,
+                      user: user,
+                    )));
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -723,6 +789,7 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
       ),
     );
   }
+
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -774,8 +841,8 @@ class _GoogleregisterState extends State<Googleregister> with ValidationMixin{
           ]),
     );
   }
-  Widget customSizedBox() => SizedBox(
-    height: 20,
-  );
 
+  Widget customSizedBox() => SizedBox(
+        height: 20,
+      );
 }

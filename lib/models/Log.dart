@@ -4,6 +4,8 @@ class Log {
   String? cikisTarih;
   String? kayitTarih;
   String? yapilanIslem;
+  String? yapilanIslemders;
+  String? yapilanIslemoyun;
   String? name;
   String? lastname;
   String? username;
@@ -17,6 +19,8 @@ class Log {
     this.cikisTarih,
     this.kayitTarih,
     this.yapilanIslem,
+    this.yapilanIslemders,
+    this.yapilanIslemoyun,
     this.name,
     this.lastname,
     this.username,
@@ -30,6 +34,8 @@ class Log {
     String? cikisTarih,
     String? kayitTarih,
     String? yapilanIslem,
+    String? yapilanIslemders,
+    String? yapilanIslemoyun,
     String? name,
     String? lastname,
     String? username,
@@ -42,6 +48,8 @@ class Log {
       cikisTarih: cikisTarih ?? this.cikisTarih,
       kayitTarih: kayitTarih ?? this.kayitTarih,
       yapilanIslem: yapilanIslem ?? this.yapilanIslem,
+      yapilanIslemders: yapilanIslemders ?? this.yapilanIslemders,
+      yapilanIslemoyun: yapilanIslemoyun ?? this.yapilanIslemoyun,
       name: name ?? this.name,
       lastname: lastname ?? this.lastname,
       username: username ?? this.username,
@@ -57,6 +65,8 @@ class Log {
       'cikisTarih': cikisTarih,
       'kayitTarih': kayitTarih,
       'yapilanIslem': yapilanIslem,
+      'yapilanIslemders': yapilanIslemders,
+      'yapilanIslemoyun': yapilanIslemoyun,
       'name': name,
       'lastname': lastname,
       'username': username,
@@ -72,6 +82,8 @@ class Log {
       cikisTarih: map['cikisTarih'],
       kayitTarih: map['kayitTarih'],
       yapilanIslem: map['yapilanIslem'],
+      yapilanIslemders: map['yapilanIslemders'],
+      yapilanIslemoyun: map['yapilanIslemoyun'],
       name: map['name'],
       lastname: map['lastname'],
       username: map['username'],
@@ -86,6 +98,8 @@ class Log {
     this.cikisTarih = o["cikisTarih"];
     this.kayitTarih = o["kayitTarih"];
     this.yapilanIslem = o["yapilanIslem"];
+    this.yapilanIslemders = o["yapilanIslemders"];
+    this.yapilanIslemoyun = o["yapilanIslemoyun"];
     this.name = o["name"];
     this.lastname = o["lastname"];
     this.username = o["username"];

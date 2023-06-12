@@ -13,6 +13,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../../data/googlesign.dart';
+import '../../hakkimizdaiki.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../ayarlar.dart';
@@ -342,25 +343,36 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
                     ),
                   ),
                   Spacer(),
-                  DefaultTextStyle(
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white54,
+              DefaultTextStyle(
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white54,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Hakkimizdaiki(
+
+                          )),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 16.0,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    child: Text(
+                      'Hizmet Şartları | Gizlilik Politikası',
+                      style: GoogleFonts.comicNeue(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
+                ),
+              ),
                 ],
               ),
             ),
@@ -627,12 +639,13 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
                       DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                      List<Log> logList = await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem="Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -669,9 +682,16 @@ class _kullaniciHarfleresre extends State<kullaniciHarfleresre> {
     _advancedDrawerController.showDrawer();
   }
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

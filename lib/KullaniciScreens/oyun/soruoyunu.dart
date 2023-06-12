@@ -6,6 +6,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/dbHelper.dart';
 import '../../data/googlesign.dart';
+import '../../hakkimizdaiki.dart';
 import '../../models/Log.dart';
 import '../../models/game.dart';
 import '../ayarlar.dart';
@@ -332,13 +333,15 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                     onPressed: () async {
                       DateTime now = DateTime.now();
                       String formattedDateTime =
-                      DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
-                      List<Log> logList = await dbHelper.getLog();
+                          DateFormat('dd.MM.yyyy HH:mm:ss').format(now);
+                      List<Log> logList =
+                          await dbHelper.getLogusername(widget.user.username!);
                       if (logList.isNotEmpty) {
                         Log existingLog = logList.first;
                         existingLog.durum = 0;
                         existingLog.cikisTarih = formattedDateTime;
                         existingLog.girisTarih;
+                        existingLog.yapilanIslem = "Çıkış";
                         await dbHelper.updateLog(existingLog);
                         print(existingLog);
                       }
@@ -347,7 +350,8 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           MaterialPageRoute(
                               builder: (context) => LoginPage(
                                     user: widget.user,
-                                    game: widget.game,log: log,
+                                    game: widget.game,
+                                    log: log,
                                   )),
                           (route) => false);
                       logOut();
@@ -462,7 +466,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                           durum: 2,
                           kullaniciId: widget.user.id,
                           level:
-                          "4", // Provide the appropriate value for the level field
+                              "4", // Provide the appropriate value for the level field
                         );
                         dbHelper.updateGame1(updatedGame, "4");
                         Navigator.push(
@@ -552,12 +556,18 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                   'Tebrikler!',
                   style: GoogleFonts.comicNeue(
                     color: Colors.lightBlueAccent,
-                    fontSize: 30,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 15),
-                Text("Cevabınız doğru."),
+                Text(
+                  "Cevabınız doğru.",
+                  style: GoogleFonts.comicNeue(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 Divider(
                   color: Colors.white,
                   thickness: 2,
@@ -613,15 +623,14 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                   style: GoogleFonts.comicNeue(
                     color: Colors.lightBlueAccent,
                     fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
                   'Cevabınız Yanlış',
                   style: GoogleFonts.comicNeue(
-                    color: Colors.lightBlueAccent,
-                    fontSize: 24,
+                    color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -629,8 +638,8 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                 Text(
                   'Doğru Cevap: ${_resim.dogruCevap}',
                   style: GoogleFonts.comicNeue(
-                    color: Colors.lightBlueAccent,
-                    fontSize: 24,
+                    color: Colors.black,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -839,19 +848,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OyunSinifi(
-                                  name: widget.name,
-                                  user: widget.user,
-                                  letter: letter,
-                                  username: widget.username,
-                                  lastname: widget.lastname,
-                                  email: widget.email,
-                                  game: widget.game,
-                                )),
-                        (route) => false);
+                    _cikmakistiyorMusunuzuc();
                   },
                   icon: Icon(Icons.exit_to_app))
             ],
@@ -1049,16 +1046,27 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Hakkimizdaiki(
+
+                              )),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -1318,7 +1326,7 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
                 height: 16,
               ),
               Text(
-                'Kalan Süre:  ${_pausedTime}',
+                'Skor: ${_dogruSayac}  Kalan Süre:  ${_pausedTime}',
                 style: GoogleFonts.comicNeue(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -1914,9 +1922,16 @@ class _SoruOyunuState extends State<SoruOyunu> with TickerProviderStateMixin {
   }
 
   void logOut() {
-    setState(() {
-      if (GoogleSignInApi != null) {
-        GoogleSignInApi.logout();
+    if (GoogleSignInApi != null) {
+      GoogleSignInApi.logout();
+    }
+    dbHelper.getCurrentUser().then((currentUser) {
+      if (currentUser != null) {
+        dbHelper.updateUserhesapById(widget.user.id!, 0).then((_) {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
       }
     });
   }

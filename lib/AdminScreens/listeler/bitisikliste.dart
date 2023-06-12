@@ -8,6 +8,7 @@ import 'package:elifbauygulamasi/AdminScreens/listemen%C3%BC.dart';
 import 'package:flutter/material.dart';
 import '../../LoginScreens/login_page.dart';
 import '../../data/dbHelper.dart';
+import '../../hakkimizda.dart';
 import '../../models/game.dart';
 import '../../models/user.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,8 +37,7 @@ class _BitisikListeState extends State<BitisikListe> {
   late Future<List<BitisikHarfler>> _lettersFuture;
   var dbHelper = DbHelper();
   final _advancedDrawerController = AdvancedDrawerController();
-  final game = Game(durum: 0, kullaniciId: 0,seviyeKilit: 0);
-
+  final game = Game(durum: 0, kullaniciId: 0, seviyeKilit: 0);
 
   @override
   void initState() {
@@ -61,9 +61,8 @@ class _BitisikListeState extends State<BitisikListe> {
                     denemeiki: widget.denemeiki,
                     user: widget.user,
                     deneme: widget.deneme,
-                log: widget.log,
-
-              )),
+                    log: widget.log,
+                  )),
           (route) => false,
         );
         return false; // Geri tuşu işleme alınmadı
@@ -118,9 +117,9 @@ class _BitisikListeState extends State<BitisikListe> {
                             builder: (context) => ListeMenu(
                                   denemeiki: widget.denemeiki,
                                   user: widget.user,
-                                  deneme: widget.deneme,                    log: widget.log,
-
-                            )),
+                                  deneme: widget.deneme,
+                                  log: widget.log,
+                                )),
                         (route) => false);
                   },
                   icon: Icon(Icons.exit_to_app))
@@ -198,9 +197,9 @@ class _BitisikListeState extends State<BitisikListe> {
                             builder: (context) => AdminPage(
                                   denemeiki: widget.denemeiki,
                                   user: widget.user,
-                                  deneme: widget.deneme,                    log: widget.log,
-
-                            )),
+                                  deneme: widget.deneme,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.home),
@@ -221,9 +220,9 @@ class _BitisikListeState extends State<BitisikListe> {
                             builder: (context) => ListeMenu(
                                   denemeiki: widget.denemeiki,
                                   user: widget.user,
-                                  deneme: widget.deneme,                    log:widget.log,
-
-                            )),
+                                  deneme: widget.deneme,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.list),
@@ -244,9 +243,9 @@ class _BitisikListeState extends State<BitisikListe> {
                             builder: (context) => HarfeklemeMenu(
                                   denemeiki: widget.denemeiki,
                                   user: widget.user,
-                                  deneme: widget.deneme,                    log: widget.log,
-
-                            )),
+                                  deneme: widget.deneme,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.add),
@@ -265,12 +264,11 @@ class _BitisikListeState extends State<BitisikListe> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => LogGiris(
-                              user: widget.user,
-                              deneme: widget.deneme,
-                              denemeiki: widget.denemeiki,
-                              log: widget.log,
-
-                            )),
+                                  user: widget.user,
+                                  deneme: widget.deneme,
+                                  denemeiki: widget.denemeiki,
+                                  log: widget.log,
+                                )),
                       );
                     },
                     leading: Icon(Icons.verified_user_outlined),
@@ -303,16 +301,24 @@ class _BitisikListeState extends State<BitisikListe> {
                       fontSize: 12,
                       color: Colors.white54,
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 16.0,
-                      ),
-                      child: Text(
-                        'Hizmet Şartları | Gizlilik Politikası',
-                        style: GoogleFonts.comicNeue(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hakkimizda()),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                        ),
+                        child: Text(
+                          'Hizmet Şartları | Gizlilik Politikası',
+                          style: GoogleFonts.comicNeue(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -379,9 +385,25 @@ class _BitisikListeState extends State<BitisikListe> {
                   SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
+                      dbHelper.getCurrentUser().then((currentUser) {
+                        if (currentUser != null) {
+                          dbHelper
+                              .updateUserhesapById(widget.user.id!, 0)
+                              .then((_) {
+                            setState(() {});
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      });
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage(game: game,user: widget.user,log: widget.log,)),
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage(
+                                    game: game,
+                                    user: widget.user,
+                                    log: widget.log,
+                                  )),
                           (route) => false);
                     },
                     style: ButtonStyle(
@@ -454,7 +476,7 @@ class _BitisikListeState extends State<BitisikListe> {
                     user: widget.user,
                     deneme: widget.deneme,
                     harf: harf1,
-                log: widget.log,
+                    log: widget.log,
                   )),
         );
         print(harf1.image_path);
